@@ -26,12 +26,14 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.Panel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import processing.core.PApplet;
 
 /**
@@ -72,11 +74,27 @@ public class RenderFrame extends Frame
         invisiblePanel.setPreferredSize(zeroDim);
         
         setSize(300, 200);
+        addIconImage();
     }
     
     public RenderFrame(String title) {
         this();
         setTitle(title);
+    }
+    
+    private void addIconImage()
+    {
+        ArrayList<Image> icons = new ArrayList<>();
+        icons.add( getIconImage("MixProcessing-Logo_16x16.png") );
+        icons.add( getIconImage("MixProcessing-Logo_32x32.png") );
+        icons.add( getIconImage("MixProcessing-Logo_48x48.png") );
+        icons.add( getIconImage("MixProcessing-Logo_256x256.png") );
+        setIconImages(icons);
+    }
+    
+    private Image getIconImage(String name)
+    {
+        return getToolkit().createImage(RenderFrame.class.getResource("res/"+name));
     }
     
     /**

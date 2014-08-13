@@ -1,4 +1,4 @@
-#MixProcessing
+#![MixProcessing Logo](images/MixProcessing-Logo_48x48.png) MixProcessing
 
 This project aims to mix [Processing](http://www.processing.org/) sketches live (also called [VJing](http://en.wikipedia.org/wiki/VJing)). 
 
