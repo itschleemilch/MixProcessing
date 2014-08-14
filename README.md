@@ -13,11 +13,12 @@ MixProcessing handels compiled Processing sketches, they have to be exported.
 The project needs the Processing core library.
 
 ##Status
-Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. Sketches have to use Java2D, P2D or P3D does not work.
+Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. 
 
 ![Demonstration of the current codebase](images/2014-08-14_tech_demo.jpg)
 
 ##Known Issues
+* Only supports Java2D mode (P2D, P3D will not work)
 * The size() function must not be called from the sketch - please remove it before exporting the sketch.
 
 ##Roadmap
@@ -25,3 +26,6 @@ Currently there is a tech demo, that loades all sketches from a subfolder and re
 * Building a mixer interface
 * Define software interface for sketch-settings
 * Build interface for editing sketch-settings
+
+---
+[Project Page](http://itschleemilch.github.io/MixProcessing/) * [Processing](http://www.processing.org/) * Thanks to [generative-gestaltung.de](http://generative-gestaltung.de/)
