@@ -20,8 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing.sketches;
 
+import de.itschleemilch.mixprocessing.channels.ChannelManagement;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -173,29 +177,36 @@ public class Sketches {
      * @param g
      * @param io 
      */
-    public void paintAll(BufferedImage bi, Graphics2D g, ImageObserver io)
+    public void paintAll(BufferedImage bi, Graphics2D g, ImageObserver io, ChannelManagement channels)
     {
         if(sketches.isEmpty())
             return;
-        
-        int clipWidth = lastW / sketches.size();
+
         for(int i = 0; i < sketches.size(); i++)
         {
+            AffineTransform old_at = g.getTransform();
+            Paint old_paint = g.getPaint();
+            
             Sketch s = sketches.get(i);
             PApplet applet = s.getInstance();
-            applet.frameRate = 0;
             
             if(applet != null && s.needsRedraw())
             {
-                Rectangle2D clip = new Rectangle2D.Float(clipWidth * i, 0, clipWidth, lastH);;
+                Shape clip = channels.getOutputChannel(s, i);
                 g.setClip(clip);
                 s.doSetup(bi, g);
+                AffineTransform transform_backup = g.getTransform();
+                g.setTransform(new AffineTransform());
                 g.setClip(clip);
+                g.setTransform(transform_backup);
                 applet.draw();
                 s.storeInternalSettings();
                 s.updateLastRedrawTime();
             }
+            g.setTransform(old_at);
+            g.setPaint(old_paint);
         }
+        channels.paintDisabledChannels(g);
     }
     
 }

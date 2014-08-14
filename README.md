@@ -13,11 +13,12 @@ MixProcessing handels compiled Processing sketches, they have to be exported.
 The project needs the Processing core library.
 
 ##Status
-Currently there is a tech demo, that loades all sketches from a subfolder and renders them into a divided frame. Sketches have to use Java2D, P2D or P3D does not work.
+Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. Sketches have to use Java2D, P2D or P3D does not work.
 
-![Demonstration of the current codebase](images/2014-08-12_tech_demo.jpg)
+![Demonstration of the current codebase](images/2014-08-14_tech_demo.jpg)
 
-Rather than just divide the area into equal rectangles the current codebase of the tech demo also would allow free forms (circles, stars, etc.), but this will be made accessable later.
+##Known Issues
+* The size() function must not be called from the sketch - please remove it before exporting the sketch.
 
 ##Roadmap
 * Building an interface for editing the channels

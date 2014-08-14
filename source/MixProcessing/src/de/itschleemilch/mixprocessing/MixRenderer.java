@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.channels.ChannelManagement;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -43,6 +44,7 @@ import java.awt.image.BufferedImage;
  */
 public class MixRenderer extends Canvas 
     implements ComponentListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
+    private final ChannelManagement channels;
     private final Sketches sketches;
     private final long FRAME_RATE = 60L;
     private final long FRAME_PERIOD = (1000L) / FRAME_RATE;
@@ -52,6 +54,7 @@ public class MixRenderer extends Canvas
     public MixRenderer(Sketches sketches)
     {
         super();
+        this.channels = new ChannelManagement();
         this.sketches = sketches;
         addComponentListener(this);
         addMouseListener(this);
@@ -90,9 +93,12 @@ public class MixRenderer extends Canvas
         }
         else
             g2d = offImg.createGraphics();
-        sketches.paintAll(offImg, g2d, this);
+        sketches.paintAll(offImg, g2d, this, channels);
         g2d.dispose();
         g.drawImage(offImg, 0, 0, this);
+        
+        if(channels.isPreviewChannelOutlines())
+            channels.paintChannelOutlines((Graphics2D)g);
     }
 
     @Override
