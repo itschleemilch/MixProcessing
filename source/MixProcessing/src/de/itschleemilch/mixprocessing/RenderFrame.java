@@ -27,14 +27,13 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Image;
-import java.awt.Panel;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import processing.core.PApplet;
 
 /**
  * RenderFrame is a Frame with the functionality to get undecorated 
@@ -43,17 +42,12 @@ import processing.core.PApplet;
  * 
  * To show/hide the cursor, right click anywhere.
  * 
- * The frame also contains invisible versions of the Processing Sketches, to give
- * them a valid access to the AWT hierarchy. 
- * 
  * @author Sebastian Schleemilch
  */
 public class RenderFrame extends Frame
         implements WindowListener, MouseListener {
     /* Invisible Cursor, switch mode with right-click */
     Cursor zeroCursor;
-    /* Insisible Area to hold all Processing Sketches */
-    Panel invisiblePanel = new Panel();
 
     public RenderFrame() {
         super();
@@ -65,13 +59,6 @@ public class RenderFrame extends Frame
                 new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR),
                 new java.awt.Point(0, 0), "NOCURSOR");
         setCursor(zeroCursor);
-        
-        invisiblePanel.setLayout(null);
-        super.add(invisiblePanel, BorderLayout.EAST);
-        Dimension zeroDim = new Dimension(0, 0);
-        invisiblePanel.setMinimumSize(zeroDim);
-        invisiblePanel.setMaximumSize(zeroDim);
-        invisiblePanel.setPreferredSize(zeroDim);
         
         setSize(300, 200);
         addIconImage();
@@ -97,27 +84,6 @@ public class RenderFrame extends Frame
         return getToolkit().createImage(RenderFrame.class.getResource("res/"+name));
     }
     
-    /**
-     * Adds a Processing sketch invisible to the frame to give it a valid 
-     * access to the AWT hierarchy. 
-     * 
-     * @param c Processing Sketch to be added
-     */
-    public void addToInvisiblePanel(PApplet c)
-    {
-        invisiblePanel.add(c);
-    }
-    
-    /**
-     * Removes a Processing sketch from the invisible area (e.g. because it will
-     * be deleted)
-     * @param c Processing Sketch to be removed
-     */
-    public void removeFromInsisiblePanel(PApplet c)
-    {
-        invisiblePanel.remove(c);
-    }
-    
     public void centerWindowOnScreen()
     {
         Dimension screen = getToolkit().getScreenSize();
@@ -136,6 +102,10 @@ public class RenderFrame extends Frame
     public void add(Component comp, Object constraints) {
         super.add(comp, constraints); 
         comp.addMouseListener(this);
+        if(comp instanceof KeyListener)
+        {
+            addKeyListener( (KeyListener)comp );
+        }
     }
     
     /* WindowListener Methods */

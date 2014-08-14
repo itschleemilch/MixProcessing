@@ -23,7 +23,9 @@ package de.itschleemilch.mixprocessing.sketches;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import processing.core.PApplet;
 
@@ -57,16 +59,22 @@ public class Sketches {
         for(int i = 0; i < sketches.size(); i++)
         {
             Sketch s = sketches.get(i);
+            s.resetSetup();
             PApplet applet = s.getInstance();
             if(applet != null && applet.frame != null)
             {
                 //applet.stop();
                 if(applet.width != w || applet.height != h)
                 {
-                    applet.setSize(w, h);
-                    //applet.width = w;
-                    //applet.height = h;
-                    //applet.g.setSize(w, h);
+                    //applet.setSize(w, h);
+                    applet.width = w;
+                    applet.height = h;
+                    if(applet.g != null)
+                    {
+                        //applet.g.setSize(w, h);
+                        applet.g.width = w;
+                        applet.g.height = h;
+                    }
                 }
                 //applet.start();
             }
@@ -132,7 +140,6 @@ public class Sketches {
      */
     public void keyEvent(KeyEvent e, int state)
     {
-        
         for(int i = 0; i < sketches.size(); i++)
         {
             Sketch s = sketches.get(i);
@@ -166,29 +173,27 @@ public class Sketches {
      * @param g
      * @param io 
      */
-    public void paintAll(Graphics2D g, ImageObserver io)
+    public void paintAll(BufferedImage bi, Graphics2D g, ImageObserver io)
     {
-        if(sketches.size() == 0)
+        if(sketches.isEmpty())
             return;
+        
         int clipWidth = lastW / sketches.size();
         for(int i = 0; i < sketches.size(); i++)
         {
             Sketch s = sketches.get(i);
             PApplet applet = s.getInstance();
-            if(applet != null)
+            applet.frameRate = 0;
+            
+            if(applet != null && s.needsRedraw())
             {
                 Rectangle2D clip = new Rectangle2D.Float(clipWidth * i, 0, clipWidth, lastH);;
                 g.setClip(clip);
-                applet.paint(g);
-                
-                /* Tests for 3D Modi, failed up to now
-                if(applet.g != null)
-                {
-                    if(applet.g.image != null)
-                        g.drawImage(applet.g.image, 0, 0, io);
-                    else if(applet.g.canvas != null)
-                        applet.g.canvas.paint(g);
-                }*/
+                s.doSetup(bi, g);
+                g.setClip(clip);
+                applet.draw();
+                s.storeInternalSettings();
+                s.updateLastRedrawTime();
             }
         }
     }

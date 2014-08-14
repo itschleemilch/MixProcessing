@@ -75,8 +75,8 @@ public class Main {
         // activate OpenGL acceleration
 //        System.setProperty("sun.java2d.opengl", "true");
         // turn on acceleration of translucent images
-//        System.setProperty("sun.java2d.translaccel", "true");
-//        System.setProperty("sun.java2d.ddforcevram", "true");
+        System.setProperty("sun.java2d.translaccel", "true");
+        System.setProperty("sun.java2d.ddforcevram", "true");
     }
     
     private static Class[] readSketches(File sourceDir)

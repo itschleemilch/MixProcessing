@@ -22,6 +22,7 @@ package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
@@ -31,7 +32,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 /**
  * Outputs the sketches and uses double buffering (ideally page flipping, system
@@ -42,10 +43,11 @@ import java.awt.image.BufferStrategy;
  */
 public class MixRenderer extends Canvas 
     implements ComponentListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
-    final Sketches sketches;
-    final long FRAME_RATE = 60L;
-    final long FRAME_PERIOD = (1000L) / FRAME_RATE;
-    boolean renderTaskRunning = false;
+    private final Sketches sketches;
+    private final long FRAME_RATE = 60L;
+    private final long FRAME_PERIOD = (1000L) / FRAME_RATE;
+    private boolean renderTaskRunning = false;
+    private BufferedImage offImg = null;
     
     public MixRenderer(Sketches sketches)
     {
@@ -54,7 +56,7 @@ public class MixRenderer extends Canvas
         addComponentListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
-        setIgnoreRepaint(true);
+        addKeyListener(this);
     }
     
     public void init()
@@ -67,30 +69,7 @@ public class MixRenderer extends Canvas
     public void run() {
         while(true)
         {
-            BufferStrategy bs = getBufferStrategy();
-            if(bs == null && isDisplayable())
-            {
-                createBufferStrategy(2);
-                bs = getBufferStrategy();
-                
-            }
-            if(bs != null)
-            {
-                Graphics g = null;
-                try {
-                    do{
-                        g = bs.getDrawGraphics();
-                        sketches.paintAll((Graphics2D)g, this);
-                        g.dispose();
-                    }while(bs.contentsLost());
-                    bs.show();
-                } catch (Exception e) {
-                    //e.printStackTrace(System.err);
-                } finally{
-                    if(g != null)
-                        g.dispose();
-                }
-            }//(bs != null)
+            repaint();
             try {
                 // TODO: Avoid fixed rate sleep, replace with framerate controller.
                 Thread.sleep(15); // max. Framerate: 66 Hz
@@ -99,8 +78,26 @@ public class MixRenderer extends Canvas
         } // while
     }
 
-    public void render(Graphics g) {
-        sketches.paintAll((Graphics2D)g, this);
+    @Override
+    public void paint(Graphics g) {
+        Graphics2D g2d = null;
+        if(offImg == null || offImg.getWidth() != getWidth() || offImg.getHeight() != getHeight())
+        {
+            offImg = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
+            g2d = offImg.createGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
+        else
+            g2d = offImg.createGraphics();
+        sketches.paintAll(offImg, g2d, this);
+        g2d.dispose();
+        g.drawImage(offImg, 0, 0, this);
+    }
+
+    @Override
+    public void update(Graphics g) {
+        paint(g); //To change body of generated methods, choose Tools | Templates.
     }
     
     /* Event Handling starts here */

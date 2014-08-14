@@ -21,9 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing.sketches;
 
+import de.itschleemilch.mixprocessing.MPGraphics2D;
 import de.itschleemilch.mixprocessing.RenderFrame;
-import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import processing.core.PApplet;
+import processing.core.PGraphicsJava2D;
 
 /**
  * Manages a Processing Sketch and a created instance of it. The sketch
@@ -35,6 +39,9 @@ import processing.core.PApplet;
 public class Sketch {
     final Class template;
     PApplet instance = null;
+    boolean setupDone = false;
+    static Field frameRatePeriodField = null;
+    static Field frameRateLastNanosField = null;
 
     /**
      * Creates a Processing sketch represenation.
@@ -78,10 +85,9 @@ public class Sketch {
                     instance = (PApplet) localInstance;
                     instance.frame = f;
                     instance.sketchPath = sketchPath;
-                    instance.init();
-                    instance.size(f.getWidth(), f.getHeight()); // Voreinstellung und JAVA2d Modi setzen
-                    instance.start();
-                    f.addToInvisiblePanel(instance);
+                    instance.width = f.getWidth();
+                    instance.height = f.getHeight();
+                    setupDone = false;  
                 }
                 return instance;
             } catch (Exception e) {
@@ -106,6 +112,69 @@ public class Sketch {
         }
     }
     
+    public void resetSetup()
+    {
+        setupDone = false;
+    }
+    
+    /**
+     * Initial setup and Grafics settings before the sketch is drawn
+     * @param bi
+     * @param g 
+     */
+    public void doSetup(BufferedImage bi, Graphics2D g)
+    {
+        if(instance.g == null || !(instance.g instanceof MPGraphics2D) )
+        {
+           createMPGraphics(bi, g);
+        }
+        else
+        {
+            MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
+            mpg2d.g2 = g;
+        }
+        if(!setupDone )
+        {
+            setupDone = true;
+            try {
+                instance.setup();
+            } catch (PApplet.RendererChangeException e) {
+                createMPGraphics(bi, g);
+                System.err.println("Please remove size() call in setup in sketch " + getName());
+            }
+        }
+        MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
+        mpg2d.init();
+        mpg2d.loadGraphicSettings();
+    }
+    
+    /**
+     * Stores internal Graphics settings after drawing this Sketch
+     */
+    public void storeInternalSettings()
+    {
+        MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
+        mpg2d.storeGraphicSettings();
+    }
+    
+    private void createMPGraphics(BufferedImage bi, Graphics2D g)
+    {
+        MPGraphics2D mpg2d = new MPGraphics2D();
+        instance.g = mpg2d;
+        mpg2d.g2 = g;
+        mpg2d.width = instance.width;
+        mpg2d.height = instance.height;
+        mpg2d.parent = instance;
+        try {
+            Field f = PGraphicsJava2D.class.getDeclaredField("offscreen");
+            f.setAccessible(true);
+            f.set(mpg2d, bi);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+        mpg2d.init();
+    }
+    
     /**
      * Returns the Sketches Name (equals Processing sketch name)
      * @return sketch name
@@ -115,4 +184,57 @@ public class Sketch {
         return template.getName();
     }
     
+    /**
+     * Checks if Sketch needs redraw depending on internal set
+     * @return 
+     */
+    public boolean needsRedraw()
+    {
+        if(frameRatePeriodField != null && frameRateLastNanosField != null)
+        {
+            try {
+                long period = frameRatePeriodField.getLong(instance);
+                long lastDrawn = frameRateLastNanosField.getLong(instance);
+                long diff = System.nanoTime() - lastDrawn;
+                if(diff >= period)
+                    return true;
+                else
+                    return false;
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Sets the last-redrawn field to the current time
+     */
+    public void updateLastRedrawTime()
+    {
+        if(frameRateLastNanosField != null)
+        {
+            try {
+                frameRateLastNanosField.setLong(instance, System.nanoTime());
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+            }
+        }
+    }
+    
+    static
+    {
+        try {
+            frameRatePeriodField = PApplet.class.getDeclaredField("frameRatePeriod");
+            frameRatePeriodField.setAccessible(true);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+        try {
+            frameRateLastNanosField = PApplet.class.getDeclaredField("frameRateLastNanos");
+            frameRateLastNanosField.setAccessible(true);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
 }
