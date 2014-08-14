@@ -63,13 +63,16 @@
 <h2>
 <a name="status" class="anchor" href="#status"><span class="octicon octicon-link"></span></a>Status</h2>
 
-<p>Currently there is a tech demo, that loades all sketches from a subfolder and renders them into a divided frame. Sketches have to use Java2D, P2D or P3D does not work.</p>
+<p>Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. Sketches have to use Java2D, P2D or P3D does not work.</p>
 
-<p><img src="https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-12_tech_demo.jpg" alt="Demonstration of the current codebase"></p>
-
-<p>Rather than just divide the area into equal rectangles the current codebase of the tech demo also would allow free forms (circles, stars, etc.), but this will be made accessable later.</p>
+<p><img src="https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-14_tech_demo.jpg" alt="Demonstration of the current codebase"></p>
 
 <h2>
+<a name="known-issues" class="anchor" href="#known-issues"><span class="octicon octicon-link"></span></a>Known Issues</h2>
+
+<ul>
+<li>The size() function must not be called from the sketch - please remove it before exporting the sketch.</li>
+</ul><h2>
 <a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap</h2>
 
 <ul>
