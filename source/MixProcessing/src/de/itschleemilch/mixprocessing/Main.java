@@ -42,7 +42,6 @@ public class Main {
     {
         LoggingDialog.initLogging();
         LoggingDialog log = new LoggingDialog();
-        log.setVisible(true);
         return log;
     }
     
@@ -110,17 +109,31 @@ public class Main {
         File jarSource = new File("jarSource"); 
         jarSource.mkdirs(); // creates the path
         
-        /* Currently CW-Change disabled: not needed
-        // Change current working directory
-        System.setProperty("user.dir", jarSource.getAbsolutePath()); */
-        
-        Class[] sketchClasses = readSketches(jarSource);
-        Sketches sketches = new Sketches();
-        
         RenderFrame frame = new RenderFrame("MixProcessing", logging);
         frame.centerWindowOnScreen();
         
         logging.setIconImages( frame.getIconImages() );
+        logging.setVisible(true);
+        
+        // Search for Processing Library
+        boolean pLibraryFound = false;
+        while(!pLibraryFound)
+        {
+            try {
+                Class.forName("processing.core.PApplet");
+                pLibraryFound = true;
+            } catch (ClassNotFoundException e) {
+                ProcessingLibraryLoader pll = new ProcessingLibraryLoader();
+                pll.setIconImages(frame.getIconImages());
+                pll.setVisible(true);
+                while(pll.isVisible())
+                    Thread.yield(); // wait for ProcessingLibraryLoader
+            }
+        }
+        
+        Class[] sketchClasses = readSketches(jarSource);
+        Sketches sketches = new Sketches();
+
         
         // Renderer
         MixRenderer renderer = new MixRenderer(sketches);
@@ -148,6 +161,7 @@ public class Main {
         ScriptingFrame scripting = new ScriptingFrame(em);
         scripting.setIconImages( frame.getIconImages() );
         scripting.setVisible(true);
+        scripting.setLocation(0, logging.getHeight()+10);
     }
     
 }

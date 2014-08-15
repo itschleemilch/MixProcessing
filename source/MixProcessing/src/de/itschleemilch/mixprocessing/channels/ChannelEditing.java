@@ -113,7 +113,6 @@ public class ChannelEditing implements MouseListener {
                 endPath();
             }
         }
-        System.out.println("New State: " + state.name());
     }
     
     /**

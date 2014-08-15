@@ -158,7 +158,6 @@ public class ScriptingFrame extends java.awt.Frame
 
     @Override
     public void channelsChanged() {
-        System.out.println("Fire CC Event!");
         rebuildSketchesChannelsList();
         revalidate();
     }
