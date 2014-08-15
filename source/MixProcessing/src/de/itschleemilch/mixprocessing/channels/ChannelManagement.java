@@ -67,7 +67,20 @@ public class ChannelManagement {
     }
     
     /**
-     * Removes a Channel from the List
+     * Returns a new and empty Group Channel Object
+     * @return 
+     */
+    public final GroupChannel addGroupChannel()
+    {
+        GroupChannel channel = new GroupChannel(channels.size());
+        channels.add(channel);
+        if(eventManager != null)
+            eventManager.fireChannelsChanged();
+        return channel;
+    }
+    
+    /**
+     * Deletes a Channel from the List
      * @param channel 
      */
     public final void removeChannel(SingleChannel channel)
@@ -128,6 +141,7 @@ public class ChannelManagement {
     {
         g.setColor(Color.RED);
         g.setFont(new Font("Arial", Font.BOLD, 10));
+        g.drawString("EDIT MODE", 10, 10);
         for (SingleChannel c : channels) {
             Shape s = c.getShape();
             if(s != null)
@@ -135,9 +149,17 @@ public class ChannelManagement {
                 g.setColor(Color.RED);
                 g.draw(s);
                 Rectangle bounds = s.getBounds();
-                int y = bounds.y + bounds.height + g.getFontMetrics().getHeight()+4;
-                int x_add = (bounds.width-g.getFontMetrics().stringWidth(c.getChannelName()))/2;
-                g.drawString(c.getChannelName(), bounds.x+x_add, y);
+                
+                if(c instanceof GroupChannel) {
+                    int x = bounds.x + ( bounds.width - g.getFontMetrics().stringWidth(c.getChannelName())) / 2;
+                    int y = bounds.y + ( bounds.height - g.getFontMetrics().getHeight() ) / 2;
+                    g.drawString(c.getChannelName(), x, y);
+                }
+                else {
+                    int x_add = (bounds.width-g.getFontMetrics().stringWidth(c.getChannelName()))/2;
+                    int y = bounds.y + bounds.height + g.getFontMetrics().getHeight() + 4;
+                    g.drawString(c.getChannelName(), bounds.x+x_add, y);
+                }
                 ChannelEditing.drawControlPoints(g, s);
             }
         }
@@ -187,5 +209,13 @@ public class ChannelManagement {
     public final void setSketchChannel(Sketch sketch, SingleChannel channel)
     {
         sketchChannelAssociation.put(sketch, channel);
+    }
+    
+    /**
+     * Unsets a Sketch<->Channel Link to stop outputting
+     * @param sketch 
+     */
+    public final void unsetSketchChannel(Sketch sketch) {
+        sketchChannelAssociation.remove(sketch);
     }
 }

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
@@ -129,7 +130,10 @@ public class ScriptingFrame extends java.awt.Frame
         sketchChannelListPanel.add(new Label("Channels:"));
         SingleChannel[] channels = eventManager.getChannels().getAllChannels();
         for (SingleChannel channel : channels) {
-            Button b = new Button(channel.getChannelName());
+            String text = channel.getChannelName();
+            if(channel instanceof GroupChannel)
+                text += " (G)";
+            Button b = new Button(text);
             b.setActionCommand("I:'" + channel.getChannelName()+"'");
             b.addActionListener(this);
             sketchChannelListPanel.add(b);
@@ -227,8 +231,12 @@ public class ScriptingFrame extends java.awt.Frame
 
         menu1.setLabel("File");
 
-        fileNewItem.setEnabled(false);
         fileNewItem.setLabel("New");
+        fileNewItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileNewItemActionPerformed(evt);
+            }
+        });
         menu1.add(fileNewItem);
 
         fileOpenItem.setEnabled(false);
@@ -290,6 +298,10 @@ public class ScriptingFrame extends java.awt.Frame
             e.printStackTrace(System.err);
         }
     }//GEN-LAST:event_fileOpenSketchFolderItemActionPerformed
+
+    private void fileNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileNewItemActionPerformed
+        scriptArea.setText("");
+    }//GEN-LAST:event_fileNewItemActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

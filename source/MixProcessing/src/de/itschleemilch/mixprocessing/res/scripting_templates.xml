@@ -16,9 +16,12 @@
         <item insert="mp.forceRefresh();">Repaint Background</item>
     </menu>
     <menu text="Sketch Control">
-        <item insert="mp.outputSketch( 'sketchName', 'channelName' );">Set Output Channel</item>
-        <item insert="mp.outputSketchNoRestart( 'sketchName', 'channelName' );">Set Output Channel (no restart)</item>
-        <item insert="mp.restartSketch( 'sketchName' );">Sketch Restart</item>
+        <item insert="mp.sketchOutput( 'sketchName', 'channelName' );">Set Output Channel</item>
+        <item insert="mp.sketchOutputNoRestart( 'sketchName', 'channelName' );">Set Output Channel (no restart)</item>
+        <item insert="mp.sketchRemove( 'sketchName' );">Remove from Channel</item>
+        <item insert="mp.sketchRestart( 'sketchName' );">Sketch Restart</item>
+    </menu>
+    <menu text="Mouse-Key Events">
         <item insert="mp.enableKeyEvents( 'sketchName', true);">Enable Key Events</item>
         <item insert="mp.enableKeyEvents( 'sketchName', false);">Disable Key Events</item>
         <item insert="mp.enableMouseEvents( 'sketchName', true);">Enable Mouse Events</item>

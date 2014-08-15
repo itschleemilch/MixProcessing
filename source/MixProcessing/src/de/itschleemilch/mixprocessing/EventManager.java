@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.channels.ChannelManagement;
+import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
@@ -90,14 +91,14 @@ public class EventManager {
             if(channel.getShape() != null)
                 sourceShapes.add( channel.getShape() );
         }
-        if(sourceShapes.size()==0)
+        if(sourceShapes.isEmpty())
             return false;
         else {
-            GeneralPath gp = new GeneralPath();
+            GroupChannel group = channels.addGroupChannel();
             for(Shape sourceShape : sourceShapes) {
-                gp.append(sourceShape, false);
+                group.addGroupElement(sourceShape);
             }
-            channels.addChannel(gp).setChannelName(newName);
+            group.setChannelName(newName);
             return true;
         }
     }
@@ -197,9 +198,9 @@ public class EventManager {
      * @param channelName
      * @return 
      */
-    public final boolean outputSketch(String sketchName, String channelName) {
-        boolean returnValue = outputSketchNoRestart(sketchName, channelName);
-        restartSketch(sketchName);
+    public final boolean sketchOutput(String sketchName, String channelName) {
+        boolean returnValue = sketchOutputNoRestart(sketchName, channelName);
+        sketchRestart(sketchName);
         return returnValue;
     }
     
@@ -210,7 +211,7 @@ public class EventManager {
      * @param channelName
      * @return 
      */
-    public final boolean outputSketchNoRestart(String sketchName, String channelName) {
+    public final boolean sketchOutputNoRestart(String sketchName, String channelName) {
         Sketch s = sketches.findSketch(sketchName);
         SingleChannel c = channels.findChannel(channelName);
         if(s != null && c != null) {
@@ -221,7 +222,17 @@ public class EventManager {
         else return false;
     }
     
-    public final boolean restartSketch(String sketchName)
+    public final boolean sketchRemove(String sketchName) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null)
+            return false;
+        else {
+            channels.unsetSketchChannel(s);
+            return true;
+        }
+    }
+    
+    public final boolean sketchRestart(String sketchName)
     {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null)

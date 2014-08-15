@@ -33,7 +33,7 @@ public class SingleChannel {
     public boolean paintBlackFlag = false;
 
     public SingleChannel(int runningID) {
-        this.channelName = "channel_"+runningID;
+        this.channelName = "channel"+runningID;
     }
 
     /**

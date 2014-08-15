@@ -63,7 +63,6 @@ public class RenderFrame extends Frame
         zeroCursor = getToolkit().createCustomCursor(
                 new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR),
                 new java.awt.Point(0, 0), "NOCURSOR");
-        setCursor(zeroCursor);
         
         setSize(800, 600);
         centerWindowOnScreen();

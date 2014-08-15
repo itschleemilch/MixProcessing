@@ -11,9 +11,11 @@
           <SubComponents>
             <MenuItem class="java.awt.MenuItem" name="fileNewItem">
               <Properties>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="label" type="java.lang.String" value="New"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fileNewItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="java.awt.MenuItem" name="fileOpenItem">
               <Properties>
