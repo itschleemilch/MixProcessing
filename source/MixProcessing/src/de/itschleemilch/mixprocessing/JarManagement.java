@@ -49,6 +49,7 @@ public class JarManagement {
     public JarManagement(File jarFolder) {
         this.jarFolder = jarFolder;
         System.out.printf("Opening Sketches at: %s\n", jarFolder.getAbsoluteFile().toString());
+        System.setProperty("MixProcessing.SKETCH_DIR", jarFolder.getAbsolutePath());
     }
     
     /**

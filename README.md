@@ -13,9 +13,14 @@ MixProcessing handels compiled Processing sketches, they have to be exported.
 The project needs the Processing core library.
 
 ##Status
-Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. 
+* Loading of compiled Processing Sketches
+* Drawing of new output areas (channels)
+* Several controls over the sketches and the channels
+* Scripting Interface to control the setup
 
-![Demonstration of the current codebase](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-14_tech_demo.jpg)
+The current tech demo loades all sketches from a subfolder and renders them into editable output channels. The channels can be edited by double-clicking and clicking inside the output frame while beeing in the editor-mode. The mixer isn't finished, yet. The skripting interface and the menus help to control the software.
+
+![Demonstration of the current codebase](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-15_tech_demo.jpg)
 
 ##Known Issues
 * Only supports Java2D mode (P2D, P3D will not work)
@@ -25,7 +30,8 @@ Currently there is a tech demo, that loades all sketches from a subfolder and re
 * Building an interface for editing the channels
 * Building a mixer interface
 * Define software interface for sketch-settings
-* Build interface for editing sketch-settings
+* Building an interface for editing sketch-settings
+* Building an automation for editing the sketch-settings
 
 ---
 [Project Page](http://itschleemilch.github.io/MixProcessing/) * [Processing](http://www.processing.org/) * Thanks to [generative-gestaltung.de](http://generative-gestaltung.de/)

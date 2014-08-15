@@ -27,6 +27,16 @@
                 <Property name="label" type="java.lang.String" value="Save As..."/>
               </Properties>
             </MenuItem>
+            <MenuItem class="org.netbeans.modules.form.Separator" name="separator1">
+            </MenuItem>
+            <MenuItem class="java.awt.MenuItem" name="fileOpenSketchFolderItem">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="Open Sketch Folder..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fileOpenSketchFolderItemActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="java.awt.Menu" name="insertMenu">

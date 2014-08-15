@@ -23,11 +23,13 @@ import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Button;
+import java.awt.Desktop;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -72,6 +74,12 @@ public class ScriptingFrame extends java.awt.Frame
         em.addChannelsChangedListener(this);
     }
     
+    /**
+     * Loades XML Menu Configuration from Ressource-Files
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException 
+     */
     private void buildMenu() 
             throws ParserConfigurationException, SAXException, IOException
     {
@@ -104,6 +112,9 @@ public class ScriptingFrame extends java.awt.Frame
         }
     }
     
+    /**
+     * Dynamically Rebuilds Sketches from the channel List
+     */
     private void rebuildSketchesChannelsList()
     {
         sketchChannelListPanel.removeAll();
@@ -111,7 +122,7 @@ public class ScriptingFrame extends java.awt.Frame
         Sketch[] sketches = eventManager.getSketches().getAllSketches();
         for (Sketch sketch : sketches) {
             Button b = new Button(sketch.getName());
-            b.setActionCommand("I:" + sketch.getName());
+            b.setActionCommand("I:'" + sketch.getName()+"'");
             b.addActionListener(this);
             sketchChannelListPanel.add(b);
         }
@@ -119,7 +130,7 @@ public class ScriptingFrame extends java.awt.Frame
         SingleChannel[] channels = eventManager.getChannels().getAllChannels();
         for (SingleChannel channel : channels) {
             Button b = new Button(channel.getChannelName());
-            b.setActionCommand("I:" + channel.getChannelName());
+            b.setActionCommand("I:'" + channel.getChannelName()+"'");
             b.addActionListener(this);
             sketchChannelListPanel.add(b);
         }
@@ -171,6 +182,7 @@ public class ScriptingFrame extends java.awt.Frame
         fileNewItem = new java.awt.MenuItem();
         fileOpenItem = new java.awt.MenuItem();
         fileSaveAsItem = new java.awt.MenuItem();
+        fileOpenSketchFolderItem = new java.awt.MenuItem();
         insertMenu = new java.awt.Menu();
 
         setTitle("Scripting Interface");
@@ -226,6 +238,14 @@ public class ScriptingFrame extends java.awt.Frame
         fileSaveAsItem.setEnabled(false);
         fileSaveAsItem.setLabel("Save As...");
         menu1.add(fileSaveAsItem);
+        menu1.addSeparator();
+        fileOpenSketchFolderItem.setLabel("Open Sketch Folder...");
+        fileOpenSketchFolderItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileOpenSketchFolderItemActionPerformed(evt);
+            }
+        });
+        menu1.add(fileOpenSketchFolderItem);
 
         menuBar1.add(menu1);
 
@@ -262,12 +282,22 @@ public class ScriptingFrame extends java.awt.Frame
         }).start();
     }//GEN-LAST:event_exec_btnActionPerformed
 
+    private void fileOpenSketchFolderItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenSketchFolderItemActionPerformed
+        String jarDir = System.getProperty("MixProcessing.SKETCH_DIR");
+        try {
+            Desktop.getDesktop().open(new File(jarDir));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }//GEN-LAST:event_fileOpenSketchFolderItemActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
     private java.awt.Button exec_btn;
     private java.awt.MenuItem fileNewItem;
     private java.awt.MenuItem fileOpenItem;
+    private java.awt.MenuItem fileOpenSketchFolderItem;
     private java.awt.MenuItem fileSaveAsItem;
     private java.awt.Menu insertMenu;
     private javax.swing.JPanel jPanel1;

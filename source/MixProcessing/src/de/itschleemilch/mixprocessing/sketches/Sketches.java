@@ -194,7 +194,7 @@ public class Sketches {
             
             if(applet != null && s.needsRedraw())
             {
-                Shape clip = channels.getOutputChannel(s, i);
+                Shape clip = channels.getChannelForSketch(s, i);
                 g.setClip(clip);
                 s.doSetup(bi, g);
                 AffineTransform transform_backup = g.getTransform();
@@ -208,7 +208,7 @@ public class Sketches {
             g.setTransform(old_at);
             g.setPaint(old_paint);
         }
-        channels.paintDisabledChannels(g);
+        channels.paintBlackedChannels(g);
     }
     
     /**

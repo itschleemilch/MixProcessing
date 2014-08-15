@@ -30,6 +30,7 @@ public class SingleChannel {
     private Shape shape = null;
     private String channelName;
     private boolean enabled = true;
+    public boolean paintBlackFlag = false;
 
     public SingleChannel(int runningID) {
         this.channelName = "channel_"+runningID;

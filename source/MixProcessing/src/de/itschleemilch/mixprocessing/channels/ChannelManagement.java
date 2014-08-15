@@ -26,9 +26,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Manages the output channels (variable output areas) and the
@@ -43,17 +44,10 @@ public class ChannelManagement {
     private boolean previewChannelOutlines = true;
     private final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
     public EventManager eventManager = null; // is set external by EventManager
+    
+    private final HashMap<Sketch, SingleChannel> sketchChannelAssociation = new HashMap<Sketch, SingleChannel>();
 
     public ChannelManagement() {
-        addChannel(new java.awt.geom.Ellipse2D.Float(10, 20, 300, 400));
-        GeneralPath.Float path1 = new GeneralPath.Float();
-        path1.moveTo(320, 50);
-        path1.curveTo(330, 20, 390, 60, 450, 50);
-        path1.lineTo(500, 500);
-        path1.curveTo(410, 420, 450, 470, 330, 400);
-        path1.closePath();
-        addChannel(path1);
-        addChannel(new java.awt.geom.RoundRectangle2D.Float(510, 30, 100, 300, 30, 60));
     }
     
     public final SingleChannel addChannel()
@@ -79,6 +73,13 @@ public class ChannelManagement {
     public final void removeChannel(SingleChannel channel)
     {
         channels.remove(channel);
+        // Also remove association
+        Set<Sketch> sketches = sketchChannelAssociation.keySet();
+        for(Sketch s : sketches) {
+            if(sketchChannelAssociation.get(s) == channel) {
+                sketchChannelAssociation.remove(s);
+            }
+        }
     }
     
     /**
@@ -146,12 +147,13 @@ public class ChannelManagement {
      * Fills disabled areas with black - needed to switch them on/off
      * @param g 
      */
-    public final void paintDisabledChannels(Graphics2D g)
+    public final void paintBlackedChannels(Graphics2D g)
     {
         g.setColor(Color.BLACK);
         for (SingleChannel c : channels) {
-            if(!c.isEnabled() && c.getShape() != null)
+            if(c.paintBlackFlag && c.getShape() != null)
             {
+                c.paintBlackFlag = false;
                 g.fill(c.getShape());
             }
         }
@@ -163,14 +165,27 @@ public class ChannelManagement {
      * @param index
      * @return 
      */
-    public final Shape getOutputChannel(Sketch s, int index)
+    public final Shape getChannelForSketch(Sketch s, int index)
     {
-        if(index >= 0 && index < channels.size())
+        SingleChannel c = sketchChannelAssociation.get(s);
+        if( c != null )
         {
-            SingleChannel c = channels.get(index);
-            if(c.isEnabled())
+            if(c.getShape() != null)
                 return c.getShape();
+            else
+                return offChannel;
         }
-        return offChannel;
+        else
+            return offChannel;
+    }
+    
+    /**
+     * Associates a sketch to output on the given channel
+     * @param sketch source Sketch
+     * @param channel output target
+     */
+    public final void setSketchChannel(Sketch sketch, SingleChannel channel)
+    {
+        sketchChannelAssociation.put(sketch, channel);
     }
 }

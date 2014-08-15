@@ -1,17 +1,27 @@
 <?xml version="1.0"?>
 <scriptingHelp>
-	<menu text="Channel Control">
-		<item insert="mp.channelOn( 'name' );">Channel On</item>
-                <item insert="mp.channelOff( 'name' );">Channel Off</item>
-                <item insert="mp.channelEditing();">Edit Channels</item>
-                <item insert="mp.channelNormal();">Exit Channel Editing</item>
-                <item insert="mp.channelRename( 'old_name', 'new_name' );">Rename Channel</item>
-                <item insert="mp.channelRemove( 'name' );">Remove Channel</item>
-	</menu>
-        <menu text="Rendering Control">
-		<item insert="mp.forceRefresh();">Repaint Background</item>
-	</menu>
-        <menu text="Sketch Control">
-		<item insert="mp.restartSketch( 'name' );">Sketch Restart</item>
-	</menu>
+    <menu text="Channel Control">
+        <item insert="mp.channelOn( 'channelName' );">Channel On</item>
+        <item insert="mp.channelOff( 'channelName' );">Channel Off</item>
+        <item insert="mp.channelBlacking( 'channelName' );">Fill Channel Black</item>
+    </menu>
+    <menu text="Channel Editing">
+        <item insert="mp.channelEditing();">Edit Channels</item>
+        <item insert="mp.channelNormal();">Exit Editing</item>
+        <item insert="mp.createGroupChannel( 'newChannelName', 'sourceChannel1', 'source2'); /* Add more channels if necessary */">Create Grouped Channel</item>
+        <item insert="mp.channelRename( 'oldChannelName', 'newNhannelName' );">Rename Channel</item>
+        <item insert="mp.channelRemove( 'channelName' );">Remove Channel</item>
+    </menu>
+    <menu text="Rendering Control">
+        <item insert="mp.forceRefresh();">Repaint Background</item>
+    </menu>
+    <menu text="Sketch Control">
+        <item insert="mp.outputSketch( 'sketchName', 'channelName' );">Set Output Channel</item>
+        <item insert="mp.outputSketchNoRestart( 'sketchName', 'channelName' );">Set Output Channel (no restart)</item>
+        <item insert="mp.restartSketch( 'sketchName' );">Sketch Restart</item>
+        <item insert="mp.enableKeyEvents( 'sketchName', true);">Enable Key Events</item>
+        <item insert="mp.enableKeyEvents( 'sketchName', false);">Disable Key Events</item>
+        <item insert="mp.enableMouseEvents( 'sketchName', true);">Enable Mouse Events</item>
+        <item insert="mp.enableMouseEvents( 'sketchName', false);">Disable Mouse Events</item>
+    </menu>
 </scriptingHelp>

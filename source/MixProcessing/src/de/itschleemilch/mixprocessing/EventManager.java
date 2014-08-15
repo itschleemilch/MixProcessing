@@ -25,6 +25,8 @@ import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
+import java.awt.Shape;
+import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
 /**
@@ -74,8 +76,34 @@ public class EventManager {
     /*************************************************************
      * Channel Control
      *************************************************************/
-    public final boolean channelOn(String name) {
-        SingleChannel c = channels.findChannel(name);
+    
+    /**
+     * 
+     * @param newName Name of the new Group Channel
+     * @param sourceChannels Shapes to be implemented
+     * @return 
+     */
+    public final boolean createGroupChannel(String newName, String ... sourceChannels) {
+        ArrayList<Shape> sourceShapes = new ArrayList<>();
+        for (String sourceChannel : sourceChannels) {
+            SingleChannel channel = channels.findChannel(sourceChannel);
+            if(channel.getShape() != null)
+                sourceShapes.add( channel.getShape() );
+        }
+        if(sourceShapes.size()==0)
+            return false;
+        else {
+            GeneralPath gp = new GeneralPath();
+            for(Shape sourceShape : sourceShapes) {
+                gp.append(sourceShape, false);
+            }
+            channels.addChannel(gp).setChannelName(newName);
+            return true;
+        }
+    }
+    
+    public final boolean channelOn(String channelName) {
+        SingleChannel c = channels.findChannel(channelName);
         if(c == null)
             return false;
         else
@@ -85,8 +113,8 @@ public class EventManager {
         }
     }
     
-    public final boolean channelOff(String name) {
-        SingleChannel c = channels.findChannel(name);
+    public final boolean channelOff(String channelName) {
+        SingleChannel c = channels.findChannel(channelName);
         if(c == null)
             return false;
         else
@@ -122,8 +150,25 @@ public class EventManager {
         }
     }
     
-    public final boolean channelRemove(String name) {
-        SingleChannel c = channels.findChannel(name);
+    /**
+     * Sets the paintBlackFlag of the channel. The next paint-cycle will
+     * fill the area with black.
+     * @param channelName
+     * @return 
+     */
+    public final boolean channelBlacking(String channelName) {
+        SingleChannel c = channels.findChannel(channelName);
+        if(c == null)
+            return false;
+        else
+        {
+            c.paintBlackFlag = true;
+            return true;
+        }
+    }
+    
+    public final boolean channelRemove(String channelName) {
+        SingleChannel c = channels.findChannel(channelName);
         if(c == null)
             return false;
         else
@@ -144,13 +189,65 @@ public class EventManager {
     /*************************************************************
      * Sketch Control
      *************************************************************/
-    public final boolean restartSketch(String name)
+    
+    /**
+     * Updates the sketch<->output channel association.
+     * Attention: Restarts Sketch!
+     * @param sketchName
+     * @param channelName
+     * @return 
+     */
+    public final boolean outputSketch(String sketchName, String channelName) {
+        boolean returnValue = outputSketchNoRestart(sketchName, channelName);
+        restartSketch(sketchName);
+        return returnValue;
+    }
+    
+    /**
+     * Updates the sketch<->output channel association.
+     * Attention: Does not restarting the Sketch!
+     * @param sketchName
+     * @param channelName
+     * @return 
+     */
+    public final boolean outputSketchNoRestart(String sketchName, String channelName) {
+        Sketch s = sketches.findSketch(sketchName);
+        SingleChannel c = channels.findChannel(channelName);
+        if(s != null && c != null) {
+            channels.setSketchChannel(s, c);
+            s.resetSetup();
+            return true;
+        }
+        else return false;
+    }
+    
+    public final boolean restartSketch(String sketchName)
     {
-        Sketch s = sketches.findSketch(name);
+        Sketch s = sketches.findSketch(sketchName);
         if(s == null)
             return false;
         else {
             s.resetSetup();
+            return true;
+        }
+    }
+    
+    public final boolean enableKeyEvents(String sketchName, boolean value) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null)
+            return false;
+        else {
+            s.setReceivingKeyEvents(value);
+            return true;
+        }
+    }
+    
+    public final boolean enableMouseEvents(String sketchName, boolean value) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null)
+            return false;
+        else {
+            s.setReceivingMouseEvents(value);
             return true;
         }
     }
