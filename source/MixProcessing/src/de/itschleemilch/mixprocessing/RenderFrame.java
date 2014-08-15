@@ -102,6 +102,7 @@ public class RenderFrame extends Frame
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+                setOpacity(1f);
                 setVisible(false);
                 dispose();
                 setUndecorated(!isUndecorated());
@@ -116,6 +117,15 @@ public class RenderFrame extends Frame
             setCursor(Cursor.getDefaultCursor());
         else
             setCursor(zeroCursor);
+    }
+    
+    public final void toggleOpacity() {
+        if(isUndecorated()) {
+            if(getOpacity() == 1f)
+                setOpacity(0.5f);
+            else
+                setOpacity(1f);
+        }
     }
 
 
@@ -181,6 +191,8 @@ public class RenderFrame extends Frame
             toggleFullscreen();
         else if(e.getKeyCode() == KeyEvent.VK_F11)
             toggleMouse();
+        else if(e.getKeyCode() == KeyEvent.VK_F10)
+            toggleOpacity();
         else if(e.getKeyCode() == KeyEvent.VK_F2)
             logging.setVisible(!logging.isVisible());
     }

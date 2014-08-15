@@ -20,7 +20,9 @@ The project needs the Processing core library.
 
 The current tech demo loades all sketches from a subfolder and renders them into editable output channels. The channels can be edited by double-clicking and clicking inside the output frame while beeing in the editor-mode. The mixer isn't finished, yet. The skripting interface and the menus help to control the software.
 
-![Demonstration of the current codebase](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-15_tech_demo.jpg)
+![Demonstration of the current codebase](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-15_tech_demo2_output.jpg)
+
+![Edit mode](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-15_tech_demo2.jpg)
 
 ##Known Issues
 * Only supports Java2D mode (P2D, P3D will not work)
