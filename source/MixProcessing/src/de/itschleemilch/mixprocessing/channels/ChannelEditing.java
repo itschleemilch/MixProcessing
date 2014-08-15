@@ -22,15 +22,115 @@ package de.itschleemilch.mixprocessing.channels;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Method;
 
 /**
  *
  * @author Sebastian Schleemilch
  */
-public class ChannelEditing {
+public class ChannelEditing implements MouseListener {
+    public enum STATES {WAITING, START, LINE_TO, END}
+    private final ChannelManagement channels;
+    private STATES state = STATES.WAITING;
+    private GeneralPath path;
+
+    public ChannelEditing(ChannelManagement channels) {
+        this.channels = channels;
+        reinit();
+    }
+
+    /**
+     * Returns the internal state of the path-editor
+     * @return 
+     */
+    public final STATES getState() {
+        return state;
+    }
+    
+    private void reinit() {
+        path = new GeneralPath();
+        state = STATES.WAITING;
+    }
+    
+    /**
+     * User wants to draw a new path
+     */
+    private void startNewPath()
+    {
+        reinit();
+    }
+    
+    private void endPath() {
+        channels.addChannel(path);
+        reinit();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if(state == STATES.WAITING) {
+            if(e.getClickCount() < 2)
+                return;
+            else {
+                startNewPath();
+                path.moveTo(e.getX(), e.getY());
+                state = STATES.LINE_TO;
+            }
+        }
+        else if(state == STATES.END) return;
+        else if(state == STATES.START) { // currently not used
+            path.moveTo(e.getX(), e.getY());
+            state = STATES.LINE_TO;
+        }
+        else if(state == STATES.LINE_TO)
+        {
+            if(e.getClickCount() < 2)
+                path.lineTo(e.getX(), e.getY());
+            else {
+                path.lineTo(e.getX(), e.getY());
+                path.closePath();
+                state = STATES.END;
+                endPath();
+            }
+        }
+        System.out.println("New State: " + state.name());
+    }
+    
+    /**
+     * Draws the current data within the editor
+     * @param g 
+     */
+    public final void paintEditorPath(Graphics2D g) {
+        if(state != STATES.WAITING)
+        {
+            Point2D lastPoint = path.getCurrentPoint();
+            if(lastPoint != null)
+                drawControlPoint(g, (float)lastPoint.getX(), (float)lastPoint.getY());
+            g.setColor(Color.MAGENTA);
+            g.draw(path);
+        }
+    }
+    
+    
     
     private static void drawControlPoint(Graphics2D g, float x, float y)
     {
@@ -46,15 +146,6 @@ public class ChannelEditing {
         drawControlPoint(g, (float)(bounds.getX()+bounds.getWidth()), (float)(bounds.getY()) );
         drawControlPoint(g, (float)(bounds.getX()+bounds.getWidth()), (float)(bounds.getY()+bounds.getHeight()) );
         drawControlPoint(g, (float)(bounds.getX()), (float)(bounds.getY()+bounds.getHeight()) );
-        
-        Method[] methods = s.getClass().getMethods();
-        for(int i = 0; i < methods.length; i++)
-        {
-            if(methods[i].getName().startsWith("set"))
-            {
-                System.out.println(methods[i].getName());
-            }
-        }
     }
     
 }

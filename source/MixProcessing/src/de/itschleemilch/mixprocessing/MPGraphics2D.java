@@ -25,12 +25,10 @@ import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Paint;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.Set;
 import processing.core.PGraphicsJava2D;
 
 /**
@@ -57,7 +55,7 @@ public class MPGraphics2D extends PGraphicsJava2D {
             Field f = PGraphicsJava2D.class.getDeclaredField("defaultComposite");
             f.setAccessible(true);
             f.set(this, defaultComposite);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace(System.err);
         }
     }
@@ -65,7 +63,7 @@ public class MPGraphics2D extends PGraphicsJava2D {
     /**
      * Should be called before every usage
      */
-    public void init()
+    public final void init()
     {
         checkSettings();
         resetMatrix(); // reset model matrix
@@ -76,7 +74,7 @@ public class MPGraphics2D extends PGraphicsJava2D {
     /**
      * Saves the Graphic Context Settings
      */
-    public void storeGraphicSettings() {
+    public final void storeGraphicSettings() {
         storeBackground = g2.getBackground();
         storeColor = g2.getColor();
         storeComposite = g2.getComposite();
@@ -90,7 +88,7 @@ public class MPGraphics2D extends PGraphicsJava2D {
     /**
      * Loads the Graphic Context Settings
      */
-    public void loadGraphicSettings() {
+    public final void loadGraphicSettings() {
         if(storeBackground != null)
             g2.setBackground(storeBackground);
         if(storeColor != null)
@@ -118,8 +116,13 @@ public class MPGraphics2D extends PGraphicsJava2D {
     }
     
 
+    /**
+     * Necessary override, to fix not inited Processing Sketch
+     * @param iwidth
+     * @param iheight 
+     */
     @Override
-    public void setSize(int iwidth, int iheight) {
+    public final void setSize(int iwidth, int iheight) {
         width = iwidth;
         height = iheight;
     }

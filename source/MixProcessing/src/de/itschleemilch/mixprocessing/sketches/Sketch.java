@@ -55,7 +55,7 @@ public class Sketch {
      * @return the instance or null
      * @see Sketch#createInstance(java.awt.Frame, java.lang.String) 
      */
-    public PApplet getInstance()
+    public final PApplet getInstance()
     {
         if(instance == null)
         {
@@ -71,7 +71,7 @@ public class Sketch {
      * @param sketchPath Data-Path where files can be loaded
      * @return the created instance
      */
-    public PApplet createInstance(RenderFrame f, String sketchPath)
+    public final PApplet createInstance(RenderFrame f, String sketchPath)
     {
         if(getInstance() != null)
             return getInstance();
@@ -89,8 +89,8 @@ public class Sketch {
                     setupDone = false;  
                 }
                 return instance;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | InstantiationException e) {
+                e.printStackTrace(System.err);
             }
             return null;
         }
@@ -99,8 +99,10 @@ public class Sketch {
     /**
      * If the sketch is currently not used, the created instance should be
      * distroyed to save ressources (RAM, CPU)
+     * 
+     * @param f 
      */
-    public void deleteInstance(RenderFrame f)
+    public final void deleteInstance(RenderFrame f)
     {
         if(instance != null)
         {
@@ -111,7 +113,10 @@ public class Sketch {
         }
     }
     
-    public void resetSetup()
+    /**
+     * Sketch's setup method is called again
+     */
+    public final void resetSetup()
     {
         setupDone = false;
     }
@@ -121,7 +126,7 @@ public class Sketch {
      * @param bi
      * @param g 
      */
-    public void doSetup(BufferedImage bi, Graphics2D g)
+    public final void doSetup(BufferedImage bi, Graphics2D g)
     {
         if(instance.g == null || !(instance.g instanceof MPGraphics2D) )
         {
@@ -150,7 +155,7 @@ public class Sketch {
     /**
      * Stores internal Graphics settings after drawing this Sketch
      */
-    public void storeInternalSettings()
+    public final void storeInternalSettings()
     {
         MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
         mpg2d.storeGraphicSettings();
@@ -178,7 +183,7 @@ public class Sketch {
      * Checks if Sketch needs redraw depending on internal set
      * @return 
      */
-    public boolean needsRedraw()
+    public final boolean needsRedraw()
     {
         if(FRAME_RATE_PERIOD_FIELD != null && FRAME_RATE_LAST_NANOS_FIELD != null)
         {
@@ -200,7 +205,7 @@ public class Sketch {
     /**
      * Sets the last-redrawn field to the current time
      */
-    public void updateLastRedrawTime()
+    public final void updateLastRedrawTime()
     {
         if(FRAME_RATE_LAST_NANOS_FIELD != null)
         {
@@ -212,7 +217,7 @@ public class Sketch {
         }
     }
 
-    public boolean isReceivingKeyEvents() {
+    public final boolean isReceivingKeyEvents() {
         return receivingKeyEvents;
     }
 
@@ -220,11 +225,11 @@ public class Sketch {
      * Sets if the sketch receives future key events.
      * @param enabled 
      */
-    public void setReceivingKeyEvents(boolean enabled) {
+    public final void setReceivingKeyEvents(boolean enabled) {
         this.receivingKeyEvents = enabled;
     }
 
-    public boolean isReceivingMouseEvents() {
+    public final boolean isReceivingMouseEvents() {
         return receivingMouseEvents;
     }
 
@@ -232,7 +237,7 @@ public class Sketch {
      * Sets if the sketch receives future mouse events.
      * @param enabled 
      */
-    public void setReceivingMouseEvents(boolean enabled) {
+    public final void setReceivingMouseEvents(boolean enabled) {
         this.receivingMouseEvents = enabled;
     }
     
@@ -241,13 +246,17 @@ public class Sketch {
      * Returns the Sketches Name (equals Processing sketch name)
      * @return sketch name
      */
-    public String getName()
+    public final String getName()
     {
         return template.getName();
     }
     
     private static final Field FRAME_RATE_PERIOD_FIELD;
     private static final Field FRAME_RATE_LAST_NANOS_FIELD;
+    /**
+     * Creates global variables needed for reflection methods during
+     * PApplet modification.
+     */
     static
     {
         Field fRP_F = null, fRLN_F = null;

@@ -22,6 +22,7 @@ package de.itschleemilch.mixprocessing;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -35,9 +36,9 @@ import processing.core.PApplet;
  */
 public class JarManagement {
     /* location where exported Processing sketches are stored */
-    final File jarFolder;
+    private final File jarFolder;
     /* Stores all loaded sketches and their runtime instances */
-    final ArrayList<Class> sketches = new ArrayList<>();
+    private final ArrayList<Class> sketches = new ArrayList<>();
 
     /**
      * Create new JarManagement object. Afterwards the readJars() method can be
@@ -54,7 +55,7 @@ public class JarManagement {
      * Searches for JAR (Java Archive) files within the jarFolder.
      * @see JarManagement#readJar(java.io.File) 
      */
-    public void readJars()
+    public final void readJars()
     {
         File[] jars = jarFolder.listFiles(new FileFilter() {
             @Override
@@ -63,8 +64,8 @@ public class JarManagement {
             }
         });
         sketches.clear();
-        for (int i = 0; i < jars.length; i++) {
-            readJar( jars[i] );
+        for (File jar : jars) {
+            readJar(jar);
         }
     }
     /**
@@ -102,8 +103,8 @@ public class JarManagement {
                 }
             }
             input.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
         } 
         if(cloader != null && mainClass != null)
         {
@@ -118,8 +119,8 @@ public class JarManagement {
                 }
                 else
                     System.out.printf("\t\tClass is no Processing Sketch: %s\n", mainClass);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace(System.err);
             }
         }
         else if(cloader != null)
@@ -136,7 +137,7 @@ public class JarManagement {
      * Returns all found processing sketches as their plain classes.
      * @return all sketch classes within the scanned folder
      */
-    public Class[] getSketchClasses()
+    public final Class[] getSketchClasses()
     {
         return sketches.toArray(new Class[0]);
     }

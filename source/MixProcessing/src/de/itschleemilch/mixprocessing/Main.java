@@ -38,6 +38,14 @@ import java.io.InputStreamReader;
  */
 public class Main {
     
+    private static LoggingDialog initLogging()
+    {
+        LoggingDialog.initLogging();
+        LoggingDialog log = new LoggingDialog();
+        log.setVisible(true);
+        return log;
+    }
+    
     /**
      * Outputs licence notices at the terminal.
      */
@@ -55,9 +63,10 @@ public class Main {
         }
         finally {
             try {
-                in.close();
+                if(in != null)
+                    in.close();
             } 
-            catch (Exception e) { /*ignore exception here*/ }
+            catch (IOException e) { /*ignore exception here*/ }
         }
         System.out.println();
     }
@@ -92,6 +101,7 @@ public class Main {
      * @param args Start Parameters are not used.
      */
     public static void main(String[] args) {
+        LoggingDialog logging = initLogging();
         infoText();
         graphicsSettings();
         
@@ -107,22 +117,22 @@ public class Main {
         Class[] sketchClasses = readSketches(jarSource);
         Sketches sketches = new Sketches();
         
-        RenderFrame frame = new RenderFrame("MixProcessing");
+        RenderFrame frame = new RenderFrame("MixProcessing", logging);
         frame.centerWindowOnScreen();
         
         MixRenderer renderer = new MixRenderer(sketches);
         frame.add(renderer, BorderLayout.CENTER);
         try {
             Thread.sleep(200); // let Renderer start
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
         }
         renderer.init();
         frame.setVisible(true);
         
         // initialise Processing Sketches
         String sketchPath = jarSource.getAbsolutePath();
-        for (int i = 0; i < sketchClasses.length; i++) {
-            Sketch s = new Sketch( sketchClasses[i] );
+        for (Class sketchClasse : sketchClasses) {
+            Sketch s = new Sketch(sketchClasse);
             sketches.addSketch(s);
             s.createInstance(frame, sketchPath);
             System.out.printf("INITIATED SKETCH %s\n", s.getName());

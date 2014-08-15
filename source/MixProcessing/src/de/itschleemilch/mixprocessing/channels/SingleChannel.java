@@ -35,27 +35,39 @@ public class SingleChannel {
         this.channelName = "channel_"+runningID;
     }
 
-    public boolean isEnabled() {
+    /**
+     * Wheather the channel is drawn or not
+     * @return 
+     */
+    public final boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public String getChannelName() {
+    /**
+     * Internal name for the user, can be edited
+     * @return 
+     */
+    public final String getChannelName() {
         return channelName;
     }
 
-    public void setChannelName(String channelName) {
+    public final void setChannelName(String channelName) {
         this.channelName = channelName;
     }
 
-    public Shape getShape() {
+    /**
+     * Returns the Shape object, that represents the output area. 
+     * @return Shape or null
+     */
+    public final Shape getShape() {
         return shape;
     }
 
-    public void setShape(Shape shape) {
+    public final void setShape(Shape shape) {
         this.shape = shape;
     }
 }

@@ -26,10 +26,8 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import processing.core.PApplet;
 
@@ -58,7 +56,7 @@ public class Sketches {
      * @param w
      * @param h 
      */
-    public void updateSize(int w, int h)
+    public final void updateSize(int w, int h)
     {
         lastW = w; lastH = h;
         for(int i = 0; i < sketches.size(); i++)
@@ -86,16 +84,14 @@ public class Sketches {
         }
     }
     
-    public void updateSize()
+    public final void updateSize()
     {
         this.updateSize(lastW, lastH);
     }
     
-    public void mouseMoved(int x, int y, boolean dragged)
+    public final void mouseMoved(int x, int y, boolean dragged)
     {
-        for(int i = 0; i < sketches.size(); i++)
-        {
-            Sketch s = sketches.get(i);
+        for (Sketch s : sketches) {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
@@ -115,11 +111,9 @@ public class Sketches {
         lastMouseY = y;
     }
     
-    public void mouseEvent(boolean pressed, boolean released, boolean clicked)
+    public final void mouseEvent(boolean pressed, boolean released, boolean clicked)
     {
-        for(int i = 0; i < sketches.size(); i++)
-        {
-            Sketch s = sketches.get(i);
+        for (Sketch s : sketches) {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
@@ -148,11 +142,9 @@ public class Sketches {
      * @param e
      * @param state 1=pressed, 2=released, 3=typed
      */
-    public void keyEvent(KeyEvent e, int state)
+    public final void keyEvent(KeyEvent e, int state)
     {
-        for(int i = 0; i < sketches.size(); i++)
-        {
-            Sketch s = sketches.get(i);
+        for (Sketch s : sketches) {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
@@ -184,10 +176,11 @@ public class Sketches {
      * one sketche's output.
      * TODO: Editable output areas (Java2D shapes, combined with 
      * java.awt.geom.Path2D
-     * @param g
-     * @param io 
+     * @param bi Double Buffer Image
+     * @param g Graphics Object from double buffer
+     * @param channels
      */
-    public void paintAll(BufferedImage bi, Graphics2D g, ImageObserver io, ChannelManagement channels)
+    public final void paintAll(BufferedImage bi, Graphics2D g, ChannelManagement channels)
     {
         if(sketches.isEmpty())
             return;

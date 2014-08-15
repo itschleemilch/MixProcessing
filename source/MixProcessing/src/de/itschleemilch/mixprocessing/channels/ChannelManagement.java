@@ -38,9 +38,9 @@ import java.util.ArrayList;
  * @author Sebastian Schleemilch
  */
 public class ChannelManagement {
-    ArrayList<SingleChannel> channels = new ArrayList<>();
-    boolean previewChannelOutlines = true;
-    final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
+    private final ArrayList<SingleChannel> channels = new ArrayList<>();
+    private boolean previewChannelOutlines = true;
+    private final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
 
     public ChannelManagement() {
         addChannel(new java.awt.geom.Ellipse2D.Float(10, 20, 300, 400));
@@ -54,26 +54,26 @@ public class ChannelManagement {
         addChannel(new java.awt.geom.RoundRectangle2D.Float(510, 30, 100, 300, 30, 60));
     }
     
-    public SingleChannel addChannel()
+    public final SingleChannel addChannel()
     {
         SingleChannel channel = new SingleChannel(channels.size());
         channels.add(channel);
         return channel;
     }
     
-    public SingleChannel addChannel(Shape s)
+    public final SingleChannel addChannel(Shape s)
     {
         SingleChannel c = addChannel();
         c.setShape(s);
         return c;
     }
     
-    public void removeChannel(SingleChannel channel)
+    public final void removeChannel(SingleChannel channel)
     {
         channels.remove(channel);
     }
 
-    public boolean isPreviewChannelOutlines() {
+    public final boolean isPreviewChannelOutlines() {
         return previewChannelOutlines;
     }
     
@@ -81,13 +81,11 @@ public class ChannelManagement {
      * Draws a red outline to the channels
      * @param g 
      */
-    public void paintChannelOutlines(Graphics2D g)
+    public final void paintChannelOutlines(Graphics2D g)
     {
         g.setColor(Color.RED);
         g.setFont(new Font("Arial", Font.BOLD, 10));
-        for(int i = 0; i < channels.size(); i++)
-        {
-            SingleChannel c = channels.get(i);
+        for (SingleChannel c : channels) {
             Shape s = c.getShape();
             if(s != null)
             {
@@ -105,12 +103,10 @@ public class ChannelManagement {
      * Fills disabled areas with black - needed to switch them on/off
      * @param g 
      */
-    public void paintDisabledChannels(Graphics2D g)
+    public final void paintDisabledChannels(Graphics2D g)
     {
         g.setColor(Color.BLACK);
-        for(int i = 0; i < channels.size(); i++)
-        {
-            SingleChannel c = channels.get(i);
+        for (SingleChannel c : channels) {
             if(!c.isEnabled() && c.getShape() != null)
             {
                 g.fill(c.getShape());
@@ -118,7 +114,7 @@ public class ChannelManagement {
         }
     }
     
-    public Shape getOutputChannel(Sketch s, int index)
+    public final Shape getOutputChannel(Sketch s, int index)
     {
         if(index >= 0 && index < channels.size())
         {

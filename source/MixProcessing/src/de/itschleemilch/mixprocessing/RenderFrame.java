@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -45,27 +46,31 @@ import java.util.ArrayList;
  * @author Sebastian Schleemilch
  */
 public class RenderFrame extends Frame
-        implements WindowListener, MouseListener {
+        implements WindowListener, KeyListener {
+    private final LoggingDialog logging;
     /* Invisible Cursor, switch mode with right-click */
-    Cursor zeroCursor;
+    private final Cursor zeroCursor;
 
-    public RenderFrame() {
+    public RenderFrame(LoggingDialog logging) {
         super();
+        this.logging = logging;
+        logging.addKeyListener(this);
         setLayout(new BorderLayout());
         addWindowListener(this);
-        addMouseListener(this);
+        addKeyListener(this);
         
         zeroCursor = getToolkit().createCustomCursor(
                 new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR),
                 new java.awt.Point(0, 0), "NOCURSOR");
         setCursor(zeroCursor);
         
-        setSize(300, 200);
+        setSize(800, 600);
+        centerWindowOnScreen();
         addIconImage();
     }
     
-    public RenderFrame(String title) {
-        this();
+    public RenderFrame(String title, LoggingDialog logging) {
+        this(logging);
         setTitle(title);
     }
     
@@ -84,11 +89,32 @@ public class RenderFrame extends Frame
         return getToolkit().createImage(RenderFrame.class.getResource("res/"+name));
     }
     
-    public void centerWindowOnScreen()
+    public final void centerWindowOnScreen()
     {
         Dimension screen = getToolkit().getScreenSize();
         int x = (screen.width-getWidth())/2;
         int y = (screen.height-getHeight())/2;
+        setLocation(x, y);
+    }
+    
+    public final void toggleFullscreen() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setVisible(false);
+                dispose();
+                setUndecorated(!isUndecorated());
+                setVisible(true);
+            }
+        });
+    }
+    
+    public final void toggleMouse()
+    {
+        if(getCursor() == zeroCursor)
+            setCursor(Cursor.getDefaultCursor());
+        else
+            setCursor(zeroCursor);
     }
 
 
@@ -101,71 +127,60 @@ public class RenderFrame extends Frame
     @Override
     public void add(Component comp, Object constraints) {
         super.add(comp, constraints); 
-        comp.addMouseListener(this);
         if(comp instanceof KeyListener)
         {
             addKeyListener( (KeyListener)comp );
         }
+        comp.addKeyListener(this);
     }
     
     /* WindowListener Methods */
+    @Override
     public void windowOpened(WindowEvent e) {
     }
 
+    @Override
     public void windowClosing(WindowEvent e) {
         System.exit(0);
     }
 
+    @Override
     public void windowClosed(WindowEvent e) {
     }
 
+    @Override
     public void windowIconified(WindowEvent e) {
     }
 
+    @Override
     public void windowDeiconified(WindowEvent e) {
     }
 
+    @Override
     public void windowActivated(WindowEvent e) {
     }
 
+    @Override
     public void windowDeactivated(WindowEvent e) {
     }
-
-    /* MouseListener Methods */
     
-    public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) // Doppelklick
-        {
-            EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    setVisible(false);
-                    dispose();
-                    setUndecorated(!isUndecorated());
-                    setVisible(true);
-                }
-            });
-            
-        }
-        if(e.getButton() == MouseEvent.BUTTON3) // Rechtsklick
-        {
-            if(getCursor() == zeroCursor)
-                setCursor(Cursor.getDefaultCursor());
-            else
-                setCursor(zeroCursor);
-        }
-    }
+    /* KeyListener Methods */
 
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
+    @Override
+    public void keyPressed(KeyEvent e) {
     }
     
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_F12)
+            toggleFullscreen();
+        else if(e.getKeyCode() == KeyEvent.VK_F11)
+            toggleMouse();
+        else if(e.getKeyCode() == KeyEvent.VK_F2)
+            logging.setVisible(!logging.isVisible());
+    }
 }

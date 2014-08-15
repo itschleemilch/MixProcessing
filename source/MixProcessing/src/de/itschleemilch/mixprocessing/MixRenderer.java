@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.channels.ChannelEditing;
 import de.itschleemilch.mixprocessing.channels.ChannelManagement;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Canvas;
@@ -46,10 +47,9 @@ public class MixRenderer extends Canvas
     implements ComponentListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
     private final ChannelManagement channels;
     private final Sketches sketches;
-    private final long FRAME_RATE = 60L;
-    private final long FRAME_PERIOD = (1000L) / FRAME_RATE;
-    private boolean renderTaskRunning = false;
     private BufferedImage offImg = null;
+    
+    private final ChannelEditing channelEditor;
     
     public MixRenderer(Sketches sketches)
     {
@@ -60,16 +60,19 @@ public class MixRenderer extends Canvas
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
+        
+        channelEditor = new ChannelEditing(channels);
+        addMouseListener(channelEditor);
     }
     
-    public void init()
+    public final void init()
     {
         sketches.updateSize(getWidth(), getHeight());
         new Thread(this).start();
     }
 
     @Override
-    public void run() {
+    public final void run() {
         while(true)
         {
             repaint();
@@ -82,8 +85,8 @@ public class MixRenderer extends Canvas
     }
 
     @Override
-    public void paint(Graphics g) {
-        Graphics2D g2d = null;
+    public final void paint(Graphics g) {
+        Graphics2D g2d;
         if(offImg == null || offImg.getWidth() != getWidth() || offImg.getHeight() != getHeight())
         {
             offImg = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
@@ -93,16 +96,18 @@ public class MixRenderer extends Canvas
         }
         else
             g2d = offImg.createGraphics();
-        sketches.paintAll(offImg, g2d, this, channels);
+        sketches.paintAll(offImg, g2d, channels);
         g2d.dispose();
         g.drawImage(offImg, 0, 0, this);
         
         if(channels.isPreviewChannelOutlines())
             channels.paintChannelOutlines((Graphics2D)g);
+        
+        channelEditor.paintEditorPath((Graphics2D)g);
     }
 
     @Override
-    public void update(Graphics g) {
+    public final void update(Graphics g) {
         paint(g); //To change body of generated methods, choose Tools | Templates.
     }
     
