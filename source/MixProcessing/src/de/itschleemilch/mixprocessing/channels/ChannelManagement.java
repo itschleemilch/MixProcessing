@@ -30,6 +30,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 /**
+ * Manages the output channels (variable output areas) and the
+ * sketch-association. 
+ * 
+ * Provides drawing methods specific for changing channels (enable/disable, edit).
  *
  * @author Sebastian Schleemilch
  */
@@ -92,6 +96,7 @@ public class ChannelManagement {
                 int y = bounds.y + bounds.height + g.getFontMetrics().getHeight()+4;
                 int x_add = (bounds.width-g.getFontMetrics().stringWidth(c.getChannelName()))/2;
                 g.drawString(c.getChannelName(), bounds.x+x_add, y);
+                ChannelEditing.drawControlPoints(g, s);
             }
         }
     }

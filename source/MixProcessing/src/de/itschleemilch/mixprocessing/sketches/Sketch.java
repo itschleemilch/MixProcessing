@@ -37,11 +37,10 @@ import processing.core.PGraphicsJava2D;
  * @author Sebastian Schleemilch
  */
 public class Sketch {
-    final Class template;
-    PApplet instance = null;
-    boolean setupDone = false;
-    static Field frameRatePeriodField = null;
-    static Field frameRateLastNanosField = null;
+    private final Class template;
+    private PApplet instance = null;
+    private boolean setupDone = false;
+    private boolean receivingMouseEvents = true, receivingKeyEvents = true;
 
     /**
      * Creates a Processing sketch represenation.
@@ -176,25 +175,16 @@ public class Sketch {
     }
     
     /**
-     * Returns the Sketches Name (equals Processing sketch name)
-     * @return sketch name
-     */
-    public String getName()
-    {
-        return template.getName();
-    }
-    
-    /**
      * Checks if Sketch needs redraw depending on internal set
      * @return 
      */
     public boolean needsRedraw()
     {
-        if(frameRatePeriodField != null && frameRateLastNanosField != null)
+        if(FRAME_RATE_PERIOD_FIELD != null && FRAME_RATE_LAST_NANOS_FIELD != null)
         {
             try {
-                long period = frameRatePeriodField.getLong(instance);
-                long lastDrawn = frameRateLastNanosField.getLong(instance);
+                long period = FRAME_RATE_PERIOD_FIELD.getLong(instance);
+                long lastDrawn = FRAME_RATE_LAST_NANOS_FIELD.getLong(instance);
                 long diff = System.nanoTime() - lastDrawn;
                 if(diff >= period)
                     return true;
@@ -212,29 +202,68 @@ public class Sketch {
      */
     public void updateLastRedrawTime()
     {
-        if(frameRateLastNanosField != null)
+        if(FRAME_RATE_LAST_NANOS_FIELD != null)
         {
             try {
-                frameRateLastNanosField.setLong(instance, System.nanoTime());
+                FRAME_RATE_LAST_NANOS_FIELD.setLong(instance, System.nanoTime());
             } catch (Exception e) {
                 e.printStackTrace(System.out);
             }
         }
     }
+
+    public boolean isReceivingKeyEvents() {
+        return receivingKeyEvents;
+    }
+
+    /**
+     * Sets if the sketch receives future key events.
+     * @param enabled 
+     */
+    public void setReceivingKeyEvents(boolean enabled) {
+        this.receivingKeyEvents = enabled;
+    }
+
+    public boolean isReceivingMouseEvents() {
+        return receivingMouseEvents;
+    }
+
+    /**
+     * Sets if the sketch receives future mouse events.
+     * @param enabled 
+     */
+    public void setReceivingMouseEvents(boolean enabled) {
+        this.receivingMouseEvents = enabled;
+    }
     
+    
+    /**
+     * Returns the Sketches Name (equals Processing sketch name)
+     * @return sketch name
+     */
+    public String getName()
+    {
+        return template.getName();
+    }
+    
+    private static final Field FRAME_RATE_PERIOD_FIELD;
+    private static final Field FRAME_RATE_LAST_NANOS_FIELD;
     static
     {
+        Field fRP_F = null, fRLN_F = null;
         try {
-            frameRatePeriodField = PApplet.class.getDeclaredField("frameRatePeriod");
-            frameRatePeriodField.setAccessible(true);
+            fRP_F = PApplet.class.getDeclaredField("frameRatePeriod");
+            fRP_F.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
+        FRAME_RATE_PERIOD_FIELD = fRP_F;
         try {
-            frameRateLastNanosField = PApplet.class.getDeclaredField("frameRateLastNanos");
-            frameRateLastNanosField.setAccessible(true);
+            fRLN_F = PApplet.class.getDeclaredField("frameRateLastNanos");
+            fRLN_F.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
+        FRAME_RATE_LAST_NANOS_FIELD = fRLN_F;
     }
 }

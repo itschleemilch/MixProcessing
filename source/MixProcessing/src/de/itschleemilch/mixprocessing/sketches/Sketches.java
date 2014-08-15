@@ -41,8 +41,9 @@ import processing.core.PApplet;
  * @see Sketch
  */
 public class Sketches {
-    final ArrayList<Sketch> sketches = new ArrayList<>();
-    int lastW = 0, lastH = 0;
+    private final ArrayList<Sketch> sketches = new ArrayList<>();
+    private int lastW = 0, lastH = 0;
+    private int lastMouseX = 0, lastMouseY = 0;
 
     public Sketches() {
     }
@@ -90,7 +91,6 @@ public class Sketches {
         this.updateSize(lastW, lastH);
     }
     
-    int lastMouseX = 0; int lastMouseY = 0;
     public void mouseMoved(int x, int y, boolean dragged)
     {
         for(int i = 0; i < sketches.size(); i++)
@@ -99,14 +99,16 @@ public class Sketches {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
-                applet.mouseX = x;
-                applet.mouseY = y;
-                applet.pmouseX = lastMouseX;
-                applet.pmouseY = lastMouseY;
-                if(dragged)
-                    applet.mouseDragged();
-                else
-                    applet.mouseMoved();
+                if(s.isReceivingMouseEvents()) {
+                    applet.mouseX = x;
+                    applet.mouseY = y;
+                    applet.pmouseX = lastMouseX;
+                    applet.pmouseY = lastMouseY;
+                    if(dragged)
+                        applet.mouseDragged();
+                    else
+                        applet.mouseMoved();
+                }
             }
         }
         lastMouseX = x;
@@ -121,18 +123,22 @@ public class Sketches {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
-                if(clicked)
-                    applet.mouseClicked();
-                else if(pressed)
-                {
-                    applet.mousePressed = true;
-                    applet.mousePressed();
+                if(s.isReceivingMouseEvents()) {
+                    if(clicked)
+                        applet.mouseClicked();
+                    else if(pressed)
+                    {
+                        applet.mousePressed = true;
+                        applet.mousePressed();
+                    }
+                    else if(released)
+                    {
+                        applet.mousePressed = false;
+                        applet.mouseReleased();
+                    }
                 }
-                else if(released)
-                {
+                else
                     applet.mousePressed = false;
-                    applet.mouseReleased();
-                }
             }
         }
     }
@@ -150,20 +156,24 @@ public class Sketches {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
-                applet.key = e.getKeyChar();
-                applet.keyCode = e.getKeyCode();
-                if(state == 0)
-                {
-                    applet.keyPressed = true;
-                    applet.keyPressed();
-                }
-                else if(state == 1)
-                {
-                    applet.keyPressed = false;
-                    applet.keyReleased();
+                if(s.isReceivingKeyEvents()) {
+                    applet.key = e.getKeyChar();
+                    applet.keyCode = e.getKeyCode();
+                    if(state == 0)
+                    {
+                        applet.keyPressed = true;
+                        applet.keyPressed();
+                    }
+                    else if(state == 1)
+                    {
+                        applet.keyPressed = false;
+                        applet.keyReleased();
+                    }
+                    else
+                        applet.keyTyped();
                 }
                 else
-                    applet.keyTyped();
+                    applet.keyPressed = false;
             }
         }
     }

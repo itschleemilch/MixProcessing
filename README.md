@@ -1,4 +1,4 @@
-#![MixProcessing Logo](images/MixProcessing-Logo_48x48.png) MixProcessing
+#![MixProcessing Logo](https://github.com/itschleemilch/MixProcessing/raw/master/images/MixProcessing-Logo_48x48.png) MixProcessing
 
 This project aims to mix [Processing](http://www.processing.org/) sketches live (also called [VJing](http://en.wikipedia.org/wiki/VJing)). 
 
@@ -15,7 +15,7 @@ The project needs the Processing core library.
 ##Status
 Currently there is a tech demo, that loades all sketches from a subfolder and renders them into three fixed output areas. 
 
-![Demonstration of the current codebase](images/2014-08-14_tech_demo.jpg)
+![Demonstration of the current codebase](https://github.com/itschleemilch/MixProcessing/raw/master/images/2014-08-14_tech_demo.jpg)
 
 ##Known Issues
 * Only supports Java2D mode (P2D, P3D will not work)
