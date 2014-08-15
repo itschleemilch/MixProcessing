@@ -47,9 +47,12 @@ public class MixRenderer extends Canvas
     implements ComponentListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
     private final ChannelManagement channels;
     private final Sketches sketches;
-    private BufferedImage offImg = null;
+    /* Double Buffers, offImg: Sketches, offImg2: Sketches+Editormode*/
+    private BufferedImage offImg = null, offImg2 = null;
     
     private final ChannelEditing channelEditor;
+    /* Self-Resetting Flag: If set-> causes full black background redraw */
+    private boolean forceRefresh = false;
     
     public MixRenderer(Sketches sketches)
     {
@@ -69,6 +72,42 @@ public class MixRenderer extends Canvas
     {
         sketches.updateSize(getWidth(), getHeight());
         new Thread(this).start();
+    }
+
+    /**
+     * Returns a reference to the channel-editor
+     * @return 
+     */
+    public ChannelEditing getChannelEditor() {
+        return channelEditor;
+    }
+    
+    /**
+     * Returns all managed output channels
+     * @return 
+     */
+    public ChannelManagement getChannels() {
+        return channels;
+    }
+
+    /**
+     * Returns all managed Sketches
+     * @return 
+     */
+    public Sketches getSketches() {
+        return sketches;
+    }
+
+    /**
+     * Can be polled to wait until the refresh has been done.
+     * @return 
+     */
+    public boolean isForceRefreshWaiting() {
+        return forceRefresh;
+    }
+    
+    public void setForceRefresh() {
+        this.forceRefresh = true;
     }
 
     @Override
@@ -93,17 +132,32 @@ public class MixRenderer extends Canvas
             g2d = offImg.createGraphics();
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
+            offImg2 = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
         }
         else
             g2d = offImg.createGraphics();
+        if(forceRefresh)
+        {
+            forceRefresh = false;
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
         sketches.paintAll(offImg, g2d, channels);
         g2d.dispose();
-        g.drawImage(offImg, 0, 0, this);
         
-        if(channels.isPreviewChannelOutlines())
-            channels.paintChannelOutlines((Graphics2D)g);
+        if(channels.isPreviewChannelOutlines()) {
+            Graphics2D g2d_2 = offImg2.createGraphics();
+            g2d_2.drawImage(offImg, 0, 0, this);
+            channels.paintChannelOutlines( g2d_2 );
+            channelEditor.paintEditorPath( g2d_2 );
+            g2d_2.dispose();
+            g.drawImage(offImg2, 0, 0, this);
+        }
+        else {
+            g.drawImage(offImg, 0, 0, this);
+        }
         
-        channelEditor.paintEditorPath((Graphics2D)g);
+        
     }
 
     @Override

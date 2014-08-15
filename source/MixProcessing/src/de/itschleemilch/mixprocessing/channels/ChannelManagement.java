@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package de.itschleemilch.mixprocessing.channels;
 
+import de.itschleemilch.mixprocessing.EventManager;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Color;
 import java.awt.Font;
@@ -41,6 +42,7 @@ public class ChannelManagement {
     private final ArrayList<SingleChannel> channels = new ArrayList<>();
     private boolean previewChannelOutlines = true;
     private final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
+    public EventManager eventManager = null; // is set external by EventManager
 
     public ChannelManagement() {
         addChannel(new java.awt.geom.Ellipse2D.Float(10, 20, 300, 400));
@@ -58,6 +60,8 @@ public class ChannelManagement {
     {
         SingleChannel channel = new SingleChannel(channels.size());
         channels.add(channel);
+        if(eventManager != null)
+            eventManager.fireChannelsChanged();
         return channel;
     }
     
@@ -68,13 +72,51 @@ public class ChannelManagement {
         return c;
     }
     
+    /**
+     * Removes a Channel from the List
+     * @param channel 
+     */
     public final void removeChannel(SingleChannel channel)
     {
         channels.remove(channel);
     }
+    
+    /**
+     * Searches for the first output channel with the given name
+     * @param name
+     * @return 
+     */
+    public final SingleChannel findChannel(String name) {
+        for (SingleChannel channel : channels) {
+            if(channel.getChannelName().equals(name))
+                return channel;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns all channels stored by manager
+     * @return 
+     */
+    public final SingleChannel[] getAllChannels()
+    {
+        return channels.toArray(new SingleChannel[0]);
+    }
 
+    /**
+     * Preview-Mode: Draws Channel Outlines and allows drawing of new channels
+     * @return 
+     */
     public final boolean isPreviewChannelOutlines() {
         return previewChannelOutlines;
+    }
+
+    /**
+     * Preview-Mode: Draws Channel Outlines and allows drawing of new channels
+     * @param previewChannelOutlines 
+     */
+    public void setPreviewChannelOutlines(boolean previewChannelOutlines) {
+        this.previewChannelOutlines = previewChannelOutlines;
     }
     
     /**
@@ -89,6 +131,7 @@ public class ChannelManagement {
             Shape s = c.getShape();
             if(s != null)
             {
+                g.setColor(Color.RED);
                 g.draw(s);
                 Rectangle bounds = s.getBounds();
                 int y = bounds.y + bounds.height + g.getFontMetrics().getHeight()+4;
@@ -114,6 +157,12 @@ public class ChannelManagement {
         }
     }
     
+    /**
+     * Association of sketches to channels
+     * @param s
+     * @param index
+     * @return 
+     */
     public final Shape getOutputChannel(Sketch s, int index)
     {
         if(index >= 0 && index < channels.size())

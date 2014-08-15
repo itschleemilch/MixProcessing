@@ -27,7 +27,6 @@ import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import processing.core.PApplet;
 
@@ -210,6 +209,29 @@ public class Sketches {
             g.setPaint(old_paint);
         }
         channels.paintDisabledChannels(g);
+    }
+    
+    /**
+     * Searches for a Sketch
+     * @param name
+     * @return  Sketch or null
+     */
+    public final Sketch findSketch(String name)
+    {
+        for (Sketch sketch : sketches) {
+            if(sketch.getName().equals(name))
+                return sketch;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns all stored sketches
+     * @return 
+     */
+    public final Sketch[] getAllSketches()
+    {
+        return sketches.toArray(new Sketch[0]);
     }
     
 }

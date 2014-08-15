@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<scriptingHelp>
+	<menu text="Channel Control">
+		<item insert="mp.channelOn( 'name' );">Channel On</item>
+                <item insert="mp.channelOff( 'name' );">Channel Off</item>
+                <item insert="mp.channelEditing();">Edit Channels</item>
+                <item insert="mp.channelNormal();">Exit Channel Editing</item>
+                <item insert="mp.channelRename( 'old_name', 'new_name' );">Rename Channel</item>
+                <item insert="mp.channelRemove( 'name' );">Remove Channel</item>
+	</menu>
+        <menu text="Rendering Control">
+		<item insert="mp.forceRefresh();">Repaint Background</item>
+	</menu>
+        <menu text="Sketch Control">
+		<item insert="mp.restartSketch( 'name' );">Sketch Restart</item>
+	</menu>
+</scriptingHelp>

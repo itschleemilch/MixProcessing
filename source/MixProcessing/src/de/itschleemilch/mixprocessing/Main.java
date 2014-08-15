@@ -120,7 +120,13 @@ public class Main {
         RenderFrame frame = new RenderFrame("MixProcessing", logging);
         frame.centerWindowOnScreen();
         
+        logging.setIconImages( frame.getIconImages() );
+        
+        // Renderer
         MixRenderer renderer = new MixRenderer(sketches);
+        // Event System
+        EventManager em = new EventManager(renderer);
+        
         frame.add(renderer, BorderLayout.CENTER);
         try {
             Thread.sleep(200); // let Renderer start
@@ -135,8 +141,13 @@ public class Main {
             Sketch s = new Sketch(sketchClasse);
             sketches.addSketch(s);
             s.createInstance(frame, sketchPath);
-            System.out.printf("INITIATED SKETCH %s\n", s.getName());
+            System.out.printf("Initialise Sketch: %s\n", s.getName());
         }
+        
+        // Scripting API
+        ScriptingFrame scripting = new ScriptingFrame(em);
+        scripting.setIconImages( frame.getIconImages() );
+        scripting.setVisible(true);
     }
     
 }

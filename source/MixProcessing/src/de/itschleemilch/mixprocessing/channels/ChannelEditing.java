@@ -29,6 +29,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * Handles the channel editing
  *
  * @author Sebastian Schleemilch
  */
@@ -36,7 +37,7 @@ public class ChannelEditing implements MouseListener {
     public enum STATES {WAITING, START, LINE_TO, END}
     private final ChannelManagement channels;
     private STATES state = STATES.WAITING;
-    private GeneralPath path;
+    private GeneralPath path;    
 
     public ChannelEditing(ChannelManagement channels) {
         this.channels = channels;

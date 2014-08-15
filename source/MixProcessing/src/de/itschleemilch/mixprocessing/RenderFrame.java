@@ -50,6 +50,7 @@ public class RenderFrame extends Frame
     private final LoggingDialog logging;
     /* Invisible Cursor, switch mode with right-click */
     private final Cursor zeroCursor;
+    private final ArrayList<Image> icons = new ArrayList<>();
 
     public RenderFrame(LoggingDialog logging) {
         super();
@@ -76,7 +77,6 @@ public class RenderFrame extends Frame
     
     private void addIconImage()
     {
-        ArrayList<Image> icons = new ArrayList<>();
         icons.add( getIconImage("MixProcessing-Logo_16x16.png") );
         icons.add( getIconImage("MixProcessing-Logo_32x32.png") );
         icons.add( getIconImage("MixProcessing-Logo_48x48.png") );
@@ -87,6 +87,10 @@ public class RenderFrame extends Frame
     private Image getIconImage(String name)
     {
         return getToolkit().createImage(RenderFrame.class.getResource("res/"+name));
+    }
+    
+    public final ArrayList<Image> getIconImages() {
+        return icons;
     }
     
     public final void centerWindowOnScreen()
