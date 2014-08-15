@@ -19,11 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package de.itschleemilch.mixprocessing;
 
+import java.awt.Desktop;
 import java.awt.FileDialog;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -51,6 +59,26 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
                     return false;
             }
         });
+        
+        // Load path settings
+        File f = new File("classpath.txt");
+        if(f.exists()) {
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(
+                        new InputStreamReader(new FileInputStream(f)) );
+                pathField.setText( br.readLine() );
+            } 
+            catch (Exception e) {
+            }
+            finally {
+                if(br != null)
+                    try {
+                        br.close();
+                    } catch (Exception e) {
+                    }
+            }
+        }
     }
     
     private void addLibraryToClasspath(URL url) {
@@ -99,7 +127,9 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         searchBtn = new java.awt.Button();
         startBtn = new java.awt.Button();
         abortBtn = new java.awt.Button();
+        downloadLibraryBtn = new java.awt.Button();
 
+        setTitle("Load Library");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -107,7 +137,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         });
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
         layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0};
-        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
+        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
         setLayout(layout);
 
         label3.setAlignment(java.awt.Label.CENTER);
@@ -183,6 +213,20 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(abortBtn, gridBagConstraints);
 
+        downloadLibraryBtn.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        downloadLibraryBtn.setLabel("Download Processing Software");
+        downloadLibraryBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadLibraryBtnActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 14;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(30, 0, 0, 0);
+        add(downloadLibraryBtn, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -208,6 +252,25 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
             @Override
             public void run() {
                 scanDirectory( new File(pathField.getText()) );
+                // Store path setting
+                File f = new File("classpath.txt");
+                BufferedWriter br = null;
+                try {
+                    br = new BufferedWriter(
+                            new OutputStreamWriter(new FileOutputStream(f)) );
+                    br.write(pathField.getText());
+                    br.close();
+                } 
+                catch (Exception e) {
+                }
+                finally {
+                    if(br != null)
+                        try {
+                            br.close();
+                        } catch (Exception e) {
+                        }
+                }
+                // Close frame -> back to main method
                 setVisible(false);
             }
         }).start();
@@ -217,20 +280,16 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         System.exit(0);
     }//GEN-LAST:event_abortBtnActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ProcessingLibraryLoader().setVisible(true);
-            }
-        });
-    }
-
+    private void downloadLibraryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadLibraryBtnActionPerformed
+        try {
+            Desktop.getDesktop().browse(new URI("https://processing.org/download/"));
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_downloadLibraryBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button abortBtn;
+    private java.awt.Button downloadLibraryBtn;
     private java.awt.Label label1;
     private java.awt.Label label2;
     private java.awt.Label label3;
