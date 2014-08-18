@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.load.JarManagement;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.BorderLayout;
