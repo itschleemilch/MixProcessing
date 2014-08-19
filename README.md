@@ -1,9 +1,9 @@
 #![MixProcessing Logo](https://github.com/itschleemilch/MixProcessing/raw/master/images/MixProcessing-Logo_48x48.png) MixProcessing
 
-This project aims to mix and control animations in real-time.
+MixProcessing is a software for mixing Processing sketches.
 
 ##What is MixProcessing?
->MixProcessing can be used for VJing Processing sketches / animations. The user defines output channels, which are free ediable areas on a output devices and can be grouped. The sketches can be controlled to render to any of the channels. A mixer let you control your compsition. Later there is a common interface for sketches planned, to set parameters (colors, speed, etc.) in real-time.
+>MixProcessing can be used to combine and mix Processing sketches to create new real-time animations. The output screen is subdivided into output channels, which are free ediable areas. The sketches can be controlled to render to any of the channels or a group af them. A mixer let you control your compsition. An automation interface can set sketch's parameters and public variables automatically.
 
 The technique of output channels can be used to create [mapping](http://en.wikipedia.org/wiki/Projection_mapping) ([example 1](http://www.vjseptum.com/wp-content/uploads/2013/01/Coliseum_VO_003.jpg)).
 
@@ -36,9 +36,10 @@ Currently there are no binary packages. There is a netbeans project file that wi
 * Java 1.7 or higher
 * Processing core library
 
-##Help
+##Help and Contact
 * [MixProcessing Wiki](https://github.com/itschleemilch/MixProcessing/wiki)
 * E-Mail: <github@it-schleemilch.de>
+* Twitter: [Follow @mixprocessing](https://twitter.com/mixprocessing), [Tweet to @mixprocessing]("https://twitter.com/intent/tweet?screen_name=mixprocessing)
 
 ##Contribution
 You are interested in contributing to MixProject? You are welcome! 
@@ -46,11 +47,12 @@ You are interested in contributing to MixProject? You are welcome!
 * [Reporting bugs](https://github.com/itschleemilch/MixProcessing/issues), [Wiki: Known Issues](https://github.com/itschleemilch/MixProcessing/wiki/Known-Issues)
 * Writing a user guide
 * [Helping with programming](https://github.com/itschleemilch/MixProcessing/wiki/Roadmap)
+* [Help with designing](https://github.com/itschleemilch/MixProcessing/blob/design/source/Design/1%20Development/2014-08-20%20Briefing/Design-Tasks.md)
 * Create Sketches for a visuals library
 
-Please use the GitHub website or send me an e-mail to get in contact.
+Please use the GitHub website, use Twitter or send me an e-mail to get in contact.
 
 ##Credits
-Thanks to the work of the [Processing](http://www.processing.org/) Team and their easy to learn programming environment.  
-Thanks to [generative-gestaltung.de](http://generative-gestaltung.de/) for test sketches  
-[Project Page](http://itschleemilch.github.io/MixProcessing/)
+* Thanks to the work of the [Processing](http://www.processing.org/) Team and their easy to learn programming environment.
+* Thanks to [generative-gestaltung.de](http://generative-gestaltung.de/) for test sketches
+* [MixProcessing's Website](http://itschleemilch.github.io/MixProcessing/)
