@@ -24,24 +24,30 @@ import de.itschleemilch.mixprocessing.channels.ChannelManagement;
 import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
+import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
+import de.itschleemilch.mixprocessing.load.SketchCompiler;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Shape;
-import java.awt.geom.GeneralPath;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
+ * Global Skripting Interface and MixProcessing's event registry.
  *
  * @author Sebastian Schleemilch
  */
 public class EventManager {
+    private final RenderFrame outputWindow;
     private final MixRenderer renderer;
     private final ChannelManagement channels;
     private final Sketches sketches;
     
-    private final ArrayList<ChannelsChangedListener> ccListener = new ArrayList<ChannelsChangedListener>();
+    private final ArrayList<ChannelsChangedListener> ccListener = new ArrayList<>();
+    private final ArrayList<SketchesChangedListener> scListener = new ArrayList<>();
 
-    public EventManager(MixRenderer renderer) {
+    public EventManager(RenderFrame outputWindow, MixRenderer renderer) {
+        this.outputWindow = outputWindow;
         this.renderer = renderer;
         this.channels = renderer.getChannels();
         this.sketches = renderer.getSketches();
@@ -184,7 +190,8 @@ public class EventManager {
      *************************************************************/
     public final void forceRefresh() {
         renderer.setForceRefresh();
-        while(renderer.isForceRefreshWaiting());
+        while(renderer.isForceRefreshWaiting())
+            Thread.yield();
     }
     
     /*************************************************************
@@ -264,11 +271,40 @@ public class EventManager {
     }
     
     /*************************************************************
+     * Environment
+     *************************************************************/
+    
+    /**
+     * Loads, compiles and registers a Processing Sketch from source code.
+     * @param sketchPath Path to Sketch's project folder or PDE file.
+     * @return sucess of process.
+     */
+    public final boolean environmentLoad(String sketchPath) {
+        final File sketchFile = new File(sketchPath);
+        final File sketchFolder = (sketchFile.isDirectory()) ? sketchFile : sketchFile.getParentFile();
+        if(sketchFile.exists()) {
+            SketchCompiler compiler =  new SketchCompiler();
+            Class result = compiler.compileSketch(new File(sketchPath));
+            if(result != null) {
+                Sketch newSketch = new Sketch(result);
+                newSketch.createInstance(outputWindow, sketchFolder.getAbsolutePath());
+                getSketches().addSketch(newSketch);
+                fireSketchesChanged();
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+    
+    /*************************************************************
      * Event System
      *************************************************************/
     
     /**
-     * Add a new ChannelsChangedListener to the Event System
+     * Adds a new ChannelsChangedListener to the Event System
      * @param ccL 
      */
     public final void addChannelsChangedListener(ChannelsChangedListener ccL) {
@@ -276,6 +312,7 @@ public class EventManager {
     }
     
     /**
+     * Fires a new ChannelChanged Event ((new, deleted, replaced)
      * Called by ChannelManagment Object
      */
     public final void fireChannelsChanged()
@@ -286,6 +323,35 @@ public class EventManager {
                 for(ChannelsChangedListener listener : ccListener) {
                     try {
                         listener.channelsChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            }
+        }).start();
+    }
+    
+    
+    /**
+     * Adds a new SketchesChangedListener to the Event System
+     * 
+     * @param scL 
+     */
+    public final void addSketchesChangedListener(SketchesChangedListener scL) {
+        scListener.add(scL);
+    }
+    
+    /**
+     * Fires a new SketchChanged Event (new, deleted, replaced)
+     */
+    public final void fireSketchesChanged()
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(SketchesChangedListener listener : scListener) {
+                    try {
+                        listener.sketchesChanged();
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
                     }

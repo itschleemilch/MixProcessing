@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,8 +83,11 @@ public class SketchCompiler {
 
             final String javaCode = preprocessSketch(className, pdeText.toString());
             final Class compiled = compileCode(className, javaCode);
-
-            return compiled;
+            
+            if(compiled.getSuperclass().equals(PApplet2.class))
+                return compiled;
+            else
+                return null;
         }
         else
             return null;
@@ -98,15 +102,35 @@ public class SketchCompiler {
      */
     private String preprocessSketch(String className, String pdeSource) {
         final StringBuilder source = new StringBuilder();
+        ArrayList<String> importDeclarations = new ArrayList<>();
         
+        // remove all comments
+        pdeSource = pdeSource.replaceAll("//.+", ""); // single line comments
+        pdeSource = pdeSource.replaceAll( 
+                "(?s)" + Pattern.quote("/*") + ".+?" + Pattern.quote("*/"), 
+                ""); // multi line comments
+        // collect all imports
+        Pattern importPattern = Pattern.compile("import (.+?);");
+        Matcher imports = importPattern.matcher(pdeSource);
+        while(imports.find()) {
+            importDeclarations.add( imports.group(1).trim() );
+        }
+        // remove all imports
+        pdeSource = pdeSource.replaceAll("import .+?;", "");
+        // remove all visibility modifiers
         pdeSource = pdeSource.replaceAll("(public|private|protected)", "");
+        // set all methods public
         Pattern publicReplacePattern = Pattern.compile("(\\w+?)\\s+(\\w+?)\\s*\\(", Pattern.MULTILINE);
         Matcher m1 = publicReplacePattern.matcher(pdeSource);
         String publicDeclared = m1.replaceAll("public $1 $2\\(");
         
-        source.append( "import processing.core.PApplet;\n" );
-        source.append( String.format("public class %s extends PApplet {\n", className) );
-        source.append( pdeSource );
+        /* Generate Java source code */
+        source.append( "import processing.core.*;\n" );
+        for(String importItem : importDeclarations) {
+            source.append("import ").append(importItem).append(";\n");
+        }
+        source.append( String.format("public class %s extends de.itschleemilch.mixprocessing.load.PApplet2 {\n", className) );
+        source.append( publicDeclared );
         source.append("\n}");
         
         return source.toString();

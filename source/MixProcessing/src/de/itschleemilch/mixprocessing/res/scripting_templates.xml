@@ -27,4 +27,7 @@
         <item insert="mp.enableMouseEvents( 'sketchName', true);">Enable Mouse Events</item>
         <item insert="mp.enableMouseEvents( 'sketchName', false);">Disable Mouse Events</item>
     </menu>
+    <menu text="Environment">
+        <item insert="mp.environmentLoad( 'c:/Sketch1/' );">Load Processing Sketch</item>
+    </menu>
 </scriptingHelp>

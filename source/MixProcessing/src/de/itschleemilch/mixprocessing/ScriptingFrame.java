@@ -22,6 +22,7 @@ package de.itschleemilch.mixprocessing;
 import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
+import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Button;
 import java.awt.Desktop;
@@ -46,11 +47,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
+ * Editor for the Skripting Interface
  *
  * @author Sebastian Schleemilch
  */
 public class ScriptingFrame extends java.awt.Frame 
-    implements ActionListener, ChannelsChangedListener {
+    implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
     private final EventManager eventManager;
     private final ScriptEngine scriptingEngine;
     
@@ -73,6 +75,7 @@ public class ScriptingFrame extends java.awt.Frame
         scriptingEngine.put("mp", em); // access to EventManager through mp Variable
         
         em.addChannelsChangedListener(this);
+        em.addSketchesChangedListener(this);
     }
     
     /**
@@ -161,7 +164,12 @@ public class ScriptingFrame extends java.awt.Frame
         rebuildSketchesChannelsList();
         revalidate();
     }
-    
+
+    @Override
+    public void sketchesChanged() {
+        rebuildSketchesChannelsList();
+        revalidate();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

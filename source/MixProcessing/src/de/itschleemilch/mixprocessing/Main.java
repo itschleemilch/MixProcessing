@@ -139,7 +139,7 @@ public class Main {
         // Renderer
         MixRenderer renderer = new MixRenderer(sketches);
         // Event System
-        EventManager em = new EventManager(renderer);
+        EventManager em = new EventManager(frame, renderer);
         
         frame.add(renderer, BorderLayout.CENTER);
         try {
