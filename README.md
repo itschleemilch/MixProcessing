@@ -14,13 +14,14 @@ This software is free software. The following licences are applied:
 
 ###Features
 * Loading of compiled Processing Sketches
+* Loading Processing Projects and compiling them
 * Rendering to editable output areas (channels)
 * Grouping channels
 * Scripting Interface to control the composition
-* (planned) Loading Processing Projects and Compiling them
-* (planned) User Interface for Controlling the sketches and the channels
-* (planned) Automation of Sketch's Variables
-* (planned) Open Sound Control Interaction
+* (planned) User interface for controlling the sketches and the channels
+* (planned) Automation of sketch's variables
+* (planned) Open Sound Control interaction
+* (planned) Integrated sketch editor
 
 The current version loades all sketches from a folder and renders them into editable output channels. The channels can be edited by double-clicking and clicking inside the output frame while beeing in the editor-mode. The skripting interface with its menus help to control the software. The graphical mixer isn't finished, yet.
 
