@@ -38,8 +38,8 @@ Currently there are no binary packages. There is a netbeans project file that wi
 
 ##Help and Contact
 * [MixProcessing Wiki](https://github.com/itschleemilch/MixProcessing/wiki)
-* E-Mail: <github@it-schleemilch.de>
-* Twitter: [Follow @mixprocessing](https://twitter.com/mixprocessing), [Tweet to @mixprocessing]("https://twitter.com/intent/tweet?screen_name=mixprocessing)
+* E-Mail: <mixprocessing@it-schleemilch.de>
+* Twitter: [Follow @mixprocessing](https://twitter.com/mixprocessing), [Tweet to @mixprocessing](https://twitter.com/intent/tweet?screen_name=mixprocessing)
 
 ##Contribution
 You are interested in contributing to MixProject? You are welcome! 
