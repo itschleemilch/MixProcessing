@@ -19,7 +19,8 @@
         <item insert="mp.sketchOutput( 'sketchName', 'channelName' );">Set Output Channel</item>
         <item insert="mp.sketchOutputNoRestart( 'sketchName', 'channelName' );">Set Output Channel (no restart)</item>
         <item insert="mp.sketchRemove( 'sketchName' );">Remove from Channel</item>
-        <item insert="mp.sketchRestart( 'sketchName' );">Sketch Restart</item>
+        <item insert="mp.sketchRestart( 'sketchName' );">Restart Sketch</item>
+        <item insert="mp.sketchAlpha( 'sketchName', 0.5 );">Set opacity</item>
     </menu>
     <menu text="Mouse-Key Events">
         <item insert="mp.enableKeyEvents( 'sketchName', true);">Enable Key Events</item>

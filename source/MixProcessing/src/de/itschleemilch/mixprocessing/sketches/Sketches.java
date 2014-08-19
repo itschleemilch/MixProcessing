@@ -198,9 +198,9 @@ public class Sketches {
                 g.setClip(clip);
                 s.doSetup(bi, g);
                 AffineTransform transform_backup = g.getTransform();
-                g.setTransform(new AffineTransform());
+                g.setTransform(new AffineTransform()); // reset transformation
                 g.setClip(clip);
-                g.setTransform(transform_backup);
+                g.setTransform(transform_backup); // bring transformation back
                 applet.draw();
                 s.storeInternalSettings();
                 s.updateLastRedrawTime();

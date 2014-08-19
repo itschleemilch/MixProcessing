@@ -199,6 +199,33 @@ public class EventManager {
      *************************************************************/
     
     /**
+     * Sets the alpha value (how opaque the sketch is drawn.)
+     * @param sketchName
+     * @param value new opacity (0: transparent, 1: opaque)
+     * @return 
+     */
+    public final boolean sketchAlpha(String sketchName, float value) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s != null) {
+            s.setAlpha(value);
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    /**
+     * 
+     * @param sketchName
+     * @param value
+     * @return 
+     * @see EventManager#sketchAlpha(java.lang.String, float) 
+     */
+    public final boolean sketchAlpha(String sketchName, double value) {
+        return sketchAlpha(sketchName, (float)value);
+    }
+    
+    /**
      * Updates the sketch<->output channel association.
      * Attention: Restarts Sketch!
      * @param sketchName
@@ -249,6 +276,10 @@ public class EventManager {
             return true;
         }
     }
+    
+    /*************************************************************
+     * User Events
+     *************************************************************/
     
     public final boolean enableKeyEvents(String sketchName, boolean value) {
         Sketch s = sketches.findSketch(sketchName);

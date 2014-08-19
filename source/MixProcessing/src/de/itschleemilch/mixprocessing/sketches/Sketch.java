@@ -23,6 +23,7 @@ package de.itschleemilch.mixprocessing.sketches;
 
 import de.itschleemilch.mixprocessing.MPGraphics2D;
 import de.itschleemilch.mixprocessing.RenderFrame;
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -41,6 +42,7 @@ public class Sketch {
     private PApplet instance = null;
     private boolean setupDone = false;
     private boolean receivingMouseEvents = true, receivingKeyEvents = true;
+    private float alpha = 1.0f; // 1.0: opace, 0.0: transparent
 
     /**
      * Creates a Processing sketch represenation.
@@ -49,6 +51,10 @@ public class Sketch {
     public Sketch(Class template) {
         this.template = template;
     }
+    
+    /*************************************************************
+     * Instantiation code
+     *************************************************************/
     
     /**
      * Returns the instance of the sketch, if created.
@@ -113,6 +119,10 @@ public class Sketch {
         }
     }
     
+    /*************************************************************
+     * Initialisation and graphics methods
+     *************************************************************/
+    
     /**
      * Sketch's setup method is called again
      */
@@ -150,6 +160,12 @@ public class Sketch {
         MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
         mpg2d.init();
         mpg2d.loadGraphicSettings();
+        // Set sketch's opacity
+        if(alpha < 1.0f) {
+            AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+            mpg2d.g2.setComposite(ac);
+            System.out.println("Set alpha: " + alpha);
+        }
     }
     
     /**
@@ -216,7 +232,51 @@ public class Sketch {
             }
         }
     }
+    
+    /*************************************************************
+     * Normal get/set methods
+     *************************************************************/
+    
+    /**
+     * Returns the alpha value of the Sketch
+     * @return 
+     * @see Sketch#setAlpha(float) 
+     */
+    public float getAlpha() {
+        return alpha;
+    }
+    
+    /**
+     * Sets the alpha value (how opaque the sketch is drawn.)
+     * 
+     * @param alpha 0: transparent. 1: opaque.
+     */
+    public void setAlpha(float alpha) {
+        if(alpha < 0)
+            this.alpha = 0.0f;
+        else if(alpha > 1.0f)
+            this.alpha = 1.0f;
+        else
+            this.alpha = alpha;
+    }
+    
+    /**
+     * Returns the Sketches Name (equals Processing sketch name)
+     * @return sketch name
+     */
+    public final String getName()
+    {
+        return template.getName();
+    }
+    
+    /*************************************************************
+     * EVENT HANDLING
+     *************************************************************/
 
+    /**
+     * Returns if this sketch should receive key events
+     * @return 
+     */
     public final boolean isReceivingKeyEvents() {
         return receivingKeyEvents;
     }
@@ -229,6 +289,10 @@ public class Sketch {
         this.receivingKeyEvents = enabled;
     }
 
+    /**
+     * Returns if this sketch should receive mouse events
+     * @return 
+     */
     public final boolean isReceivingMouseEvents() {
         return receivingMouseEvents;
     }
@@ -241,15 +305,9 @@ public class Sketch {
         this.receivingMouseEvents = enabled;
     }
     
-    
-    /**
-     * Returns the Sketches Name (equals Processing sketch name)
-     * @return sketch name
-     */
-    public final String getName()
-    {
-        return template.getName();
-    }
+    /*************************************************************
+     * Static Code: Global variables
+     *************************************************************/
     
     private static final Field FRAME_RATE_PERIOD_FIELD;
     private static final Field FRAME_RATE_LAST_NANOS_FIELD;
