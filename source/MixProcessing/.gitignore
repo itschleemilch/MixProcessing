@@ -2,3 +2,5 @@ SubProjects/
 jarSource/
 dist/
 build/
+preferences/
+webserver/

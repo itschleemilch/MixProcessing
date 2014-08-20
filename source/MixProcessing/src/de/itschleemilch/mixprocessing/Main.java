@@ -24,6 +24,7 @@ import de.itschleemilch.mixprocessing.load.JarManagement;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
+import de.itschleemilch.mixprocessing.webserver.Webserver;
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -140,7 +141,7 @@ public class Main {
         // Renderer
         MixRenderer renderer = new MixRenderer(sketches);
         // Event System
-        EventManager em = new EventManager(frame, renderer);
+        EventManager eventManager = new EventManager(frame, renderer);
         
         frame.add(renderer, BorderLayout.CENTER);
         try {
@@ -160,11 +161,14 @@ public class Main {
         }
         
         // Scripting API
-        ScriptRunner scriptRunner = new ScriptRunner(em);
-        ScriptingFrame scripting = new ScriptingFrame(em, scriptRunner);
+        ScriptRunner scriptRunner = new ScriptRunner(eventManager);
+        ScriptingFrame scripting = new ScriptingFrame(eventManager, scriptRunner);
         scripting.setIconImages( frame.getIconImages() );
         scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);
+        
+        // Webinterface
+        Webserver webserver = new Webserver(eventManager);
     }
     
 }
