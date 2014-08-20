@@ -30,6 +30,7 @@ import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Shape;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
@@ -274,6 +275,80 @@ public class EventManager {
         else {
             s.resetSetup();
             return true;
+        }
+    }
+    
+    
+    /**
+     * Set sketch's variables. Includes public, private and protected ones.
+     * 
+     * @param sketchName Sketch, which's variable should be modified.
+     * @param varName Name of variable to be modified.
+     * @param newValue New value for the modified variable.
+     * @return 
+     */
+    public final boolean sketchSetVar(String sketchName, String varName, Object newValue) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null)
+            return false;
+        else {
+            Object obj = s.getInstance();
+            Class type = null;
+            try {
+                Field field = obj.getClass().getDeclaredField(varName);
+                field.setAccessible(true);
+                type = field.getType();
+                
+                if(type.equals(String.class))
+                    field.set(obj, newValue.toString());
+                
+                else if(type.equals(boolean.class))
+                    field.setBoolean(obj, (boolean)newValue);
+                
+                else if(type.equals(byte.class))
+                    field.setByte(obj, (byte)newValue);
+                
+                else if(type.equals(char.class))
+                    field.setChar(obj, (char)newValue);
+                
+                else if(type.equals(double.class))
+                    field.setDouble(obj, (double)newValue);
+                
+                else if(type.equals(float.class))
+                    field.setFloat(obj, (float)newValue);
+                
+                else if(type.equals(int.class)) {
+                    if(newValue instanceof Double)
+                        field.setInt(obj, ((Double)newValue).intValue() );
+                    else
+                        field.setInt(obj, (int)newValue);
+                }
+                
+                else if(type.equals(long.class))
+                    field.setLong(obj, (long)newValue);
+                
+                else if(type.equals(short.class))
+                    field.setShort(obj, (short)newValue);
+                
+                else
+                    field.set(obj, newValue);
+                
+                return true;
+            } 
+            catch (NoSuchFieldException e1) {
+                System.err.printf("Variable does not exist: %s in sketch %s\n", 
+                        varName, sketchName);
+                return false;
+            } 
+            catch (IllegalAccessException e2) {
+                System.err.printf("Variable's type can not be set: %s in sketch %s, type: %s\n", 
+                        varName, sketchName, type.getName());
+                return false;
+            }
+            catch (Exception e3) {
+                e3.printStackTrace(System.err);
+                return false;
+            }
         }
     }
     
