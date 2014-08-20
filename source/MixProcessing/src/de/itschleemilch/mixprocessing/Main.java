@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.load.JarManagement;
+import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.BorderLayout;
@@ -159,7 +160,8 @@ public class Main {
         }
         
         // Scripting API
-        ScriptingFrame scripting = new ScriptingFrame(em);
+        ScriptRunner scriptRunner = new ScriptRunner(em);
+        ScriptingFrame scripting = new ScriptingFrame(em, scriptRunner);
         scripting.setIconImages( frame.getIconImages() );
         scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);

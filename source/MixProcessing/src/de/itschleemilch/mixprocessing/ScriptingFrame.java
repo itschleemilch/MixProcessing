@@ -23,9 +23,11 @@ import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
+import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Button;
 import java.awt.Desktop;
+import java.awt.HeadlessException;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -54,14 +56,16 @@ import org.xml.sax.SAXException;
 public class ScriptingFrame extends java.awt.Frame 
     implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
     private final EventManager eventManager;
-    private final ScriptEngine scriptingEngine;
-    
+    private final ScriptRunner scrRunner;
+
     /**
      * Creates a new Scripting Frame
      * @param em Access to event system
      */
-    public ScriptingFrame(EventManager em) {
-        this.eventManager = em;
+    public ScriptingFrame(EventManager eventManager, ScriptRunner scrRunner) {
+        this.eventManager = eventManager;
+        this.scrRunner = scrRunner;
+        
         initComponents();
         try {
             buildMenu();
@@ -69,13 +73,9 @@ public class ScriptingFrame extends java.awt.Frame
             e.printStackTrace(System.err);
         }
         rebuildSketchesChannelsList();
-        /* Init Scripting API */
-        ScriptEngineManager factory = new ScriptEngineManager();
-        scriptingEngine = factory.getEngineByName("JavaScript");
-        scriptingEngine.put("mp", em); // access to EventManager through mp Variable
         
-        em.addChannelsChangedListener(this);
-        em.addSketchesChangedListener(this);
+        eventManager.addChannelsChangedListener(this);
+        eventManager.addSketchesChangedListener(this);
     }
     
     /**
@@ -282,19 +282,7 @@ public class ScriptingFrame extends java.awt.Frame
 
     private void exec_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exec_btnActionPerformed
         final String script = scriptArea.getText();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                scriptErrorArea.setText("");
-                try {
-                    scriptingEngine.eval(script);
-                } catch (ScriptException e) {
-                    scriptErrorArea.append(e.getMessage());
-                    scriptErrorArea.append(System.getProperty("line.separator"));
-                    scriptErrorArea.append(System.getProperty("line.separator"));
-                }
-            }
-        }).start();
+        scrRunner.exec(script, scriptArea);
     }//GEN-LAST:event_exec_btnActionPerformed
 
     private void fileOpenSketchFolderItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenSketchFolderItemActionPerformed
