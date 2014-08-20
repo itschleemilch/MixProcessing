@@ -164,7 +164,6 @@ public class Sketch {
         if(alpha < 1.0f) {
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
             mpg2d.g2.setComposite(ac);
-            System.out.println("Set alpha: " + alpha);
         }
     }
     

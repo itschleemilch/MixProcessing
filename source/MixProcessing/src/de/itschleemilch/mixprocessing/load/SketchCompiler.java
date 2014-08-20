@@ -84,7 +84,7 @@ public class SketchCompiler {
             final String javaCode = preprocessSketch(className, pdeText.toString());
             final Class compiled = compileCode(className, javaCode);
             
-            if(compiled.getSuperclass().equals(PApplet2.class))
+            if(compiled != null && compiled.getSuperclass().equals(PApplet2.class))
                 return compiled;
             else
                 return null;
@@ -109,6 +109,8 @@ public class SketchCompiler {
         pdeSource = pdeSource.replaceAll( 
                 "(?s)" + Pattern.quote("/*") + ".+?" + Pattern.quote("*/"), 
                 ""); // multi line comments
+        // fix false float format (without ending f):
+        pdeSource = pdeSource.replaceAll("(\\d+\\.\\d+)([^fd])", "$1f$2");
         // collect all imports
         Pattern importPattern = Pattern.compile("import (.+?);");
         Matcher imports = importPattern.matcher(pdeSource);
@@ -119,10 +121,10 @@ public class SketchCompiler {
         pdeSource = pdeSource.replaceAll("import .+?;", "");
         // remove all visibility modifiers
         pdeSource = pdeSource.replaceAll("(public|private|protected)", "");
-        // set all methods public
-        Pattern publicReplacePattern = Pattern.compile("(\\w+?)\\s+(\\w+?)\\s*\\(", Pattern.MULTILINE);
+        // set all methods public of type void
+        Pattern publicReplacePattern = Pattern.compile("void\\s+(\\w+?)\\s*\\(", Pattern.MULTILINE);
         Matcher m1 = publicReplacePattern.matcher(pdeSource);
-        String publicDeclared = m1.replaceAll("public $1 $2\\(");
+        String publicDeclared = m1.replaceAll("public void $1\\(");
         
         /* Generate Java source code */
         source.append( "import processing.core.*;\n" );
@@ -166,7 +168,10 @@ public class SketchCompiler {
             return Class.forName( className, true, classLoader );
         } 
         catch (ClassNotFoundException e) {
-            e.printStackTrace(System.err);
+            //e.printStackTrace(System.err);
+            System.err.println("Error while compiling: " + className);
+            System.err.flush();
+            System.err.println(src);
             return null;
         }
         finally {
