@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.util.SinglePreference;
 import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.io.BufferedReader;
@@ -61,24 +62,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         });
         
         // Load path settings
-        File f = new File("classpath.txt");
-        if(f.exists()) {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(f)) );
-                pathField.setText( br.readLine() );
-            } 
-            catch (Exception e) {
-            }
-            finally {
-                if(br != null)
-                    try {
-                        br.close();
-                    } catch (Exception e) {
-                    }
-            }
-        }
+        pathField.setText( SinglePreference.getPreference("classpath", "") );
     }
     
     private void addLibraryToClasspath(URL url) {
@@ -253,23 +237,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
             public void run() {
                 scanDirectory( new File(pathField.getText()) );
                 // Store path setting
-                File f = new File("classpath.txt");
-                BufferedWriter br = null;
-                try {
-                    br = new BufferedWriter(
-                            new OutputStreamWriter(new FileOutputStream(f)) );
-                    br.write(pathField.getText());
-                    br.close();
-                } 
-                catch (Exception e) {
-                }
-                finally {
-                    if(br != null)
-                        try {
-                            br.close();
-                        } catch (Exception e) {
-                        }
-                }
+                SinglePreference.setPreference("classpath", pathField.getText());
                 // Close frame -> back to main method
                 setVisible(false);
             }
