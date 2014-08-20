@@ -4,7 +4,7 @@
 * Related documents: [Design-Tasks](Design-Tasks.md), [User Tasks](User-Tasks.md), [Datamodel MixProcessing](Datamodel_MixProcessing.png), [Renoise Audio Workstation](http://renoise.com), [Figure (App)](https://www.propellerheads.se/products/figure/), [OSC: Open Sound Control](http://de.wikipedia.org/wiki/Open_Sound_Control)
 
 ##Summary
-> Diskussion with possible volunteer SP: Features ans audience of MixProcessing, some concepts of Renoise DAW, open design tasks for MixProcessing, snippets around the project.
+> Diskussion with possible volunteer SP: Features and audience of MixProcessing, some concepts of Renoise DAW, open design tasks for MixProcessing, snippets around the project, collaberation.
 
 ##Notes of the discussion
 * Evaluation / user test through DJ.
@@ -28,3 +28,7 @@
  * Fast usable application.
  * Enables remote access via network: Controlling MixProcessing from other devices (such as tablets) or other locations (e.g. central for multi MixProcessing installations)
  * Enables MixProcessing Users to implement their own specific control UI for their application
+* Automation: May a good idea to realise them like in [CSS3 Transitions](http://www.w3schools.com/css/css3_transitions.asp)
+ * Properties: Delay, Duration, target value, timing function
+ * Extending Timing functions with oscillating functions (sin, square, triangle)
+ * Easier to include into UI!
