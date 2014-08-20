@@ -30,11 +30,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
+import javax.script.ScriptException;
 
 /**
  * Integrated Webserver. 
  * Experimental.
- * Applications: Remote UI (prototyping, may also for the fimal version), remote API
+ * Applications: Remote UI (prototyping, may also for the fimal version), remote API.
+ * 
+ * Remote API call: /api1?<1 script command>
+ * Example: http://localhost:8080/api1?mp.sketchOutput(%27P_2_1_2_04%27,%27channel0%27);
+ * 
+ * Storage webserver home files: see preference in file KEY_STORAGE. 
+ * Port ist set via KEY_PORT setting within preference-folder.
  *
  * @author Sebastian Schleemilch
  */
@@ -174,24 +182,55 @@ public class Webserver extends Thread {
         final String resource = (getParamBeginning > -1) 
                 ? query.substring(0, getParamBeginning) : query;
         
-        /* Send requested file */
-        final File requestedFile = new File(fileStorage, resource);
-        OutputStream output = null;
-        try {
-            output = client.getOutputStream();
-            if (requestedFile.exists() && requestedFile.isFile()) {
-                sendFile(output, requestedFile);
-            } 
-            else {
-                File defaultFile = new File(fileStorage, "index.html");
-                sendFile(output, defaultFile);
+        /* Remote Scripting API */
+        if(resource.equals("api1")) {
+            String param = "";
+            if(getParamBeginning > -1) {
+                String paramRaw = query.substring(getParamBeginning+1);
+                try {
+                    param = URLDecoder.decode(paramRaw, "UTF-8");
+                } catch (Exception e) {
+                    param = "decoding error.";
+                }
+            }            
+            OutputStream output = null;
+            try {
+                output = client.getOutputStream();
+                Object answer = null;
+                try {
+                    answer = scriptRunner.remoteApiCall(param);
+                } catch (ScriptException e) {
+                    e.printStackTrace(System.err);
+                }
+                sendString(output, (answer != null) ? ""+answer : "null");
+            } catch (IOException e) {
+            } finally {
+                if(output != null)
+                    try{output.close();} catch(IOException e) {}
+                try{client.close();}catch(IOException ee) {}
             }
-        } catch (IOException e) {
-        } finally {
-            if(output != null)
-                try{output.close();} catch(IOException e) {}
-            try{client.close();}catch(IOException ee) {}
         }
+        /* File Output */
+        else {
+            /* Send requested file */
+            final File requestedFile = new File(fileStorage, resource);
+            OutputStream output = null;
+            try {
+                output = client.getOutputStream();
+                if (requestedFile.exists() && requestedFile.isFile()) {
+                    sendFile(output, requestedFile);
+                } 
+                else {
+                    File defaultFile = new File(fileStorage, "index.html");
+                    sendFile(output, defaultFile);
+                }
+            } catch (IOException e) {
+            } finally {
+                if(output != null)
+                    try{output.close();} catch(IOException e) {}
+                try{client.close();}catch(IOException ee) {}
+            }
+        } // End file output
     } // process
 
 
@@ -199,12 +238,7 @@ public class Webserver extends Thread {
         final StringBuilder header = new StringBuilder();
         final String mime = MIME.findMime(sourceFile.getName());
         /* Output HTTP Header  */
-        header.append("HTTP/1.1 200 OK\r\n");
-        header.append("Server: ").append(SERVER_NAME).append("\r\n");
-        header.append("Content-Length: ").append( Long.toString(sourceFile.length()) ).append("\r\n");
-        header.append("Connection: close\r\n");
-        header.append("Content-Type: ").append(mime).append("\r\n");
-        header.append("\r\n");
+        generateHeader(header, sourceFile.length(), mime);
         out.write(header.toString().getBytes("UTF-8"));
         /* Redirect file to client */
         FileInputStream fis = null;
@@ -222,6 +256,28 @@ public class Webserver extends Thread {
         }
         /* Flush contents  */
         out.flush();
+    }
+    
+    private void sendString(OutputStream out, String data) throws IOException {
+        final StringBuilder header = new StringBuilder();
+        byte[] outputData = data.getBytes("UTF-8");
+        /* Output HTTP Header  */
+        generateHeader(header, outputData.length, "text/plain; charset=UTF-8");
+        out.write(header.toString().getBytes("UTF-8"));
+        /* Redirect data to client */
+        out.write(outputData);
+        /* Flush contents  */
+        out.flush();
+    }
+    
+    private void generateHeader(final StringBuilder header, long dataLength, String contentType) {
+        header.append("HTTP/1.1 200 OK\r\n");
+        header.append("Server: ").append(SERVER_NAME).append("\r\n");
+        header.append("Content-Length: ").append( Long.toString(dataLength) ).append("\r\n");
+        header.append("Connection: close\r\n");
+        header.append("Content-Type: ").append(contentType).append("\r\n");
+        header.append("Cache-Control: private, max-age=0, no-cache\r\n");
+        header.append("\r\n");
     }
 
     

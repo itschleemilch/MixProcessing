@@ -41,6 +41,7 @@ public class EventManager extends ScriptingApi {
 
     public EventManager(RenderFrame outputWindow, MixRenderer renderer) {
         super(outputWindow, renderer);        
+        this.events = this;
         setExternalReferences();
     }
     
@@ -79,35 +80,7 @@ public class EventManager extends ScriptingApi {
             return true;
         }
     }
-    
-    /*************************************************************
-     * Environment
-     *************************************************************/
-    
-    /**
-     * Loads, compiles and registers a Processing Sketch from source code.
-     * @param sketchPath Path to Sketch's project folder or PDE file.
-     * @return sucess of process.
-     */
-    public final boolean environmentLoad(String sketchPath) {
-        final File sketchFile = new File(sketchPath);
-        final File sketchFolder = (sketchFile.isDirectory()) ? sketchFile : sketchFile.getParentFile();
-        if(sketchFile.exists()) {
-            SketchCompiler compiler =  new SketchCompiler();
-            Class result = compiler.compileSketch(new File(sketchPath));
-            if(result != null) {
-                Sketch newSketch = new Sketch(result);
-                newSketch.createInstance(outputWindow, sketchFolder.getAbsolutePath());
-                getSketches().addSketch(newSketch);
-                fireSketchesChanged();
-                return true;
-            }
-            else
-                return false;
-        }
-        else
-            return false;
-    }
+
     
     /*************************************************************
      * Event System

@@ -41,7 +41,8 @@ public class ScriptRunner {
     }
     
     /**
-     * Executes a JavaScript and outputs thrown Exceptions to TextArea
+     * Executes a JavaScript and outputs thrown Exceptions to TextArea.
+     * Uses a seperate Thread.
      * @param jsScript source code
      * @param errorLog error output
      */
@@ -59,5 +60,25 @@ public class ScriptRunner {
                 }
             }
         }).start();
+    }
+    
+    /**
+     * Remote API Call: Returns the methods parameters
+     * @param jsScript
+     * @return value or null
+     * @throws ScriptException 
+     */
+    public Object remoteApiCall(String jsScript) throws ScriptException {
+        jsScript = jsScript.trim();
+        if(!jsScript.endsWith(";"))
+            jsScript += ";";
+        jsScript = "var rVal = " + jsScript;
+        scriptingEngine.eval(jsScript);
+        Object answer = null;
+        try {
+            answer = scriptingEngine.get("rVal");
+        } catch (Exception e) {
+        }
+        return answer;
     }
 }

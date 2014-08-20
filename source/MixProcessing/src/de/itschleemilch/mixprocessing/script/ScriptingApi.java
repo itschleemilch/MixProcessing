@@ -19,28 +19,55 @@
  */
 package de.itschleemilch.mixprocessing.script;
 
+import de.itschleemilch.mixprocessing.EventManager;
 import de.itschleemilch.mixprocessing.MixRenderer;
 import de.itschleemilch.mixprocessing.RenderFrame;
 import de.itschleemilch.mixprocessing.channels.ChannelManagement;
 import de.itschleemilch.mixprocessing.channels.GroupChannel;
 import de.itschleemilch.mixprocessing.channels.SingleChannel;
+import de.itschleemilch.mixprocessing.load.SketchCompiler;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Shape;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
+ * MixProcessing's scripting API.
+ * Important: All methods have to return a value. 
+ * Reason: Remote API returns a value to each call.
  *
  * @author Sebastian Schleemilch
  */
 public class ScriptingApi {
+    protected EventManager events;
     protected final RenderFrame outputWindow;
     protected final MixRenderer renderer;
     protected final ChannelManagement channels;
     protected final Sketches sketches;
     
+    /**
+     * Only called by EventManager
+     * @param outputWindow
+     * @param renderer 
+     */
     public ScriptingApi(RenderFrame outputWindow, MixRenderer renderer) {
+        this.events = null;
+        this.outputWindow = outputWindow;
+        this.renderer = renderer;
+        this.channels = renderer.getChannels();
+        this.sketches = renderer.getSketches();
+    }
+    
+    /**
+     * Public Constructor
+     * @param events
+     * @param outputWindow
+     * @param renderer 
+     */
+    public ScriptingApi(EventManager events, RenderFrame outputWindow, MixRenderer renderer) {
+        this.events = events;
         this.outputWindow = outputWindow;
         this.renderer = renderer;
         this.channels = renderer.getChannels();
@@ -128,17 +155,21 @@ public class ScriptingApi {
     
     /**
      * Enter channel editing mode
+     * @return true
      */
-    public final void channelEditing() {
+    public final boolean channelEditing() {
         channels.setPreviewChannelOutlines(true);
+        return true;
     }
     
     /**
      * Exit channel editing mode
+     * @return true
      */
-    public final void channelNormal()
+    public final boolean channelNormal()
     {
         channels.setPreviewChannelOutlines(false);
+        return true;
     }
     
     public final boolean channelRename(String oldName, String newName) {
@@ -183,10 +214,11 @@ public class ScriptingApi {
     /*************************************************************
      * Rendering Control
      *************************************************************/
-    public final void forceRefresh() {
+    public final boolean forceRefresh() {
         renderer.setForceRefresh();
         while(renderer.isForceRefreshWaiting())
             Thread.yield();
+        return true;
     }
     
     /*************************************************************
@@ -344,6 +376,35 @@ public class ScriptingApi {
                 return false;
             }
         }
+    }
+    
+    /*************************************************************
+     * Environment
+     *************************************************************/
+    
+    /**
+     * Loads, compiles and registers a Processing Sketch from source code.
+     * @param sketchPath Path to Sketch's project folder or PDE file.
+     * @return sucess of process.
+     */
+    public final boolean environmentLoad(String sketchPath) {
+        final File sketchFile = new File(sketchPath);
+        final File sketchFolder = (sketchFile.isDirectory()) ? sketchFile : sketchFile.getParentFile();
+        if(sketchFile.exists()) {
+            SketchCompiler compiler =  new SketchCompiler();
+            Class result = compiler.compileSketch(new File(sketchPath));
+            if(result != null) {
+                Sketch newSketch = new Sketch(result);
+                newSketch.createInstance(outputWindow, sketchFolder.getAbsolutePath());
+                getSketches().addSketch(newSketch);
+                events.fireSketchesChanged();
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
     }
     
 } // End of ScriptingApi
