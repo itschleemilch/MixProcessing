@@ -54,6 +54,8 @@ public class MixRenderer extends Canvas
     /* Self-Resetting Flag: If set-> causes full black background redraw */
     private boolean forceRefresh = false;
     
+    private int repaintSleep = 16; // used within repaint loop
+    
     public MixRenderer(Sketches sketches)
     {
         super();
@@ -66,6 +68,8 @@ public class MixRenderer extends Canvas
         
         channelEditor = new ChannelEditing(channels);
         addMouseListener(channelEditor);
+        
+        setMaxFrameRate(35f);
     }
     
     public final void init()
@@ -109,6 +113,26 @@ public class MixRenderer extends Canvas
     public void setForceRefresh() {
         this.forceRefresh = true;
     }
+    
+    /**
+     * Returns the set maximum frame rate.
+     * @return 
+     */
+    public float getMaxFrameRate() {
+        return 1000f / (float)repaintSleep;
+    }
+    
+    /**
+     * Sets the absolut maximum frame rate. 
+     * @param frameRate 
+     */
+    public void setMaxFrameRate(float frameRate) {
+        float sleep = 1000f / frameRate;
+        int newSleep = Math.round(sleep);
+        if(newSleep < 10) // set lower limit
+            newSleep = 10;
+        repaintSleep = newSleep;
+    }
 
     @Override
     public final void run() {
@@ -117,7 +141,7 @@ public class MixRenderer extends Canvas
             repaint();
             try {
                 // TODO: Avoid fixed rate sleep, replace with framerate controller.
-                Thread.sleep(15); // max. Framerate: 66 Hz
+                Thread.sleep(repaintSleep);
             } catch (InterruptedException e) {
             }
         } // while

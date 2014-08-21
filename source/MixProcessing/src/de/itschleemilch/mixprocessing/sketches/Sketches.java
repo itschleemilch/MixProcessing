@@ -138,18 +138,18 @@ public class Sketches {
     
     /**
      * 
-     * @param e
-     * @param state 1=pressed, 2=released, 3=typed
+     * @param event
+     * @param state 0=pressed, 1=released, 2=typed
      */
-    public final void keyEvent(KeyEvent e, int state)
+    public final void keyEvent(KeyEvent event, int state)
     {
         for (Sketch s : sketches) {
             PApplet applet = s.getInstance();
             if(applet != null)
             {
                 if(s.isReceivingKeyEvents()) {
-                    applet.key = e.getKeyChar();
-                    applet.keyCode = e.getKeyCode();
+                    applet.key = event.getKeyChar();
+                    applet.keyCode = event.getKeyCode();
                     if(state == 0)
                     {
                         applet.keyPressed = true;

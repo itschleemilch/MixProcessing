@@ -92,6 +92,7 @@ public class Sketch {
                     instance.sketchPath = sketchPath;
                     instance.width = f.getWidth();
                     instance.height = f.getHeight();
+                    instance.frameCount = 0;
                     setupDone = false;  
                 }
                 return instance;
@@ -152,6 +153,7 @@ public class Sketch {
             setupDone = true;
             try {
                 instance.setup();
+                instance.frameCount = 0;
             } catch (PApplet.RendererChangeException e) {
                 createMPGraphics(bi, g);
                 System.err.println("Please remove size() call in setup in sketch " + getName());
@@ -174,6 +176,7 @@ public class Sketch {
     {
         MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
         mpg2d.storeGraphicSettings();
+        instance.frameCount++;
     }
     
     private void createMPGraphics(BufferedImage bi, Graphics2D g)
@@ -268,6 +271,11 @@ public class Sketch {
         return template.getName();
     }
     
+    @Override
+    public String toString() {
+        return template.getName();
+    }
+    
     /*************************************************************
      * EVENT HANDLING
      *************************************************************/
@@ -303,7 +311,7 @@ public class Sketch {
     public final void setReceivingMouseEvents(boolean enabled) {
         this.receivingMouseEvents = enabled;
     }
-    
+
     /*************************************************************
      * Static Code: Global variables
      *************************************************************/

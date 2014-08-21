@@ -32,6 +32,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
 import javax.script.ScriptException;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 /**
  * Integrated Webserver. 
@@ -197,12 +199,25 @@ public class Webserver extends Thread {
             try {
                 output = client.getOutputStream();
                 Object answer = null;
+                boolean error = false;
                 try {
                     answer = scriptRunner.remoteApiCall(param);
                 } catch (ScriptException e) {
                     e.printStackTrace(System.err);
+                    error = true;
                 }
-                sendString(output, (answer != null) ? ""+answer : "null");
+                // OLD: sendString(output, (answer != null) ? ""+answer : "null");
+                
+                /* JSON Response, JSON API via Processing Code Library */
+                JSONArray returnArray = new JSONArray();
+                fillJsonArray(returnArray, answer);
+                
+                JSONObject jsonData = new JSONObject();
+                jsonData.setBoolean("error", error);
+                jsonData.setJSONArray("return", returnArray);
+                
+                String jsonOutput = jsonData.format(-1); // -1: no indentation, no newlines.
+                sendString(output, jsonOutput);
             } catch (IOException e) {
             } finally {
                 if(output != null)
@@ -278,6 +293,61 @@ public class Webserver extends Thread {
         header.append("Content-Type: ").append(contentType).append("\r\n");
         header.append("Cache-Control: private, max-age=0, no-cache\r\n");
         header.append("\r\n");
+    }
+    
+    private void fillJsonArray(JSONArray array, Object data) {
+        if(data == null)
+            array.append("null");
+
+        else if(data instanceof Boolean)
+            array.append( (Boolean) data );
+
+        else if(data instanceof Double)
+            array.append( (Double) data );
+
+        else if(data instanceof Float)
+            array.append( (Float) data );
+
+        else if(data instanceof Integer)
+            array.append( (Integer) data );
+
+        else if(data instanceof Long)
+            array.append( (Long) data );
+        
+        else if(data instanceof Object[]) { 
+            Object[] subarray = (Object[]) data;
+            for(Object subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
+        
+        else if(data instanceof Object)
+            array.append(data.toString());
+        
+        else if(data instanceof double[]) { 
+            double[] subarray = (double[]) data;
+            for(double subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
+        else if(data instanceof float[]) { 
+            float[] subarray = (float[]) data;
+            for(float subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
+        else if(data instanceof int[]) { 
+            int[] subarray = (int[]) data;
+            for(int subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
+        else if(data instanceof boolean[]) { 
+            boolean[] subarray = (boolean[]) data;
+            for(boolean subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
+        else if(data instanceof long[]) { 
+            long[] subarray = (long[]) data;
+            for(long subdata : subarray)
+                fillJsonArray(array, subdata); // add all elements
+        }
     }
 
     

@@ -27,7 +27,6 @@ import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Button;
 import java.awt.Desktop;
-import java.awt.HeadlessException;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -35,9 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.Box;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,7 +56,8 @@ public class ScriptingFrame extends java.awt.Frame
 
     /**
      * Creates a new Scripting Frame
-     * @param em Access to event system
+     * @param eventManager Access to event system
+     * @param scrRunner 
      */
     public ScriptingFrame(EventManager eventManager, ScriptRunner scrRunner) {
         this.eventManager = eventManager;
@@ -282,7 +279,8 @@ public class ScriptingFrame extends java.awt.Frame
 
     private void exec_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exec_btnActionPerformed
         final String script = scriptArea.getText();
-        scrRunner.exec(script, scriptArea);
+        scriptErrorArea.setText(""); // clear output.
+        scrRunner.exec(script, scriptErrorArea);
     }//GEN-LAST:event_exec_btnActionPerformed
 
     private void fileOpenSketchFolderItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenSketchFolderItemActionPerformed

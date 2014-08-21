@@ -29,9 +29,11 @@ import de.itschleemilch.mixprocessing.load.SketchCompiler;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import processing.core.PApplet;
 
 /**
  * MixProcessing's scripting API.
@@ -214,10 +216,27 @@ public class ScriptingApi {
     /*************************************************************
      * Rendering Control
      *************************************************************/
-    public final boolean forceRefresh() {
+    public final boolean rendererForceRefresh() {
         renderer.setForceRefresh();
         while(renderer.isForceRefreshWaiting())
             Thread.yield();
+        return true;
+    }
+    
+    /**
+     * Returns the set maximum frame rate of the renderer
+     * @return 
+     */
+    public float rendererGetFrameRate() {
+        return renderer.getMaxFrameRate();
+    }
+    
+    /**
+     * Sets the absolut maximum frame rate of the renderer.
+     * @param frameRate 
+     */
+    public boolean setFrameRate(float frameRate) {
+        renderer.setMaxFrameRate(frameRate);
         return true;
     }
     
@@ -378,6 +397,134 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Get the value of a sketch's variable 
+     * @param sketchName
+     * @param varName
+     * @return 
+     */
+    public final Object sketchGetVar(String sketchName, String varName) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null)
+            return null;
+        else {
+            Object obj = s.getInstance();
+            try {
+                Field field = obj.getClass().getDeclaredField(varName);
+                field.setAccessible(true);
+                Class type = field.getType();
+                
+                if(type.equals(boolean.class))
+                    return field.getBoolean(obj);
+                
+                else if(type.equals(byte.class))
+                    return field.getByte(obj);
+                
+                else if(type.equals(char.class))
+                    return field.getChar(obj);
+                
+                else if(type.equals(double.class))
+                    return field.getDouble(obj);
+                
+                else if(type.equals(float.class))
+                    return field.getFloat(obj);
+                
+                else if(type.equals(int.class))
+                    return field.getInt(obj);
+                
+                else if(type.equals(long.class))
+                    return field.getLong(obj);
+                
+                else if(type.equals(short.class))
+                    return field.getShort(obj);
+                
+                else
+                    return field.get(obj);
+            } 
+            catch (NoSuchFieldException e1) {
+                System.err.printf("Variable does not exist: %s in sketch %s\n", 
+                        varName, sketchName);
+                return null;
+            } 
+            catch (Exception e3) {
+                e3.printStackTrace(System.err);
+                return null;
+            }
+        }
+    }
+    
+    /**
+     * Lists all sketch-specific variables with their names.
+     * Does not list any PApplet variable names.
+     * @param sketchName
+     * @return 
+     */
+    public String[] sketchGetVars(String sketchName) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null)
+            return null;
+        else {
+            ArrayList<String> vars = new ArrayList<>();
+            Field[] fields = s.getInstance().getClass().getDeclaredFields();
+            for(Field field : fields) {
+                vars.add(field.getName());
+            }
+            return vars.toArray(new String[0]);
+        }
+    }
+    
+    /**
+     * Returns a sketch's frame rate value or -1f (not found, not inited)
+     * @param sketchName
+     * @return 
+     */
+    public float sketchGetFrameRate(String sketchName) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null)
+            return -1f;
+        else {
+            return s.getInstance().frameRate;
+        }
+    } 
+    
+    /**
+     * Returns a sketch's frame count value or -1f (not found, not inited)
+     * @param sketchName
+     * @return 
+     */
+    public int sketchGetFrameCount(String sketchName) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null)
+            return -1;
+        else {
+            return s.getInstance().frameCount;
+        }
+    }
+    
+    /*************************************************************
+     * User Events
+     *************************************************************/
+    
+    public final boolean sketchKeyEventsOn(String sketchName, boolean value) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null)
+            return false;
+        else {
+            s.setReceivingKeyEvents(value);
+            return true;
+        }
+    }
+    
+    public final boolean sketchMouseEventsOn(String sketchName, boolean value) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null)
+            return false;
+        else {
+            s.setReceivingMouseEvents(value);
+            return true;
+        }
+    }
+    
     /*************************************************************
      * Environment
      *************************************************************/
@@ -405,6 +552,104 @@ public class ScriptingApi {
         }
         else
             return false;
+    }
+    
+    /**
+     * Returns an array of all sketches
+     * @return Sketch[] Array
+     */
+    public final Sketch[] environmentListSketches() {
+        return getSketches().getAllSketches();
+    }
+    
+    /**
+     * Returns an array of all channels
+     * @return 
+     */
+    public final SingleChannel[] environmentListChannels() {
+        return getChannels().getAllChannels();
+    }
+    
+    /**
+     * Presses the virtual keyboard for all receiving sketches.
+     * @param key pressed key as char
+     * @return 
+     */
+    public final boolean environmentKeyPressed(char key) {
+        getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 0);
+        return true;
+    }
+    
+    /**
+     * Releases the virtual keyboard for all receiving sketches.
+     * @param key released key as char
+     * @return 
+     */
+    public final boolean environmentKeyReleased(char key) {
+        getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 1);
+        return true;
+    }
+    
+    /**
+     * Types the virtual keyboard for all receiving sketches.
+     * @param key typed key as char
+     * @return 
+     */
+    public final boolean environmentKeyTyped(char key) {
+        getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 2);
+        return true;
+    }
+    
+    /**
+     * Moves the virtual mouse to the given position for all receiving sketches.
+     * @param x
+     * @param y
+     * @return 
+     */
+    public final boolean environmentSetMouse(int x, int y) {
+        getSketches().mouseMoved(x, y, false);
+        return true;
+    }
+    
+    /**
+     * Calls the sketches' mouseClicked() method for all receiving sketches.
+     * @return 
+     */
+    public final boolean environmentDoMouseClick() {
+        getSketches().mouseEvent(false, false, true);
+        return true;
+    }
+    
+    /*************************************************************
+     * Console Output
+     *************************************************************/
+    
+    /**
+     * Log Text to the standard log output.
+     * @param format
+     * @param args optional parameters
+     * @return 
+     */
+    public boolean println(String text) {
+        System.out.println(text);
+        return true;
+    }
+    
+    /*************************************************************
+     * Time delay
+     *************************************************************/
+    
+    /**
+     * Freeze the current thread for the given milliseconds.
+     * @param ms
+     * @return 
+     */
+    public boolean sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {
+        }
+        return true;
     }
     
 } // End of ScriptingApi

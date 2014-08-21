@@ -57,30 +57,6 @@ public class EventManager extends ScriptingApi {
         }).start();
     }
     
-    /*************************************************************
-     * User Events
-     *************************************************************/
-    
-    public final boolean enableKeyEvents(String sketchName, boolean value) {
-        Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
-            return false;
-        else {
-            s.setReceivingKeyEvents(value);
-            return true;
-        }
-    }
-    
-    public final boolean enableMouseEvents(String sketchName, boolean value) {
-        Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
-            return false;
-        else {
-            s.setReceivingMouseEvents(value);
-            return true;
-        }
-    }
-
     
     /*************************************************************
      * Event System

@@ -37,7 +37,7 @@ public class ScriptRunner {
         /* Init Scripting API */
         ScriptEngineManager factory = new ScriptEngineManager();
         scriptingEngine = factory.getEngineByName("JavaScript");
-        scriptingEngine.put("mp", eventManager); // access to EventManager through mp Variable
+        scriptingEngine.put("Api", eventManager); // access to EventManager through mp Variable
     }
     
     /**
@@ -54,10 +54,12 @@ public class ScriptRunner {
                 try {
                     scriptingEngine.eval(jsScript);
                 } catch (ScriptException e) {
+                    errorLog.append("Error: ");
                     errorLog.append(e.getMessage());
                     errorLog.append(System.getProperty("line.separator"));
                     errorLog.append(System.getProperty("line.separator"));
                 }
+                errorLog.append("Executed.");
             }
         }).start();
     }

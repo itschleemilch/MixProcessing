@@ -60,6 +60,11 @@ public class SingleChannel {
         this.channelName = channelName;
     }
 
+    @Override
+    public String toString() {
+        return channelName;
+    }
+
     /**
      * Returns the Shape object, that represents the output area. 
      * @return Shape or null

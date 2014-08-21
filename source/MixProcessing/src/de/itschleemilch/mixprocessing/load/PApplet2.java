@@ -30,6 +30,7 @@ import processing.core.PApplet;
 public class PApplet2 extends PApplet {
 
     public PApplet2() {
+        frameCount = 0;
     }
 
     /**
