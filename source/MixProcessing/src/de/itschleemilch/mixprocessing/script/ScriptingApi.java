@@ -115,12 +115,14 @@ public class ScriptingApi {
      * @return 
      */
     public final boolean createGroupChannel(String newName, String ... sourceChannels) {
+        /* Collect shapes */
         ArrayList<Shape> sourceShapes = new ArrayList<>();
         for (String sourceChannel : sourceChannels) {
             SingleChannel channel = channels.findChannel(sourceChannel);
             if(channel.getShape() != null)
                 sourceShapes.add( channel.getShape() );
         }
+        /* Make group */
         if(sourceShapes.isEmpty())
             return false;
         else {
@@ -129,6 +131,7 @@ public class ScriptingApi {
                 group.addGroupElement(sourceShape);
             }
             group.setChannelName(newName);
+            events.fireChannelsChanged();
             return true;
         }
     }
@@ -181,6 +184,7 @@ public class ScriptingApi {
         else
         {
             c.setChannelName(newName);
+            events.fireChannelsChanged();
             return true;
         }
     }
@@ -209,6 +213,7 @@ public class ScriptingApi {
         else
         {
             channels.removeChannel(c);
+            events.fireChannelsChanged();
             return true;
         }
     }
@@ -308,6 +313,7 @@ public class ScriptingApi {
             return false;
         else {
             channels.unsetSketchChannel(s);
+            events.fireSketchesChanged();
             return true;
         }
     }

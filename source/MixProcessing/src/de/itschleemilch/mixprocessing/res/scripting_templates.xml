@@ -1,52 +1,90 @@
 <?xml version="1.0"?>
 <scriptingHelp>
-    <menu text="Channel Control">
+
+    <menu text="Channel Manipulation">
         <item insert="Api.channelOn( 'channelName' );">Channel On</item>
         <item insert="Api.channelOff( 'channelName' );">Channel Off</item>
         <item insert="Api.channelBlacking( 'channelName' );">Fill Channel Black</item>
-    </menu>
-    <menu text="Channel Editing">
-        <item insert="Api.channelEditing();">Edit Channels</item>
-        <item insert="Api.channelNormal();">Exit Editing</item>
-        <item insert="Api.createGroupChannel( 'newChannelName', 'sourceChannel1', 'source2'); /* Add more channels if necessary */">Create Grouped Channel</item>
+        
+        <item separator="true"/>
+        <item label="Set current view mode:"/>     
+        <item insert="Api.channelEditing();">Switch to Edit Mode</item>
+        <item insert="Api.channelNormal();">Switch to Normal Mode</item>
+        
+        <item separator="true"/>
+        
+        <item label="Management:"/>     
         <item insert="Api.channelRename( 'oldChannelName', 'newNhannelName' );">Rename Channel</item>
+        <item insert="Api.createGroupChannel( 'newChannelName', 'sourceChannel1', 'source2'); /* Add more channels if necessary */">Create Grouped Channel</item>
         <item insert="Api.channelRemove( 'channelName' );">Remove Channel</item>
     </menu>
-    <menu text="Rendering Control">
-        <item insert="Api.rendererGetFrameRate();">Get frame rate</item>
-        <item insert="Api.setFrameRate( 60.0 );">Set frame rate</item>
+    
+    <menu text="Rendering Settings">
+        <item insert="Api.rendererGetFrameRate();">Get Frame Rate</item>
+        <item insert="Api.setFrameRate( 60.0 );">Set Frame Rate</item>
+        
+        <item separator="true"/>
+        
         <item insert="Api.rendererForceRefresh();">Repaint Background</item>
     </menu>
-    <menu text="Sketch Control">
-        <item insert="Api.sketchOutput( 'sketchName', 'channelName' );">Set Output Channel</item>
-        <item insert="Api.sketchOutputNoRestart( 'sketchName', 'channelName' );">Set Output Channel (no restart)</item>
-        <item insert="Api.sketchRemove( 'sketchName' );">Remove from Channel</item>
+    
+    <menu text="Sketch Manipulation">  
+        <item insert="Api.sketchOutputNoRestart( 'sketchName', 'channelName' );">Set Output Channel</item>
+        <item insert="Api.sketchOutput( 'sketchName', 'channelName' );">Set Output Channel (+restart)</item>        
+        <item insert="Api.sketchRemove( 'sketchName' );">Remove from Current Channel</item>
+        
+        <item separator="true"/>
+        
         <item insert="Api.sketchAlpha( 'sketchName', 0.5 );">Set opacity</item>
+        
+        <item separator="true"/>
+        
+        <item insert="Api.sketchGetVar( 'sketchName', 'varName');">Get Variable's Value</item>
+        <item insert="Api.sketchSetVar( 'sketchName', 'varName', 5);">Set Sketch's Variable</item>
+        <item insert="Api.sketchGetVars( 'sketchName' );">Get all Variable Names</item>
+        
+        <item separator="true"/>
+        
+        <item label="Statistics:"/>     
+        <item insert="Api.sketchGetFrameCount( 'sketchName' );">Get Sketch's Frame Count</item>
+        <item insert="Api.sketchGetFrameRate( 'sketchName' );">Get Sketch's Frame Rate</item>
         <item insert="Api.sketchRestart( 'sketchName' );">Restart Sketch</item>
-        <item insert="Api.sketchGetVar( 'sketchName', 'varName');">Get variable</item>
-        <item insert="Api.sketchSetVar( 'sketchName', 'varName', 5);">Set variable</item>
-        <item insert="Api.sketchGetVars( 'sketchName' );">Get all variable names</item>
-        <item insert="Api.sketchGetFrameCount( 'sketchName' );">Get sketch's frame count</item>
-        <item insert="Api.sketchGetFrameRate( 'sketchName' );">Get sketch's frame rate</item>
     </menu>
+    
     <menu text="Mouse-Key Events">
+        <item label="Exclude single sketches from events:"/>     
         <item insert="Api.sketchKeyEventsOn( 'sketchName', true);">Enable Key Events</item>
         <item insert="Api.sketchKeyEventsOn( 'sketchName', false);">Disable Key Events</item>
         <item insert="Api.sketchMouseEventsOn( 'sketchName', true);">Enable Mouse Events</item>
         <item insert="Api.sketchMouseEventsOn( 'sketchName', false);">Disable Mouse Events</item>
         
-        <item insert="Api.environmentSetMouse( 10, 10 );">Move mouse</item>
-        <item insert="Api.environmentDoMouseClick();">Click mouse</item>
+        <item separator="true"/>
         
-        <item insert="Api.environmentKeyPressed( '1' );">Press key</item>
-        <item insert="Api.environmentKeyReleased( '1' );">Release key</item>
-        <item insert="Api.environmentKeyTyped( '1' );">Fire key typed</item>
+        <item label="Fire virtual mouse events:"/>     
+        <item insert="Api.environmentSetMouse( 10, 10 );">Move Mouse</item>
+        <item insert="Api.environmentDoMouseClick();">Click Mouse</item>
+        
+        <item separator="true"/>
+        
+        <item label="Fire virtual key events:"/>        
+        <item insert="Api.environmentKeyPressed( '1' );">Press Key</item>
+        <item insert="Api.environmentKeyReleased( '1' );">Release Key</item>
+        <item insert="Api.environmentKeyTyped( '1' );">Key Typed</item>
     </menu>
+    
     <menu text="Environment">
+        <item label="Load from source code:"/>     
         <item insert="Api.environmentLoad( 'c:/Sketch1/' );">Load Processing Sketch</item>
+        
+        <item separator="true"/>
+        
         <item insert="Api.environmentListSketches();">Get sketch list</item>
         <item insert="Api.environmentListChannels();">Get channel list</item>
+        
+        <item separator="true"/>
+        
         <item insert="Api.println( 'OutputText' );">Log Text</item>
         <item insert="Api.sleep( 1000 );">Time delay</item>
     </menu>
+    
 </scriptingHelp>

@@ -27,6 +27,7 @@ import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.Button;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -101,15 +102,46 @@ public class ScriptingFrame extends java.awt.Frame
                     Node n = items.item(j);
                     if(n instanceof Element) {
                         String itemText = n.getTextContent();
-                        String itemInsertValue = ((Element)n).getAttribute("insert");
-                        MenuItem awtItem = new MenuItem(itemText);
-                        awtItem.setActionCommand("I:"+itemInsertValue);
-                        awtItem.addActionListener(this);
-                        awtMenu.add(awtItem);
+                        if( ((Element)n).hasAttribute("separator") ) {
+                            awtMenu.addSeparator();
+                        }
+                        else if( ((Element)n).hasAttribute("label") ) {
+                            String label = ((Element)n).getAttribute("label");
+                            MenuItem awtItem = new MenuItem(label);
+                            awtItem.setEnabled(false);
+                            awtMenu.add(awtItem);
+                            
+                        }
+                        else {
+                            String itemInsertValue = ((Element)n).getAttribute("insert");
+                            MenuItem awtItem = new MenuItem(itemText);
+                            awtItem.setActionCommand("I:"+itemInsertValue);
+                            awtItem.addActionListener(this);
+                            awtMenu.add(awtItem);
+                        }
                     }
                 }
                 insertMenu.add(awtMenu);
             }
+        }
+    }
+    
+    private void rebuildSketchList() {
+        sketchChoice.removeAll();
+        Sketch[] sketches = eventManager.getSketches().getAllSketches();
+        for (Sketch sketch : sketches) {
+            sketchChoice.add(sketch.getName());
+        }
+    }
+    
+    private void rebuildChannelList() {
+        channelChoice.removeAll();
+        SingleChannel[] channels = eventManager.getChannels().getAllChannels();
+        for (SingleChannel channel : channels) {
+            String text = channel.getChannelName();
+            if(channel instanceof GroupChannel)
+                text += " (G)";
+            channelChoice.add(text);
         }
     }
     
@@ -118,27 +150,18 @@ public class ScriptingFrame extends java.awt.Frame
      */
     private void rebuildSketchesChannelsList()
     {
-        sketchChannelListPanel.removeAll();
-        sketchChannelListPanel.add(new Label("Sketches:"));
-        Sketch[] sketches = eventManager.getSketches().getAllSketches();
-        for (Sketch sketch : sketches) {
-            Button b = new Button(sketch.getName());
-            b.setActionCommand("I:'" + sketch.getName()+"'");
-            b.addActionListener(this);
-            sketchChannelListPanel.add(b);
+        rebuildSketchList();
+        rebuildChannelList();
+    }
+    
+    private void insertText(String text) {
+        if(scriptArea.getSelectionStart() == scriptArea.getSelectionEnd())
+            scriptArea.insert(text, scriptArea.getCaretPosition());
+        else { // Replace selected Text
+            scriptArea.replaceRange(text, 
+                    scriptArea.getSelectionStart(), 
+                    scriptArea.getSelectionEnd());
         }
-        sketchChannelListPanel.add(new Label("Channels:"));
-        SingleChannel[] channels = eventManager.getChannels().getAllChannels();
-        for (SingleChannel channel : channels) {
-            String text = channel.getChannelName();
-            if(channel instanceof GroupChannel)
-                text += " (G)";
-            Button b = new Button(text);
-            b.setActionCommand("I:'" + channel.getChannelName()+"'");
-            b.addActionListener(this);
-            sketchChannelListPanel.add(b);
-        }
-        sketchChannelListPanel.add(Box.createGlue());
     }
 
     @Override
@@ -146,25 +169,19 @@ public class ScriptingFrame extends java.awt.Frame
         if(e.getActionCommand().startsWith("I:"))
         {
             String insertText = e.getActionCommand().substring(2);
-            if(scriptArea.getSelectionStart() == scriptArea.getSelectionEnd())
-                scriptArea.insert(insertText, scriptArea.getCaretPosition());
-            else { // Replace selected Text
-                scriptArea.replaceRange(insertText, 
-                        scriptArea.getSelectionStart(), 
-                        scriptArea.getSelectionEnd());
-            }
+            insertText(insertText);
         }
     }
 
     @Override
     public void channelsChanged() {
-        rebuildSketchesChannelsList();
+        rebuildChannelList();
         revalidate();
     }
 
     @Override
     public void sketchesChanged() {
-        rebuildSketchesChannelsList();
+        rebuildSketchList();
         revalidate();
     }
 
@@ -183,8 +200,14 @@ public class ScriptingFrame extends java.awt.Frame
         scriptErrorArea = new java.awt.TextArea();
         jPanel1 = new javax.swing.JPanel();
         label1 = new java.awt.Label();
-        scrollPane1 = new java.awt.ScrollPane();
-        sketchChannelListPanel = new java.awt.Panel();
+        label2 = new java.awt.Label();
+        sketchChoice = new java.awt.Choice();
+        sketchInsertBtn = new java.awt.Button();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
+        label3 = new java.awt.Label();
+        channelChoice = new java.awt.Choice();
+        channelInsertBtn = new java.awt.Button();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         menuBar1 = new java.awt.MenuBar();
         menu1 = new java.awt.Menu();
         fileNewItem = new java.awt.MenuItem();
@@ -220,16 +243,37 @@ public class ScriptingFrame extends java.awt.Frame
 
         add(centerPanel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
 
         label1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         label1.setText("Insert ressource names:");
-        jPanel1.add(label1, java.awt.BorderLayout.NORTH);
+        jPanel1.add(label1);
 
-        sketchChannelListPanel.setLayout(new javax.swing.BoxLayout(sketchChannelListPanel, javax.swing.BoxLayout.Y_AXIS));
-        scrollPane1.add(sketchChannelListPanel);
+        label2.setText("Sketches:");
+        jPanel1.add(label2);
+        jPanel1.add(sketchChoice);
 
-        jPanel1.add(scrollPane1, java.awt.BorderLayout.CENTER);
+        sketchInsertBtn.setLabel("Insert");
+        sketchInsertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sketchInsertBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(sketchInsertBtn);
+        jPanel1.add(filler2);
+
+        label3.setText("Channels:");
+        jPanel1.add(label3);
+        jPanel1.add(channelChoice);
+
+        channelInsertBtn.setLabel("Insert");
+        channelInsertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                channelInsertBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(channelInsertBtn);
+        jPanel1.add(filler3);
 
         add(jPanel1, java.awt.BorderLayout.EAST);
 
@@ -296,23 +340,37 @@ public class ScriptingFrame extends java.awt.Frame
         scriptArea.setText("");
     }//GEN-LAST:event_fileNewItemActionPerformed
 
+    private void sketchInsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sketchInsertBtnActionPerformed
+        insertText("'" + sketchChoice.getSelectedItem() + "'");
+    }//GEN-LAST:event_sketchInsertBtnActionPerformed
+
+    private void channelInsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelInsertBtnActionPerformed
+        insertText("'" + channelChoice.getSelectedItem() + "'");
+    }//GEN-LAST:event_channelInsertBtnActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
+    private java.awt.Choice channelChoice;
+    private java.awt.Button channelInsertBtn;
     private java.awt.Button exec_btn;
     private java.awt.MenuItem fileNewItem;
     private java.awt.MenuItem fileOpenItem;
     private java.awt.MenuItem fileOpenSketchFolderItem;
     private java.awt.MenuItem fileSaveAsItem;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
     private java.awt.Menu insertMenu;
     private javax.swing.JPanel jPanel1;
     private java.awt.Label label1;
+    private java.awt.Label label2;
+    private java.awt.Label label3;
     private java.awt.Menu menu1;
     private java.awt.MenuBar menuBar1;
     private java.awt.Panel panel1;
     private java.awt.TextArea scriptArea;
     private java.awt.TextArea scriptErrorArea;
-    private java.awt.ScrollPane scrollPane1;
-    private java.awt.Panel sketchChannelListPanel;
+    private java.awt.Choice sketchChoice;
+    private java.awt.Button sketchInsertBtn;
     // End of variables declaration//GEN-END:variables
 }
