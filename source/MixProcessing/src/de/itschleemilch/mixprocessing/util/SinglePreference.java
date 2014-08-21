@@ -57,7 +57,7 @@ public class SinglePreference {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader( new InputStreamReader( 
-                        new FileInputStream(sourceFile) ) );
+                        new FileInputStream(sourceFile), "UTF-8" ) );
                 return reader.readLine();
             } 
             catch (Exception e) {
@@ -86,8 +86,9 @@ public class SinglePreference {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter( new OutputStreamWriter(
-                    new FileOutputStream(targetFile) ) );
+                    new FileOutputStream(targetFile), "UTF-8" ) );
             writer.write(value);
+            writer.flush();
             writer.close();
         } 
         catch (Exception e) {

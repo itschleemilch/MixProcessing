@@ -41,7 +41,7 @@ import processing.data.JSONObject;
  * Applications: Remote UI (prototyping, may also for the fimal version), remote API.
  * 
  * Remote API call: /api1?<1 script command>
- * Example: http://localhost:8080/api1?mp.sketchOutput(%27P_2_1_2_04%27,%27channel0%27);
+ * Example: http://localhost:8080/api/api1?mp.sketchOutput(%27P_2_1_2_04%27,%27channel0%27);
  * 
  * Storage webserver home files: see preference in file KEY_STORAGE. 
  * Port ist set via KEY_PORT setting within preference-folder.
@@ -185,7 +185,7 @@ public class Webserver extends Thread {
                 ? query.substring(0, getParamBeginning) : query;
         
         /* Remote Scripting API */
-        if(resource.equals("api1")) {
+        if(resource.startsWith("api/api1")) {
             String param = "";
             if(getParamBeginning > -1) {
                 String paramRaw = query.substring(getParamBeginning+1);
@@ -194,7 +194,15 @@ public class Webserver extends Thread {
                 } catch (Exception e) {
                     param = "decoding error.";
                 }
-            }            
+            }
+            
+            /* Return callback function that is parametriced als 3rd level folder */
+            String jsCallBackFunction = "";
+            if(resource.length() > "api/api1/".length()) {
+                int ending = (getParamBeginning>-1)?getParamBeginning:resource.length();
+                jsCallBackFunction = resource.substring("api/api1/".length(), ending);
+            }
+            
             OutputStream output = null;
             try {
                 output = client.getOutputStream();
@@ -215,6 +223,7 @@ public class Webserver extends Thread {
                 JSONObject jsonData = new JSONObject();
                 jsonData.setBoolean("error", error);
                 jsonData.setJSONArray("return", returnArray);
+                jsonData.setString("callback", jsCallBackFunction);
                 
                 String jsonOutput = jsonData.format(-1); // -1: no indentation, no newlines.
                 sendString(output, jsonOutput);
