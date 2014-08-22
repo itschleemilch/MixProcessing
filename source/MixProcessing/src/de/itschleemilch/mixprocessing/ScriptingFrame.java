@@ -25,6 +25,7 @@ import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
+import de.itschleemilch.mixprocessing.util.InternetShortcuts;
 import java.awt.Button;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -209,12 +210,16 @@ public class ScriptingFrame extends java.awt.Frame
         channelInsertBtn = new java.awt.Button();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         menuBar1 = new java.awt.MenuBar();
-        menu1 = new java.awt.Menu();
+        fileManu = new java.awt.Menu();
         fileNewItem = new java.awt.MenuItem();
         fileOpenItem = new java.awt.MenuItem();
         fileSaveAsItem = new java.awt.MenuItem();
         fileOpenSketchFolderItem = new java.awt.MenuItem();
         insertMenu = new java.awt.Menu();
+        helpMenu = new java.awt.Menu();
+        projectHome = new java.awt.MenuItem();
+        projectWebsite = new java.awt.MenuItem();
+        userManualItem = new java.awt.MenuItem();
 
         setTitle("Scripting Interface");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -277,7 +282,7 @@ public class ScriptingFrame extends java.awt.Frame
 
         add(jPanel1, java.awt.BorderLayout.EAST);
 
-        menu1.setLabel("File");
+        fileManu.setLabel("File");
 
         fileNewItem.setLabel("New");
         fileNewItem.addActionListener(new java.awt.event.ActionListener() {
@@ -285,29 +290,57 @@ public class ScriptingFrame extends java.awt.Frame
                 fileNewItemActionPerformed(evt);
             }
         });
-        menu1.add(fileNewItem);
+        fileManu.add(fileNewItem);
 
         fileOpenItem.setEnabled(false);
         fileOpenItem.setLabel("Open...");
-        menu1.add(fileOpenItem);
+        fileManu.add(fileOpenItem);
 
         fileSaveAsItem.setEnabled(false);
         fileSaveAsItem.setLabel("Save As...");
-        menu1.add(fileSaveAsItem);
-        menu1.addSeparator();
+        fileManu.add(fileSaveAsItem);
+        fileManu.addSeparator();
         fileOpenSketchFolderItem.setLabel("Open Sketch Folder...");
         fileOpenSketchFolderItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fileOpenSketchFolderItemActionPerformed(evt);
             }
         });
-        menu1.add(fileOpenSketchFolderItem);
+        fileManu.add(fileOpenSketchFolderItem);
 
-        menuBar1.add(menu1);
+        menuBar1.add(fileManu);
 
         insertMenu.setActionCommand("Insert Commands");
         insertMenu.setLabel("Insert");
         menuBar1.add(insertMenu);
+
+        helpMenu.setLabel("Help");
+
+        projectHome.setLabel("Project Home");
+        projectHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                projectHomeActionPerformed(evt);
+            }
+        });
+        helpMenu.add(projectHome);
+
+        projectWebsite.setLabel("MixProcessing Website");
+        projectWebsite.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                projectWebsiteActionPerformed(evt);
+            }
+        });
+        helpMenu.add(projectWebsite);
+        helpMenu.addSeparator();
+        userManualItem.setLabel("User Manual");
+        userManualItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userManualItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(userManualItem);
+
+        menuBar1.add(helpMenu);
 
         setMenuBar(menuBar1);
 
@@ -348,29 +381,51 @@ public class ScriptingFrame extends java.awt.Frame
         insertText("'" + channelChoice.getSelectedItem() + "'");
     }//GEN-LAST:event_channelInsertBtnActionPerformed
 
+    private void userManualItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userManualItemActionPerformed
+        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.USER_MANUAL);
+        if(!success)
+            System.err.println("Failed to open website.");
+    }//GEN-LAST:event_userManualItemActionPerformed
+
+    private void projectHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectHomeActionPerformed
+        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.PROJECT_HOME);
+        if(!success)
+            System.err.println("Failed to open website.");
+    }//GEN-LAST:event_projectHomeActionPerformed
+
+    private void projectWebsiteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectWebsiteActionPerformed
+        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.PROJECT_WEBSITE);
+        if(!success)
+            System.err.println("Failed to open website.");
+    }//GEN-LAST:event_projectWebsiteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
     private java.awt.Choice channelChoice;
     private java.awt.Button channelInsertBtn;
     private java.awt.Button exec_btn;
+    private java.awt.Menu fileManu;
     private java.awt.MenuItem fileNewItem;
     private java.awt.MenuItem fileOpenItem;
     private java.awt.MenuItem fileOpenSketchFolderItem;
     private java.awt.MenuItem fileSaveAsItem;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
+    private java.awt.Menu helpMenu;
     private java.awt.Menu insertMenu;
     private javax.swing.JPanel jPanel1;
     private java.awt.Label label1;
     private java.awt.Label label2;
     private java.awt.Label label3;
-    private java.awt.Menu menu1;
     private java.awt.MenuBar menuBar1;
     private java.awt.Panel panel1;
+    private java.awt.MenuItem projectHome;
+    private java.awt.MenuItem projectWebsite;
     private java.awt.TextArea scriptArea;
     private java.awt.TextArea scriptErrorArea;
     private java.awt.Choice sketchChoice;
     private java.awt.Button sketchInsertBtn;
+    private java.awt.MenuItem userManualItem;
     // End of variables declaration//GEN-END:variables
 }

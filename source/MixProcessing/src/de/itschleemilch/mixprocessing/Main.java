@@ -116,7 +116,7 @@ public class Main {
         frame.centerWindowOnScreen();
         
         logging.setIconImages( frame.getIconImages() );
-        logging.setVisible(true);
+        //logging.setVisible(true);
         
         // Search for Processing Library
         boolean pLibraryFound = false;
@@ -143,6 +143,7 @@ public class Main {
         // Event System
         EventManager eventManager = new EventManager(frame, renderer);
         
+        frame.setScriptingAPI(eventManager);
         frame.add(renderer, BorderLayout.CENTER);
         try {
             Thread.sleep(200); // let Renderer start

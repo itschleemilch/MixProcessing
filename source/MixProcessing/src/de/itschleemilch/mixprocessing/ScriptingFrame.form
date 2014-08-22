@@ -4,7 +4,7 @@
   <NonVisualComponents>
     <Menu class="java.awt.MenuBar" name="menuBar1">
       <SubComponents>
-        <Menu class="java.awt.Menu" name="menu1">
+        <Menu class="java.awt.Menu" name="fileManu">
           <Properties>
             <Property name="label" type="java.lang.String" value="File"/>
           </Properties>
@@ -46,6 +46,39 @@
             <Property name="actionCommand" type="java.lang.String" value="Insert Commands"/>
             <Property name="label" type="java.lang.String" value="Insert"/>
           </Properties>
+        </Menu>
+        <Menu class="java.awt.Menu" name="helpMenu">
+          <Properties>
+            <Property name="label" type="java.lang.String" value="Help"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="java.awt.MenuItem" name="projectHome">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="Project Home"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="projectHomeActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="java.awt.MenuItem" name="projectWebsite">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="MixProcessing Website"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="projectWebsiteActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="org.netbeans.modules.form.Separator" name="separator2">
+            </MenuItem>
+            <MenuItem class="java.awt.MenuItem" name="userManualItem">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="User Manual"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="userManualItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
         </Menu>
       </SubComponents>
     </Menu>

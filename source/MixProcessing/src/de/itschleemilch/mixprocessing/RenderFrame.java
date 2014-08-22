@@ -20,9 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.script.ScriptingApi;
+import de.itschleemilch.mixprocessing.util.InternetShortcuts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
@@ -32,6 +35,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -50,6 +54,8 @@ public class RenderFrame extends Frame
     private final Cursor zeroCursor;
     private final ArrayList<Image> icons = new ArrayList<>();
 
+    private ScriptingApi scriptingAPI = null;
+    
     public RenderFrame(LoggingDialog logging) {
         super();
         this.logging = logging;
@@ -70,6 +76,14 @@ public class RenderFrame extends Frame
     public RenderFrame(String title, LoggingDialog logging) {
         this(logging);
         setTitle(title);
+    }
+
+    /**
+     * Must be called after creation to pass the scripting API.
+     * @param scriptingAPI 
+     */
+    public void setScriptingAPI(ScriptingApi scriptingAPI) {
+        this.scriptingAPI = scriptingAPI;
     }
     
     private void addIconImage()
@@ -185,15 +199,40 @@ public class RenderFrame extends Frame
     public void keyTyped(KeyEvent e) {
     }
 
+    /**
+     * Defines output window's shortcuts.
+     * @param e 
+     */
     @Override
     public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_F12)
-            toggleFullscreen();
-        else if(e.getKeyCode() == KeyEvent.VK_F11)
-            toggleMouse();
-        else if(e.getKeyCode() == KeyEvent.VK_F10)
-            toggleOpacity();
-        else if(e.getKeyCode() == KeyEvent.VK_F2)
+        /* Open the user manual. */
+        if(e.getKeyCode() == KeyEvent.VK_F1) {
+            InternetShortcuts.openShortcut(InternetShortcuts.USER_MANUAL);
+        }
+        /* Switch to channel edit mode. */
+        else if(e.getKeyCode() == KeyEvent.VK_F2) {
+            if(scriptingAPI != null) {
+                if( scriptingAPI.channelIsEditing() )
+                    scriptingAPI.channelNormal();
+                else
+                    scriptingAPI.channelEditing();
+            }
+        }
+        /* Show / hide debug log. */
+        else if(e.getKeyCode() == KeyEvent.VK_F5) {
             logging.setVisible(!logging.isVisible());
+        }
+        /* Make window 50% opaque. */
+        else if(e.getKeyCode() == KeyEvent.VK_F10) {
+            toggleOpacity();
+        }
+        /* Show / hide mouse cursur. */
+        else if(e.getKeyCode() == KeyEvent.VK_F11) {
+            toggleMouse();
+        }
+        /* Make window frameless. */
+        else if(e.getKeyCode() == KeyEvent.VK_F12) {
+            toggleFullscreen();
+        }
     }
 }

@@ -177,6 +177,14 @@ public class ScriptingApi {
         return true;
     }
     
+    /**
+     * Returns if the current mode is editing mode.
+     * @return
+     */
+    public final boolean channelIsEditing() {
+        return channels.isPreviewChannelOutlines();
+    }
+    
     public final boolean channelRename(String oldName, String newName) {
         SingleChannel c = channels.findChannel(oldName);
         if(c == null)
