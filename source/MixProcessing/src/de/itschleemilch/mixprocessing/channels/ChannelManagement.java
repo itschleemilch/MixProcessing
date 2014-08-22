@@ -212,7 +212,7 @@ public class ChannelManagement {
     }
     
     /**
-     * Unsets a Sketch<->Channel Link to stop outputting
+     * Unsets a Sketch-Channel Link to stop outputting
      * @param sketch 
      */
     public final void unsetSketchChannel(Sketch sketch) {

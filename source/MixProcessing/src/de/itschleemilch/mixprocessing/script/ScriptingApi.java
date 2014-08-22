@@ -277,7 +277,7 @@ public class ScriptingApi {
     }
     
     /**
-     * Updates the sketch<->output channel association.
+     * Updates the sketch-output channel association.
      * Attention: Restarts Sketch!
      * @param sketchName
      * @param channelName
@@ -290,7 +290,7 @@ public class ScriptingApi {
     }
     
     /**
-     * Updates the sketch<->output channel association.
+     * Updates the sketch-output channel association.
      * Attention: Does not restarting the Sketch!
      * @param sketchName
      * @param channelName

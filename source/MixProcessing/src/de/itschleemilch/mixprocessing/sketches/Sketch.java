@@ -59,7 +59,7 @@ public class Sketch {
     /**
      * Returns the instance of the sketch, if created.
      * @return the instance or null
-     * @see Sketch#createInstance(java.awt.Frame, java.lang.String) 
+     * @see Sketch#createInstance(de.itschleemilch.mixprocessing.RenderFrame, java.lang.String) 
      */
     public final PApplet getInstance()
     {

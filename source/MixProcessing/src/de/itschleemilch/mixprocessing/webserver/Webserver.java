@@ -40,7 +40,7 @@ import processing.data.JSONObject;
  * Experimental.
  * Applications: Remote UI (prototyping, may also for the fimal version), remote API.
  * 
- * Remote API call: /api1?<1 script command>
+ * Remote API call: /api/api1?[script command]
  * Example: http://localhost:8080/api/api1?mp.sketchOutput(%27P_2_1_2_04%27,%27channel0%27);
  * 
  * Storage webserver home files: see preference in file KEY_STORAGE. 
