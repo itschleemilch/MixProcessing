@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Remote Scripting Template</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="mp_lib.js"></script>
+	<script type="text/javascript">
+		function testMixProcessingAPI() {
+            Api.environmentListChannels( function(data) {
+                alert( "Channel List: " + JSON.stringify(data) );
+            });
+		}
+	</script>
+</head>
+<body>
+    <h1>Test 2</h1>
+    <input type="button" value="List all channels" onclick="testMixProcessingAPI();"> 
+
+</body>
+</html>

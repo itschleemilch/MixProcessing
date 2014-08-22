@@ -196,13 +196,6 @@ public class Webserver extends Thread {
                 }
             }
             
-            /* Return callback function that is parametriced als 3rd level folder */
-            String jsCallBackFunction = "";
-            if(resource.length() > "api/api1/".length()) {
-                int ending = (getParamBeginning>-1)?getParamBeginning:resource.length();
-                jsCallBackFunction = resource.substring("api/api1/".length(), ending);
-            }
-            
             OutputStream output = null;
             try {
                 output = client.getOutputStream();
@@ -223,7 +216,6 @@ public class Webserver extends Thread {
                 JSONObject jsonData = new JSONObject();
                 jsonData.setBoolean("error", error);
                 jsonData.setJSONArray("return", returnArray);
-                jsonData.setString("callback", jsCallBackFunction);
                 
                 String jsonOutput = jsonData.format(-1); // -1: no indentation, no newlines.
                 sendString(output, jsonOutput);
