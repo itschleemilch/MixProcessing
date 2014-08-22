@@ -1,6 +1,5 @@
-./SubProjects/
-./jarSource/
-./dist/
-./build/
-./preferences/
+/jarSource/
+/dist/
+/build/
+/preferences/
 ./webserver/

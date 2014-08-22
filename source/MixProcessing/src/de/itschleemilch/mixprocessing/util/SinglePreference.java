@@ -103,4 +103,5 @@ public class SinglePreference {
         }
     }
     
+    public static final String KEY_SKETCH_JAR_SOURCE = "sketches.source.exported";
 }
