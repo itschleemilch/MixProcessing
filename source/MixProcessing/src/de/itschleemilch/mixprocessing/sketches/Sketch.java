@@ -37,7 +37,7 @@ import processing.core.PGraphicsJava2D;
  * 
  * @author Sebastian Schleemilch
  */
-public class Sketch {
+public class Sketch implements Comparable<Sketch> {
     private final Class template;
     private PApplet instance = null;
     private boolean setupDone = false;
@@ -268,12 +268,17 @@ public class Sketch {
      */
     public final String getName()
     {
-        return template.getName();
+        return template.getSimpleName();
     }
     
     @Override
     public String toString() {
-        return template.getName();
+        return getName();
+    }
+
+    @Override
+    public int compareTo(Sketch o) {
+        return getName().compareTo(o.getName());
     }
     
     /*************************************************************

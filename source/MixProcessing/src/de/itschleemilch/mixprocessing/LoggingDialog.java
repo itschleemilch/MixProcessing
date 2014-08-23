@@ -59,9 +59,6 @@ public class LoggingDialog extends Frame implements WindowListener {
         centerPanel.add(errArea, BorderLayout.SOUTH);
         add(centerPanel, BorderLayout.CENTER);
         
-        Label infoLabel = new Label("[F2] Toggle Logging [F11] Toggle mouse visibility [F12] Toggle fullscreen/frameless", Label.LEFT);
-        add(infoLabel, BorderLayout.SOUTH);
-        
         setSize(640, 480);
     }
     

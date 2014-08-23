@@ -26,12 +26,18 @@ import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
 import de.itschleemilch.mixprocessing.webserver.Webserver;
+import de.itschleemilch.mixprocessing.welcome.WelcomeChannels;
+import de.itschleemilch.mixprocessing.welcome.WelcomeFrame;
+import de.itschleemilch.mixprocessing.welcome.WelcomeSketch;
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.swing.UIManager;
 
 /**
  * Basic demo of the current MixProcessing codebase. Loades all sketches
@@ -79,6 +85,7 @@ public class Main {
      * the settings must be editable by the user.
      * 
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html">System Properties for Java 2D</a>
+     * @see <a href="https://developer.apple.com/library/mac/documentation/java/Reference/Java_PropertiesRef/Articles/JavaSystemProperties.html">Java System Property Reference for Mac</a>
      */
     private static void graphicsSettings()
     {
@@ -89,6 +96,17 @@ public class Main {
         // turn on acceleration of translucent images
         System.setProperty("sun.java2d.translaccel", "true");
         System.setProperty("sun.java2d.ddforcevram", "true");
+        
+        /* Use Apple’s Quartz renderer instead of Sun’s 2D renderer */
+        if( System.getProperty("os.name").toLowerCase().contains("mac") ) {
+            System.setProperty("apple.awt.graphics.UseQuartz", "true");
+        }
+        
+        /* Swing Settings */
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+        }        
     }
     
     private static Class[] readSketches(File sourceDir)
@@ -112,17 +130,17 @@ public class Main {
         have to be placed. Also all data files have to be stored here. */
         File defaultSource = new File("jarSource"); 
         String jarSourcePath = SinglePreference.getPreference(
-                SinglePreference.KEY_SKETCH_JAR_SOURCE, 
+                JarManagement.KEY_SKETCH_JAR_SOURCE, 
                 defaultSource.getAbsolutePath() );
         
         File jarSource = new File(jarSourcePath); 
         jarSource.mkdirs(); // creates the path, if not exists
         
-        SinglePreference.setPreference(SinglePreference.KEY_SKETCH_JAR_SOURCE, 
+        SinglePreference.setPreference(JarManagement.KEY_SKETCH_JAR_SOURCE, 
                 jarSource.getAbsolutePath());
         
         RenderFrame frame = new RenderFrame("MixProcessing", logging);
-        frame.centerWindowOnScreen();
+        frame.centerWindowOnScreen(frame);
         
         logging.setIconImages( frame.getIconImages() );
         //logging.setVisible(true);
@@ -145,6 +163,11 @@ public class Main {
         
         Class[] sketchClasses = readSketches(jarSource);
         Sketches sketches = new Sketches();
+        
+        // add welcome Sketch
+        ArrayList<Class> totalSketchList = new ArrayList<>( 
+                Arrays.asList(sketchClasses) );
+        totalSketchList.add(WelcomeSketch.class);
 
         
         // Renderer
@@ -154,16 +177,12 @@ public class Main {
         
         frame.setScriptingAPI(eventManager);
         frame.add(renderer, BorderLayout.CENTER);
-        try {
-            Thread.sleep(200); // let Renderer start
-        } catch (InterruptedException e) {
-        }
         renderer.init();
-        frame.setVisible(true);
+        //frame.setVisible(true); -> moved after showing welcome screen
         
         // initialise Processing Sketches
         String sketchPath = jarSource.getAbsolutePath();
-        for (Class sketchClasse : sketchClasses) {
+        for (Class sketchClasse : totalSketchList) {
             Sketch s = new Sketch(sketchClasse);
             sketches.addSketch(s);
             s.createInstance(frame, sketchPath);
@@ -174,11 +193,28 @@ public class Main {
         ScriptRunner scriptRunner = new ScriptRunner(eventManager);
         ScriptingFrame scripting = new ScriptingFrame(eventManager, scriptRunner);
         scripting.setIconImages( frame.getIconImages() );
-        scripting.setVisible(true);
+        //scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);
+        
+        /* Init Welcome Settings */
+        WelcomeChannels.addWelcomeChannels(eventManager.getChannels());
+        eventManager.sketchOutput(WelcomeSketch.class.getSimpleName(), 
+                WelcomeChannels.CHANNEL_NAMES[0]);
+        
+        // Welcome Screen
+        WelcomeFrame welcome = new WelcomeFrame(logging, scripting);
+        welcome.setIconImages(frame.getIconImages());
+        int welcomeX = frame.getLocation().x - welcome.getWidth();
+        int welcomeY = frame.getLocation().y;
+        welcome.setLocation(welcomeX, welcomeY);
+        welcome.setVisible(true);
+        
+        // Show renderer
+        frame.setVisible(true);
         
         // Webinterface
         Webserver webserver = new Webserver(eventManager);
+        webserver.startServer();
     }
     
 }

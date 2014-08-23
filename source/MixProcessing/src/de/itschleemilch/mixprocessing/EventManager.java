@@ -22,9 +22,7 @@ package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
-import de.itschleemilch.mixprocessing.load.SketchCompiler;
 import de.itschleemilch.mixprocessing.script.ScriptingApi;
-import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.io.File;
 import java.util.ArrayList;
 

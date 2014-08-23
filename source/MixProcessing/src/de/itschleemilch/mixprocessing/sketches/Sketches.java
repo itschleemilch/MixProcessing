@@ -181,29 +181,26 @@ public class Sketches {
      */
     public final void paintAll(BufferedImage bi, Graphics2D g, ChannelManagement channels)
     {
-        if(sketches.isEmpty())
-            return;
-
         for(int i = 0; i < sketches.size(); i++)
         {
             AffineTransform old_at = g.getTransform();
             Paint old_paint = g.getPaint();
             
-            Sketch s = sketches.get(i);
-            PApplet applet = s.getInstance();
+            Sketch sketch = sketches.get(i);
+            PApplet applet = sketch.getInstance();
             
-            if(applet != null && s.needsRedraw())
+            if(applet != null && sketch.needsRedraw())
             {
-                Shape clip = channels.getChannelForSketch(s, i);
+                Shape clip = channels.getChannelForSketch(sketch, i);
                 g.setClip(clip);
-                s.doSetup(bi, g);
+                sketch.doSetup(bi, g);
                 AffineTransform transform_backup = g.getTransform();
                 g.setTransform(new AffineTransform()); // reset transformation
                 g.setClip(clip);
                 g.setTransform(transform_backup); // bring transformation back
                 applet.draw();
-                s.storeInternalSettings();
-                s.updateLastRedrawTime();
+                sketch.storeInternalSettings();
+                sketch.updateLastRedrawTime();
             }
             g.setTransform(old_at);
             g.setPaint(old_paint);

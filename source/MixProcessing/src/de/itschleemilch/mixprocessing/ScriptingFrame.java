@@ -1,22 +1,22 @@
 /*
-MixProcessing - Live Mixing of Processing Sketches 
-https://github.com/itschleemilch/MixProcessing
+ MixProcessing - Live Mixing of Processing Sketches 
+ https://github.com/itschleemilch/MixProcessing
 
-Copyright (c) 2014 Sebastian Schleemilch
+ Copyright (c) 2014 Sebastian Schleemilch
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.channels.GroupChannel;
@@ -25,18 +25,16 @@ import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
-import de.itschleemilch.mixprocessing.util.InternetShortcuts;
-import java.awt.Button;
-import java.awt.Desktop;
-import java.awt.Font;
-import java.awt.Label;
-import java.awt.Menu;
-import java.awt.MenuItem;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import javax.swing.Box;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,21 +45,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Editor for the Skripting Interface
+ * Public console to access the Scripting API.
  *
  * @author Sebastian Schleemilch
  */
-public class ScriptingFrame extends java.awt.Frame 
-    implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
+public class ScriptingFrame extends javax.swing.JFrame 
+implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
     private final EventManager eventManager;
     private final ScriptRunner scrRunner;
 
-    /**
-     * Creates a new Scripting Frame
-     * @param eventManager Access to event system
-     * @param scrRunner 
-     */
-    public ScriptingFrame(EventManager eventManager, ScriptRunner scrRunner) {
+    public ScriptingFrame(EventManager eventManager, ScriptRunner scrRunner) throws HeadlessException {
         this.eventManager = eventManager;
         this.scrRunner = scrRunner;
         
@@ -75,8 +68,10 @@ public class ScriptingFrame extends java.awt.Frame
         
         eventManager.addChannelsChangedListener(this);
         eventManager.addSketchesChangedListener(this);
+        
+        setSize(500, 300);
     }
-    
+
     /**
      * Loades XML Menu Configuration from Ressource-Files
      * @throws ParserConfigurationException
@@ -84,8 +79,7 @@ public class ScriptingFrame extends java.awt.Frame
      * @throws IOException 
      */
     private void buildMenu() 
-            throws ParserConfigurationException, SAXException, IOException
-    {
+    throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	       Document doc = dBuilder.parse( 
@@ -96,7 +90,7 @@ public class ScriptingFrame extends java.awt.Frame
             if(node instanceof Element)
             {
                 Element menu = (Element) node;
-                Menu awtMenu = new Menu(menu.getAttribute("text"));
+                JMenu subMenu = new JMenu(menu.getAttribute("text"));
                 NodeList items = menu.getElementsByTagName("item");
                 for(int j = 0; j < items.getLength(); j++)
                 {
@@ -104,45 +98,85 @@ public class ScriptingFrame extends java.awt.Frame
                     if(n instanceof Element) {
                         String itemText = n.getTextContent();
                         if( ((Element)n).hasAttribute("separator") ) {
-                            awtMenu.addSeparator();
+                            subMenu.add(new JSeparator());
                         }
                         else if( ((Element)n).hasAttribute("label") ) {
                             String label = ((Element)n).getAttribute("label");
-                            MenuItem awtItem = new MenuItem(label);
-                            awtItem.setEnabled(false);
-                            awtMenu.add(awtItem);
+                            JMenuItem menuItem = new JMenuItem(label);
+                            menuItem.setEnabled(false);
+                            subMenu.add(menuItem);
                             
                         }
                         else {
                             String itemInsertValue = ((Element)n).getAttribute("insert");
-                            MenuItem awtItem = new MenuItem(itemText);
-                            awtItem.setActionCommand("I:"+itemInsertValue);
-                            awtItem.addActionListener(this);
-                            awtMenu.add(awtItem);
+                            JMenuItem menuItem = new JMenuItem(itemText);
+                            menuItem.setActionCommand("I:"+itemInsertValue);
+                            menuItem.addActionListener(this);
+                            subMenu.add(menuItem);
                         }
                     }
                 }
-                insertMenu.add(awtMenu);
+                insertCmdMenu.add(subMenu);
+            } // if node
+        } // loop menu items
+    }
+    
+    private void rebuildSketchList() {
+        try{ SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                sketchListMenu.removeAll();
+            }
+        }); } catch(InterruptedException | InvocationTargetException e) {
+            e.printStackTrace(System.err);
+        }
+        
+        Sketch[] sketches = eventManager.getSketches().getAllSketches();
+        Arrays.sort(sketches);
+        for (Sketch sketch : sketches) {
+            JMenuItem item = new JMenuItem(sketch.getName());
+            item.setActionCommand("I:" + sketch.getName());
+            item.addActionListener(this);
+            
+            try{ SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    sketchListMenu.add(item);
+                }
+            }); } catch(InterruptedException | InvocationTargetException e) {
+                e.printStackTrace(System.err);
             }
         }
     }
     
-    private void rebuildSketchList() {
-        sketchChoice.removeAll();
-        Sketch[] sketches = eventManager.getSketches().getAllSketches();
-        for (Sketch sketch : sketches) {
-            sketchChoice.add(sketch.getName());
-        }
-    }
-    
     private void rebuildChannelList() {
-        channelChoice.removeAll();
+        try{ SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                channelListMenu.removeAll();
+            }
+        }); } catch(InterruptedException | InvocationTargetException e) {
+            e.printStackTrace(System.err);
+        }
+        
         SingleChannel[] channels = eventManager.getChannels().getAllChannels();
+        Arrays.sort(channels);
         for (SingleChannel channel : channels) {
             String text = channel.getChannelName();
             if(channel instanceof GroupChannel)
                 text += " (G)";
-            channelChoice.add(text);
+            final JMenuItem item = new JMenuItem(text);
+            item.setActionCommand("I:" + channel.getChannelName());
+            item.addActionListener(this);
+            
+            try{ SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    channelListMenu.add(item);
+                }
+            }); } catch(InterruptedException | InvocationTargetException e) {
+                e.printStackTrace(System.err);
+            }
         }
     }
     
@@ -156,12 +190,10 @@ public class ScriptingFrame extends java.awt.Frame
     }
     
     private void insertText(String text) {
-        if(scriptArea.getSelectionStart() == scriptArea.getSelectionEnd())
-            scriptArea.insert(text, scriptArea.getCaretPosition());
+        if(scriptInputField.getSelectionStart() == scriptInputField.getSelectionEnd())
+            scriptInputField.replaceSelection(text);
         else { // Replace selected Text
-            scriptArea.replaceRange(text, 
-                    scriptArea.getSelectionStart(), 
-                    scriptArea.getSelectionEnd());
+            scriptInputField.replaceSelection(text);
         }
     }
 
@@ -191,241 +223,87 @@ public class ScriptingFrame extends java.awt.Frame
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        centerPanel = new javax.swing.JPanel();
-        scriptArea = new java.awt.TextArea();
-        panel1 = new java.awt.Panel();
-        exec_btn = new java.awt.Button();
-        scriptErrorArea = new java.awt.TextArea();
-        jPanel1 = new javax.swing.JPanel();
-        label1 = new java.awt.Label();
-        label2 = new java.awt.Label();
-        sketchChoice = new java.awt.Choice();
-        sketchInsertBtn = new java.awt.Button();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
-        label3 = new java.awt.Label();
-        channelChoice = new java.awt.Choice();
-        channelInsertBtn = new java.awt.Button();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        menuBar1 = new java.awt.MenuBar();
-        fileManu = new java.awt.Menu();
-        fileNewItem = new java.awt.MenuItem();
-        fileOpenItem = new java.awt.MenuItem();
-        fileSaveAsItem = new java.awt.MenuItem();
-        fileOpenSketchFolderItem = new java.awt.MenuItem();
-        insertMenu = new java.awt.Menu();
-        helpMenu = new java.awt.Menu();
-        projectHome = new java.awt.MenuItem();
-        projectWebsite = new java.awt.MenuItem();
-        userManualItem = new java.awt.MenuItem();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        consoleOutputArea = new javax.swing.JTextArea();
+        scriptInputField = new javax.swing.JTextField();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        insertCmdMenu = new javax.swing.JMenu();
+        insertNamesMenu = new javax.swing.JMenu();
+        channelListMenu = new javax.swing.JMenu();
+        sketchListMenu = new javax.swing.JMenu();
 
         setTitle("Scripting Interface");
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                exitForm(evt);
-            }
-        });
 
-        centerPanel.setLayout(new java.awt.BorderLayout());
-        centerPanel.add(scriptArea, java.awt.BorderLayout.CENTER);
+        consoleOutputArea.setEditable(false);
+        consoleOutputArea.setBackground(new java.awt.Color(0, 0, 0));
+        consoleOutputArea.setColumns(20);
+        consoleOutputArea.setForeground(new java.awt.Color(0, 204, 51));
+        consoleOutputArea.setRows(5);
+        consoleOutputArea.setText("Scripting API Console\n\n");
+        consoleOutputArea.setToolTipText("");
+        jScrollPane1.setViewportView(consoleOutputArea);
 
-        panel1.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        exec_btn.setLabel("Execute");
-        exec_btn.addActionListener(new java.awt.event.ActionListener() {
+        scriptInputField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exec_btnActionPerformed(evt);
+                scriptInputFieldActionPerformed(evt);
             }
         });
-        panel1.add(exec_btn, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(scriptInputField, java.awt.BorderLayout.SOUTH);
 
-        scriptErrorArea.setEditable(false);
-        panel1.add(scriptErrorArea, java.awt.BorderLayout.CENTER);
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
 
-        centerPanel.add(panel1, java.awt.BorderLayout.SOUTH);
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
 
-        add(centerPanel, java.awt.BorderLayout.CENTER);
+        insertCmdMenu.setText("Commands");
+        jMenuBar1.add(insertCmdMenu);
 
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+        insertNamesMenu.setText("Names");
 
-        label1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        label1.setText("Insert ressource names:");
-        jPanel1.add(label1);
+        channelListMenu.setText("Channels");
+        insertNamesMenu.add(channelListMenu);
 
-        label2.setText("Sketches:");
-        jPanel1.add(label2);
-        jPanel1.add(sketchChoice);
+        sketchListMenu.setText("Sketches");
+        insertNamesMenu.add(sketchListMenu);
 
-        sketchInsertBtn.setLabel("Insert");
-        sketchInsertBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sketchInsertBtnActionPerformed(evt);
-            }
-        });
-        jPanel1.add(sketchInsertBtn);
-        jPanel1.add(filler2);
+        jMenuBar1.add(insertNamesMenu);
 
-        label3.setText("Channels:");
-        jPanel1.add(label3);
-        jPanel1.add(channelChoice);
-
-        channelInsertBtn.setLabel("Insert");
-        channelInsertBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                channelInsertBtnActionPerformed(evt);
-            }
-        });
-        jPanel1.add(channelInsertBtn);
-        jPanel1.add(filler3);
-
-        add(jPanel1, java.awt.BorderLayout.EAST);
-
-        fileManu.setLabel("File");
-
-        fileNewItem.setLabel("New");
-        fileNewItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileNewItemActionPerformed(evt);
-            }
-        });
-        fileManu.add(fileNewItem);
-
-        fileOpenItem.setEnabled(false);
-        fileOpenItem.setLabel("Open...");
-        fileManu.add(fileOpenItem);
-
-        fileSaveAsItem.setEnabled(false);
-        fileSaveAsItem.setLabel("Save As...");
-        fileManu.add(fileSaveAsItem);
-        fileManu.addSeparator();
-        fileOpenSketchFolderItem.setLabel("Open Sketch Folder...");
-        fileOpenSketchFolderItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileOpenSketchFolderItemActionPerformed(evt);
-            }
-        });
-        fileManu.add(fileOpenSketchFolderItem);
-
-        menuBar1.add(fileManu);
-
-        insertMenu.setActionCommand("Insert Commands");
-        insertMenu.setLabel("Insert");
-        menuBar1.add(insertMenu);
-
-        helpMenu.setLabel("Help");
-
-        projectHome.setLabel("Project Home");
-        projectHome.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                projectHomeActionPerformed(evt);
-            }
-        });
-        helpMenu.add(projectHome);
-
-        projectWebsite.setLabel("MixProcessing Website");
-        projectWebsite.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                projectWebsiteActionPerformed(evt);
-            }
-        });
-        helpMenu.add(projectWebsite);
-        helpMenu.addSeparator();
-        userManualItem.setLabel("User Manual");
-        userManualItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                userManualItemActionPerformed(evt);
-            }
-        });
-        helpMenu.add(userManualItem);
-
-        menuBar1.add(helpMenu);
-
-        setMenuBar(menuBar1);
+        setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * Exit the Application
-     */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        System.exit(0);
-    }//GEN-LAST:event_exitForm
-
-    private void exec_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exec_btnActionPerformed
-        final String script = scriptArea.getText();
-        scriptErrorArea.setText(""); // clear output.
-        scrRunner.exec(script, scriptErrorArea);
-    }//GEN-LAST:event_exec_btnActionPerformed
-
-    private void fileOpenSketchFolderItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenSketchFolderItemActionPerformed
-        String jarDir = System.getProperty("MixProcessing.SKETCH_DIR");
-        try {
-            Desktop.getDesktop().open(new File(jarDir));
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-    }//GEN-LAST:event_fileOpenSketchFolderItemActionPerformed
-
-    private void fileNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileNewItemActionPerformed
-        scriptArea.setText("");
-    }//GEN-LAST:event_fileNewItemActionPerformed
-
-    private void sketchInsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sketchInsertBtnActionPerformed
-        insertText("'" + sketchChoice.getSelectedItem() + "'");
-    }//GEN-LAST:event_sketchInsertBtnActionPerformed
-
-    private void channelInsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelInsertBtnActionPerformed
-        insertText("'" + channelChoice.getSelectedItem() + "'");
-    }//GEN-LAST:event_channelInsertBtnActionPerformed
-
-    private void userManualItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userManualItemActionPerformed
-        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.USER_MANUAL);
-        if(!success)
-            System.err.println("Failed to open website.");
-    }//GEN-LAST:event_userManualItemActionPerformed
-
-    private void projectHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectHomeActionPerformed
-        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.PROJECT_HOME);
-        if(!success)
-            System.err.println("Failed to open website.");
-    }//GEN-LAST:event_projectHomeActionPerformed
-
-    private void projectWebsiteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectWebsiteActionPerformed
-        boolean success = InternetShortcuts.openShortcut(InternetShortcuts.PROJECT_WEBSITE);
-        if(!success)
-            System.err.println("Failed to open website.");
-    }//GEN-LAST:event_projectWebsiteActionPerformed
-
+    private void scriptInputFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptInputFieldActionPerformed
+        final String script = scriptInputField.getText();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                consoleOutputArea.append(">" + script + "\n");
+                scriptInputField.setText(""); // clear output.
+                scrRunner.exec(script, consoleOutputArea); // runs in seperate thread
+            }
+        });
+    }//GEN-LAST:event_scriptInputFieldActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel centerPanel;
-    private java.awt.Choice channelChoice;
-    private java.awt.Button channelInsertBtn;
-    private java.awt.Button exec_btn;
-    private java.awt.Menu fileManu;
-    private java.awt.MenuItem fileNewItem;
-    private java.awt.MenuItem fileOpenItem;
-    private java.awt.MenuItem fileOpenSketchFolderItem;
-    private java.awt.MenuItem fileSaveAsItem;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
-    private java.awt.Menu helpMenu;
-    private java.awt.Menu insertMenu;
-    private javax.swing.JPanel jPanel1;
-    private java.awt.Label label1;
-    private java.awt.Label label2;
-    private java.awt.Label label3;
-    private java.awt.MenuBar menuBar1;
-    private java.awt.Panel panel1;
-    private java.awt.MenuItem projectHome;
-    private java.awt.MenuItem projectWebsite;
-    private java.awt.TextArea scriptArea;
-    private java.awt.TextArea scriptErrorArea;
-    private java.awt.Choice sketchChoice;
-    private java.awt.Button sketchInsertBtn;
-    private java.awt.MenuItem userManualItem;
+    private javax.swing.JMenu channelListMenu;
+    private javax.swing.JTextArea consoleOutputArea;
+    private javax.swing.JMenu insertCmdMenu;
+    private javax.swing.JMenu insertNamesMenu;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField scriptInputField;
+    private javax.swing.JMenu sketchListMenu;
     // End of variables declaration//GEN-END:variables
 }

@@ -39,7 +39,7 @@ public class SinglePreference {
      * Storage folder for the preferences.
      * @return 
      */
-    private static File getParentFolder() {
+    public static File getParentFolder() {
         File parent = new File("preferences");
         parent.mkdirs();
         return parent;
@@ -102,6 +102,4 @@ public class SinglePreference {
                 }
         }
     }
-    
-    public static final String KEY_SKETCH_JAR_SOURCE = "sketches.source.exported";
 }

@@ -29,7 +29,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Handles the channel editing
+ * Handles the channel editing.
  *
  * @author Sebastian Schleemilch
  */
@@ -88,6 +88,9 @@ public class ChannelEditing implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if(!channels.isPreviewChannelOutlines())
+            return;
+        
         if(state == STATES.WAITING) {
             if(e.getClickCount() < 2)
                 return;

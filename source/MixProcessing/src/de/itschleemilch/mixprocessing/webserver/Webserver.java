@@ -57,7 +57,7 @@ public class Webserver extends Thread {
     private File fileStorage = null;
     
     /**
-     * Creates a new Webserver object.
+     * Creates a new Webserver object. Must be started!
      * @param eventManager 
      * @see Webserver#startServer() 
      */
@@ -65,7 +65,6 @@ public class Webserver extends Thread {
         this.eventManager = eventManager;
         this.scriptRunner = new ScriptRunner(eventManager);
         initServerStorage();
-        startServer();
     }
     
     /**
@@ -350,10 +349,18 @@ public class Webserver extends Thread {
                 fillJsonArray(array, subdata); // add all elements
         }
     }
+    
+    /**
+     * Returns the URL of the webserver for the local machine.
+     * @return 
+     */
+    public static String getLocalServerURL() {
+        return "http://localhost:" + SinglePreference.getPreference(KEY_PORT, "8080") + "/";
+    }
 
     
-    private final static String KEY_STORAGE = "webserver.storage";  
-    private final static String KEY_PORT = "webserver.port";   
+    public final static String KEY_STORAGE = "webserver.storage";  
+    public final static String KEY_PORT = "webserver.port";   
     
     private final static String SERVER_NAME = "MixProcessing Control Server";
 }

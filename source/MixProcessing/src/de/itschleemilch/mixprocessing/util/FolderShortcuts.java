@@ -20,27 +20,26 @@
 package de.itschleemilch.mixprocessing.util;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Supply the whole application with static internet resources.
  *
  * @author Sebastian Schleemilch
  */
-public class InternetShortcuts {
+public class FolderShortcuts {
     
     /**
-     * Opens an internet link with user's default web browser.
-     * @param url
-     * @return suceess of opening (false=error)
+     * Opens the local explorer with the given path.
+     * @param path
+     * @return 
      */
-    public static boolean openShortcut(String url) {
+    public static boolean openShortcut(File path) {
         if(Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI(url));
-            } catch (URISyntaxException | IOException e) {
+                Desktop.getDesktop().open(path);
+            } catch (IOException e) {
                 return false;
             }
             return true;
@@ -48,9 +47,4 @@ public class InternetShortcuts {
         else
             return false;
     }
-    
-    public static final String USER_MANUAL = "https://github.com/itschleemilch/MixProcessing/blob/master/documentation/user/user_manual.md";
-    
-    public static final String PROJECT_HOME = "https://github.com/itschleemilch/MixProcessing";
-    public static final String PROJECT_WEBSITE = "http://itschleemilch.github.io/MixProcessing/";
 }

@@ -25,11 +25,11 @@ import de.itschleemilch.mixprocessing.util.InternetShortcuts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -68,8 +68,8 @@ public class RenderFrame extends Frame
                 new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR),
                 new java.awt.Point(0, 0), "NOCURSOR");
         
-        setSize(800, 600);
-        centerWindowOnScreen();
+        setSize(STARTUP_WIDTH, STARTUP_HEIGHT);
+        centerWindowOnScreen(this);
         addIconImage();
     }
     
@@ -104,12 +104,16 @@ public class RenderFrame extends Frame
         return icons;
     }
     
-    public final void centerWindowOnScreen()
+    /**
+     * Centers the windows on the screen
+     * @param window 
+     */
+    public final static void centerWindowOnScreen(Window window)
     {
-        Dimension screen = getToolkit().getScreenSize();
-        int x = (screen.width-getWidth())/2;
-        int y = (screen.height-getHeight())/2;
-        setLocation(x, y);
+        Dimension screen = window.getToolkit().getScreenSize();
+        int x = (screen.width-window.getWidth())/2;
+        int y = (screen.height-window.getHeight())/2;
+        window.setLocation(x, y);
     }
     
     public final void toggleFullscreen() {
@@ -121,6 +125,10 @@ public class RenderFrame extends Frame
                 dispose();
                 setUndecorated(!isUndecorated());
                 setVisible(true);
+                if(isUndecorated())
+                    setAlwaysOnTop(true);
+                else
+                    setAlwaysOnTop(false);
             }
         });
     }
@@ -235,4 +243,7 @@ public class RenderFrame extends Frame
             toggleFullscreen();
         }
     }
+    
+    public static final int STARTUP_WIDTH   = 800;
+    public static final int STARTUP_HEIGHT  = 600;
 }

@@ -26,7 +26,7 @@ import java.awt.Shape;
  *
  * @author Sebastian Schleemilch
  */
-public class SingleChannel {
+public class SingleChannel implements Comparable<SingleChannel> {
     private Shape shape = null;
     private String channelName;
     private boolean enabled = true;
@@ -75,5 +75,10 @@ public class SingleChannel {
 
     public final void setShape(Shape shape) {
         this.shape = shape;
+    }
+
+    @Override
+    public int compareTo(SingleChannel o) {
+        return getChannelName().compareTo(o.getChannelName());
     }
 }

@@ -24,6 +24,9 @@ import java.awt.TextArea;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
 /**
  * Runs JavaScript Code to control MixProcessing 
@@ -46,20 +49,27 @@ public class ScriptRunner {
      * @param jsScript source code
      * @param errorLog error output
      */
-    public void exec(final String jsScript, final TextArea errorLog)
+    public void exec(final String jsScript, final JTextArea errorLog)
     {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                final StringBuilder out = new StringBuilder();
                 try {
                     scriptingEngine.eval(jsScript);
                 } catch (ScriptException e) {
-                    errorLog.append("Error: ");
-                    errorLog.append(e.getMessage());
-                    errorLog.append(System.getProperty("line.separator"));
-                    errorLog.append(System.getProperty("line.separator"));
+                    out.append("Error: ");
+                    out.append(e.getMessage());
+                    out.append(System.getProperty("line.separator"));
+                    out.append(System.getProperty("line.separator"));
                 }
-                errorLog.append("Executed.");
+                out.append("\n\n");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLog.append(out.toString());
+                    }
+                });
             }
         }).start();
     }

@@ -21,6 +21,7 @@ package de.itschleemilch.mixprocessing.channels;
 
 import de.itschleemilch.mixprocessing.EventManager;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
+import de.itschleemilch.mixprocessing.welcome.WelcomeChannels;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -190,7 +191,7 @@ public class ChannelManagement {
     public final Shape getChannelForSketch(Sketch s, int index)
     {
         SingleChannel c = sketchChannelAssociation.get(s);
-        if( c != null )
+        if( c != null && c.isEnabled() )
         {
             if(c.getShape() != null)
                 return c.getShape();
