@@ -20,7 +20,6 @@
 package de.itschleemilch.mixprocessing.welcome;
 
 import de.itschleemilch.mixprocessing.load.PApplet2;
-import java.awt.geom.Point2D;
 import processing.core.PFont;
 
 /**
@@ -33,8 +32,8 @@ public class WelcomeSketch extends PApplet2 {
     int colorWheel = 0;
     final int AGENT_COUNT = 200;
     
-    Point2D.Float[] agents = new Point2D.Float[AGENT_COUNT];
-    Point2D.Float[] agents_move = new Point2D.Float[AGENT_COUNT];
+    float[][] agents = new float[AGENT_COUNT][2];
+    float[][] agents_move = new float[AGENT_COUNT][2];
     
     @Override
     public void setup() {
@@ -46,9 +45,10 @@ public class WelcomeSketch extends PApplet2 {
         myFont = createFont("Georgia", 50);
         
         for(int i = 0; i < agents.length; i++) {
-            agents[i] = new Point2D.Float(random(width), random(height));
-            agents_move[i] = new Point2D.Float(-0.3f+random(0.6f), 
-                    -0.3f+random(0.6f));
+            agents[i][0] = random(width);
+            agents[i][1] = random(height);
+            agents_move[i][0] = -0.3f+random(0.6f);
+            agents_move[i][1] = -0.3f+random(0.6f);
         }
     }
     
@@ -58,28 +58,30 @@ public class WelcomeSketch extends PApplet2 {
         noStroke();
         // draw agents
         for(int i = 0; i < agents.length; i++) {
-            Point2D.Float agent = agents[i];
-            ellipse(agent.x, agent.y, 5, 5);
+            ellipse(agents[i][0], agents[i][1], 5, 5);
         }
         // draw interconnects
         noFill();
         stroke(255);
         
         for(int i1 = 0; i1 < agents.length; i1++) {
-            Point2D.Float agent1 = agents[i1];
+            float a1_x = agents[i1][0];
+            float a1_y = agents[i1][1];
             for(int i2 = 0; i2 < agents.length; i2++) {
-                Point2D.Float agent2 = agents[i2];
-                float dist = (float)Math.abs( agent2.distance(agent1) );
+                float a2_x = agents[i2][0];
+                float a2_y = agents[i2][1];
+                double distSquared = Math.pow(a2_x-a1_x, 2) + Math.pow(a2_y-a1_y, 2);
+                float dist = (float)Math.sqrt(distSquared);
                 if(dist < 20f) {
                     strokeWeight(2);
                     stroke(255);
-                    line(agent1.x, agent1.y, agent2.x, agent2.y);
+                    line(a1_x, a1_y, a2_x, a2_y);
                 }
                 else if(dist < 40f) {
                     float alpha = 100f*(dist-20f)/20f;
                     strokeWeight(1);
                     stroke(255, alpha);
-                    line(agent1.x, agent1.y, agent2.x, agent2.y);
+                    line(a1_x, a1_y, a2_x, a2_y);
                 }
             }
         }
@@ -87,36 +89,36 @@ public class WelcomeSketch extends PApplet2 {
     
     private void moveAgents() {
         for(int i = 0; i < agents.length; i++) {
-            Point2D.Float agent = agents[i];
-            Point2D.Float move = agents_move[i];
-            agent.x += move.x;
-            agent.y += move.y;
+//            Point2D.Float agent = agents[i];
+//            Point2D.Float move = agents_move[i];
+            agents[i][0] += agents_move[i][0];
+            agents[i][1] += agents_move[i][1];
             
-            move.x += -0.3+random(0.6f);
-            move.y += -0.3+random(0.6f);
+            agents_move[i][0] += -0.3+random(0.6f);
+            agents_move[i][1] += -0.3+random(0.6f);
             
-            if(agent.x < -10) {
-                agent.x = -10;
-                move.x = random(0.3f);
+            if(agents[i][0] < -10) {
+                agents[i][0] = -10;
+                agents_move[i][0] = random(0.3f);
             }
-            else if(agent.x > width+10) {
-                agent.x = width+10;
-                move.x = 0-random(0.3f);
+            else if(agents[i][0] > width+10) {
+                agents[i][0] = width+10;
+                agents_move[i][0] = 0-random(0.3f);
             }
-            if(agent.y < -10) {
-                agent.y = -10;
-                move.y = random(0.3f);
+            if(agents[i][1] < -10) {
+                agents[i][1] = -10;
+                agents_move[i][1] = random(0.3f);
             }
-            else if(agent.y > height+10) {
-                agent.y = height+10;
-                move.y = 0-random(0.3f);
+            else if(agents[i][1] > height+10) {
+                agents[i][1]= height+10;
+                agents_move[i][1] = 0-random(0.3f);
             }
             
             /* Align to mouse */
-            float dX = mouseX - agent.x;
-            float dY = mouseY - agent.y;
-            agent.x += dX*0.01;
-            agent.y += dY*0.01;
+            float dX = mouseX - agents[i][0];
+            float dY = mouseY - agents[i][1];
+            agents[i][0] += dX*0.01;
+            agents[i][1] += dY*0.01;
         }
     }
 
