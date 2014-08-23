@@ -93,15 +93,11 @@ public class ChannelEditing implements MouseListener {
         }
         
         if(state == STATES.WAITING) {
-            if(e.getClickCount() < 2) {
-            }
-            else {
+            if(e.getClickCount() > 1) { // start new click
                 startNewPath();
                 path.moveTo(e.getX(), e.getY());
                 state = STATES.LINE_TO;
             }
-        }
-        else if(state == STATES.END) {
         }
         else if(state == STATES.START) { // currently not used
             path.moveTo(e.getX(), e.getY());

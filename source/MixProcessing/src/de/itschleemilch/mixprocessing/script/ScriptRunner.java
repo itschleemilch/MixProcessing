@@ -92,6 +92,7 @@ public class ScriptRunner {
         try {
             answer = scriptingEngine.get("rVal");
         } catch (Exception e) {
+            e.printStackTrace(System.err);
         }
         return answer;
     }

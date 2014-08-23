@@ -70,6 +70,7 @@ public class SinglePreference {
                     try {
                         reader.close();
                     } catch (IOException e) {
+                        e.printStackTrace(System.err);
                     }
                 }
             }
@@ -102,6 +103,7 @@ public class SinglePreference {
                 try {
                     writer.close();
                 } catch (IOException e) {
+                    e.printStackTrace(System.err);
                 }
             }
         }

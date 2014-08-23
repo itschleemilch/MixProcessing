@@ -123,11 +123,14 @@ public class Webserver extends Thread {
             try {
                 server.close();
             } catch (IOException e) {
+                e.printStackTrace(System.err);
             }
             try {
-                if(isAlive())
+                if(isAlive()) {
                     interrupt();
+                }
             } catch (Exception e) {
+                e.printStackTrace(System.err);
             }
             server = null;
         }
@@ -152,6 +155,7 @@ public class Webserver extends Thread {
                     }
                 }).start();
             } catch (IOException e) {
+                e.printStackTrace(System.err);
             }
         } // while
     }
@@ -166,20 +170,30 @@ public class Webserver extends Thread {
             clientCmd = reader.readLine();
         } catch (IOException e) {
             // Failed to open input stream or to read first line
-            try{client.close();}catch(IOException ee) {}
+            try{
+                client.close();
+            }
+            catch(IOException ee) {
+                ee.printStackTrace(System.err);
+            }
             return;
         }
         /* Determine HTTP request parameters */
-        final String clientCmdLowerCase = clientCmd.toLowerCase();
-        final String method = clientCmdLowerCase.substring(0, clientCmdLowerCase.indexOf(' '));
+        //final String clientCmdLowerCase = clientCmd.toLowerCase();
+        //final String method = clientCmdLowerCase.substring(0, clientCmdLowerCase.indexOf(' '));
         
         // Get resource (eliminate first /) and get-param, example: GET /infotext.html HTTP/1.1
         final String query = clientCmd.substring(clientCmd.indexOf(" ") + 2, 
                 clientCmd.lastIndexOf(" ") );
         
         int getParamBeginning = query.indexOf('?');
-        final String resource = (getParamBeginning > -1) 
-                ? query.substring(0, getParamBeginning) : query;
+        final String resource;
+        if(getParamBeginning > -1) {
+            resource = query.substring(0, getParamBeginning);
+        }
+        else {
+            resource = query;
+        }
         
         /* Remote Scripting API */
         if(resource.startsWith("api/api1")) {
@@ -217,11 +231,22 @@ public class Webserver extends Thread {
                 String jsonOutput = jsonData.format(-1); // -1: no indentation, no newlines.
                 sendString(output, jsonOutput);
             } catch (IOException e) {
+                e.printStackTrace(System.err);
             } finally {
                 if(output != null) {
-                    try{output.close();} catch(IOException e) {}
+                    try{
+                        output.close();
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
-                try{client.close();}catch(IOException ee) {}
+                try{
+                    client.close();
+                } 
+                catch(IOException ee) {
+                    ee.printStackTrace(System.err);
+                }
             }
         }
         /* File Output */
@@ -239,11 +264,22 @@ public class Webserver extends Thread {
                     sendFile(output, defaultFile);
                 }
             } catch (IOException e) {
+                e.printStackTrace(System.err);
             } finally {
                 if(output != null) {
-                    try{output.close();} catch(IOException e) {}
+                    try{
+                        output.close();
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
-                try{client.close();}catch(IOException ee) {}
+                try{
+                    client.close();
+                }
+                catch(IOException ee) {
+                    ee.printStackTrace(System.err);
+                }
             }
         } // End file output
     } // process
@@ -265,9 +301,15 @@ public class Webserver extends Thread {
                 out.write(buffer, 0, read);
             }
         } catch (IOException e) {
+            e.printStackTrace(System.err);
         } finally {
             if(fis != null) {
-                try{fis.close();} catch(IOException e) {}
+                try{
+                    fis.close();
+                }
+                catch(IOException e) {
+                    e.printStackTrace(System.err);
+                }
             }
         }
         /* Flush contents  */

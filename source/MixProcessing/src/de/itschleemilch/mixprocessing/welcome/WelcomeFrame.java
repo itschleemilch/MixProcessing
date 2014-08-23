@@ -231,7 +231,7 @@ public class WelcomeFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_projectHomelItemActionPerformed
 
     private void aboutlItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutlItemActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_aboutlItemActionPerformed
 
 

@@ -24,5 +24,5 @@ package de.itschleemilch.mixprocessing.events;
  * @author Sebastian Schleemilch
  */
 public interface ChannelsChangedListener {
-    public void channelsChanged();
+    void channelsChanged();
 }

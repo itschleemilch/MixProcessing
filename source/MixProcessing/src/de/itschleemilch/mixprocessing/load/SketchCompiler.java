@@ -183,6 +183,7 @@ public class SketchCompiler {
                 try {
                     fileManager.close();
                 } catch (IOException e) {
+                    e.printStackTrace(System.err);
                 }
             }
         }

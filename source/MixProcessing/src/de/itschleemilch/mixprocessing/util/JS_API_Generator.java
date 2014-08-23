@@ -173,11 +173,20 @@ public class JS_API_Generator {
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(headerIn) );
             String line;
-            while( (line=reader.readLine()) != null )
+            while( (line=reader.readLine()) != null ) {
                 println(line);
-        } catch(IOException e) {}
+            }
+        }
+        catch(IOException e) {
+            e.printStackTrace(System.err);
+        }
         finally {
-            try{headerIn.close();}catch(Exception e) {}
+            try {
+                headerIn.close();
+            }
+            catch(IOException e) {
+                e.printStackTrace(System.err);
+            }
         }
     }
     

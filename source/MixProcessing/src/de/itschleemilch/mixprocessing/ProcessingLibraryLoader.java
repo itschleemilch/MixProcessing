@@ -21,14 +21,12 @@ package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.util.InternetShortcuts;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
-import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 

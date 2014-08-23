@@ -24,6 +24,7 @@ import de.itschleemilch.mixprocessing.channels.SingleChannel;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
+import de.itschleemilch.mixprocessing.script.ScriptingApi;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -51,11 +52,11 @@ import org.xml.sax.SAXException;
  */
 public class ScriptingFrame extends javax.swing.JFrame 
 implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
-    private final EventManager eventManager;
+    private final ScriptingApi api;
     private final ScriptRunner scrRunner;
 
-    public ScriptingFrame(EventManager eventManager, ScriptRunner scrRunner) throws HeadlessException {
-        this.eventManager = eventManager;
+    public ScriptingFrame(EventManager eventManager, ScriptingApi api, ScriptRunner scrRunner) throws HeadlessException {
+        this.api = api;
         this.scrRunner = scrRunner;
         
         initComponents();
@@ -131,10 +132,10 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
             e.printStackTrace(System.err);
         }
         
-        Sketch[] sketches = eventManager.getAPI().getSketches().getAllSketches();
+        Sketch[] sketches = api.getSketches().getAllSketches();
         Arrays.sort(sketches);
         for (Sketch sketch : sketches) {
-            JMenuItem item = new JMenuItem(sketch.getName());
+            final JMenuItem item = new JMenuItem(sketch.getName());
             item.setActionCommand("I:" + sketch.getName());
             item.addActionListener(this);
             
@@ -159,7 +160,7 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
             e.printStackTrace(System.err);
         }
         
-        SingleChannel[] channels = eventManager.getAPI().getChannels().getAllChannels();
+        SingleChannel[] channels = api.getChannels().getAllChannels();
         Arrays.sort(channels);
         for (SingleChannel channel : channels) {
             String text = channel.getChannelName();

@@ -79,7 +79,9 @@ public class Main {
                     in.close();
                 }
             } 
-            catch (IOException e) { /*ignore exception here*/ }
+            catch (IOException e) {
+                e.printStackTrace(System.err);
+            }
         }
         System.out.println();
     }
@@ -111,6 +113,7 @@ public class Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | IllegalAccessException | 
                 InstantiationException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace(System.err);
         }        
     }
     
@@ -179,10 +182,9 @@ public class Main {
         // Renderer
         MixRenderer renderer = new MixRenderer(sketches);
         // Event System
-        EventManager eventManager = new EventManager(frame, renderer);
+        EventManager eventManager = new EventManager();
         // Scripting API
         ScriptingApi api = new ScriptingApi(eventManager, frame, renderer);
-        eventManager.setApiAcess(api);
         frame.setScriptingAPI(api);
         
         frame.add(renderer, BorderLayout.CENTER);
@@ -200,14 +202,14 @@ public class Main {
         
         // Scripting API
         ScriptRunner scriptRunner = new ScriptRunner(api);
-        ScriptingFrame scripting = new ScriptingFrame(eventManager, scriptRunner);
+        ScriptingFrame scripting = new ScriptingFrame(eventManager, api, scriptRunner);
         scripting.setIconImages( frame.getIconImages() );
         //scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);
         
         /* Init Welcome Settings */
-        WelcomeChannels.addWelcomeChannels(eventManager.getAPI().getChannels());
-        eventManager.getAPI().sketchOutput(WelcomeSketch.class.getSimpleName(), 
+        WelcomeChannels.addWelcomeChannels(api.getChannels());
+        api.sketchOutput(WelcomeSketch.class.getSimpleName(), 
                 WelcomeChannels.CHANNEL_NAMES[0]);
         
         // Welcome Screen

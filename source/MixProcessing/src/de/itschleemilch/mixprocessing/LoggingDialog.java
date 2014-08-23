@@ -88,6 +88,7 @@ public class LoggingDialog extends Frame implements WindowListener {
                     try {
                         Thread.yield(); // sleep some time
                     } catch (Exception e) {
+                        e.printStackTrace(System.err);
                     }
                 } // while(true)
             } // run

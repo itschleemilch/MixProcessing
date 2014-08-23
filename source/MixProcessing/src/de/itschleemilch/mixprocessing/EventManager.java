@@ -22,7 +22,6 @@ package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
-import de.itschleemilch.mixprocessing.script.ScriptingApi;
 import java.util.ArrayList;
 
 /**
@@ -35,34 +34,8 @@ public class EventManager {
     
     private final ArrayList<ChannelsChangedListener> ccListener = new ArrayList<>();
     private final ArrayList<SketchesChangedListener> scListener = new ArrayList<>();
-    private ScriptingApi api = null;
 
-    public EventManager(RenderFrame outputWindow, MixRenderer renderer) {
-    }
-    
-    /**
-     * After creation this has to be called.
-     * @param api 
-     */
-    public void setApiAcess(final ScriptingApi api)
-    {
-        this.api = api;
-        final EventManager em = this;
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                api.getChannels().eventManager = em;
-            }
-        }).start();
-    }
-
-    /**
-     * Access to the Scripting API.
-     * @return 
-     */
-    public ScriptingApi getAPI() {
-        return api;
+    public EventManager() {
     }
     
     /*************************************************************

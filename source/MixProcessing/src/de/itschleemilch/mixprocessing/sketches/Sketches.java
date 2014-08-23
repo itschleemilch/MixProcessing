@@ -63,22 +63,16 @@ public class Sketches {
             Sketch s = sketches.get(i);
             s.resetSetup();
             PApplet applet = s.getInstance();
-            if(applet != null && applet.frame != null)
+            if( applet != null && applet.frame != null && 
+                    (applet.width != w || applet.height != h) )
             {
-                //applet.stop();
-                if(applet.width != w || applet.height != h)
+                applet.width = w;
+                applet.height = h;
+                if(applet.g != null)
                 {
-                    //applet.setSize(w, h);
-                    applet.width = w;
-                    applet.height = h;
-                    if(applet.g != null)
-                    {
-                        //applet.g.setSize(w, h);
-                        applet.g.width = w;
-                        applet.g.height = h;
-                    }
+                    applet.g.width = w;
+                    applet.g.height = h;
                 }
-                //applet.start();
             }
         }
     }
@@ -92,19 +86,17 @@ public class Sketches {
     {
         for (Sketch s : sketches) {
             PApplet applet = s.getInstance();
-            if(applet != null)
+            if(applet != null && s.isReceivingMouseEvents())
             {
-                if(s.isReceivingMouseEvents()) {
-                    applet.mouseX = x;
-                    applet.mouseY = y;
-                    applet.pmouseX = lastMouseX;
-                    applet.pmouseY = lastMouseY;
-                    if(dragged) {
-                        applet.mouseDragged();
-                    }
-                    else {
-                        applet.mouseMoved();
-                    }
+                applet.mouseX = x;
+                applet.mouseY = y;
+                applet.pmouseX = lastMouseX;
+                applet.pmouseY = lastMouseY;
+                if(dragged) {
+                    applet.mouseDragged();
+                }
+                else {
+                    applet.mouseMoved();
                 }
             }
         }

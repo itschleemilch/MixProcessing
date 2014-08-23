@@ -578,7 +578,15 @@ public class ScriptingApi {
      */
     public final boolean environmentLoad(String sketchPath) {
         final File sketchFile = new File(sketchPath);
-        final File sketchFolder = (sketchFile.isDirectory()) ? sketchFile : sketchFile.getParentFile();
+        
+        final File sketchFolder;
+        if(sketchFile.isDirectory()) {
+            sketchFolder = sketchFile;
+        }
+        else {
+            sketchFolder = sketchFile.getParentFile();
+        }
+        
         if(sketchFile.exists()) {
             SketchCompiler compiler =  new SketchCompiler();
             Class<?> result = compiler.compileSketch(new File(sketchPath));
