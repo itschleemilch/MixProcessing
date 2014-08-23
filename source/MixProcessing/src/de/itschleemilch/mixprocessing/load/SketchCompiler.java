@@ -60,7 +60,7 @@ public class SketchCompiler {
      * 
      * @return generated class of the sketch
      */
-    public final Class compileSketch(File pdeFile) {
+    public final Class<?> compileSketch(File pdeFile) {
         if(pdeFile.isDirectory())
         {
             pdeFile = new File(pdeFile, pdeFile.getName()+".pde");
@@ -82,7 +82,7 @@ public class SketchCompiler {
 
 
             final String javaCode = preprocessSketch(className, pdeText.toString());
-            final Class compiled = compileCode(className, javaCode);
+            final Class<?> compiled = compileCode(className, javaCode);
             
             if(compiled != null && compiled.getSuperclass().equals(PApplet2.class))
                 return compiled;
@@ -155,7 +155,7 @@ public class SketchCompiler {
      * @param src
      * @return compiled class or null
      */
-    private Class compileCode(String className, String src) {
+    private Class<?> compileCode(String className, String src) {
         JavaFileManager fileManager = null;
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

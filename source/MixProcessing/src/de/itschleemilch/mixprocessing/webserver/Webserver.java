@@ -124,11 +124,11 @@ public class Webserver extends Thread {
         if(server != null) {
             try {
                 server.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
             }
             try {
                 if(isAlive())
-                    stop();
+                    interrupt();
             } catch (Exception e) {
             }
             server = null;
@@ -140,7 +140,7 @@ public class Webserver extends Thread {
      */
     @Override
     public final void run() {
-        while (true) { // Accept new clients
+        while (!isInterrupted()) { // Accept new clients
             try {
                 final Socket client = server.accept();
                 new Thread(new Runnable() {

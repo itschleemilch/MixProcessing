@@ -38,7 +38,7 @@ public class JarManagement {
     /* location where exported Processing sketches are stored */
     private final File jarFolder;
     /* Stores all loaded sketches and their runtime instances */
-    private final ArrayList<Class> sketches = new ArrayList<>();
+    private final ArrayList<Class<?>> sketches = new ArrayList<>();
 
     /**
      * Create new JarManagement object. Afterwards the readJars() method can be
@@ -110,8 +110,8 @@ public class JarManagement {
         {
             System.out.printf("\t\tDiscovered main class: %s from %s\n", mainClass, jar.getName());
             try {
-                Class sketchClass = cloader.loadClass(mainClass);
-                Class superClass = sketchClass.getSuperclass();
+                Class<?> sketchClass = cloader.loadClass(mainClass);
+                Class<?> superClass = sketchClass.getSuperclass();
                 if(superClass.equals(PApplet.class))
                 {
                     sketches.add(sketchClass);
@@ -137,9 +137,9 @@ public class JarManagement {
      * Returns all found processing sketches as their plain classes.
      * @return all sketch classes within the scanned folder
      */
-    public final Class[] getSketchClasses()
+    public final Class<?>[] getSketchClasses()
     {
-        return sketches.toArray(new Class[0]);
+        return sketches.toArray(new Class<?>[0]);
     }
     
     public static final String KEY_SKETCH_JAR_SOURCE = "sketches.source.exported";

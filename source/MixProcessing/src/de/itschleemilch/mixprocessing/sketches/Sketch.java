@@ -38,7 +38,7 @@ import processing.core.PGraphicsJava2D;
  * @author Sebastian Schleemilch
  */
 public class Sketch implements Comparable<Sketch> {
-    private final Class template;
+    private final Class<?> template;
     private PApplet instance = null;
     private boolean setupDone = false;
     private boolean receivingMouseEvents = true, receivingKeyEvents = true;
@@ -48,7 +48,7 @@ public class Sketch implements Comparable<Sketch> {
      * Creates a Processing sketch represenation.
      * @param template base class of the sketch
      */
-    public Sketch(Class template) {
+    public Sketch(Class<?> template) {
         this.template = template;
     }
     

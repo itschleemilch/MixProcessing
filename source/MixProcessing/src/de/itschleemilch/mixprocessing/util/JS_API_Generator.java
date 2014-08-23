@@ -131,7 +131,7 @@ public class JS_API_Generator {
         boolean firstElement = true;
         for(Parameter param : params) {
             String pName = param.getName();
-            Class pType = param.getType();
+            Class<?> pType = param.getType();
             if(firstElement)
                 firstElement = false;
             else
@@ -150,7 +150,7 @@ public class JS_API_Generator {
      * @param type
      * @return 
      */
-    private String getShortType(Class type) {
+    private String getShortType(Class<?> type) {
         String typeName = type.getName();
         if(typeName.contains("."))
                 return typeName.substring(typeName.lastIndexOf('.')+1);

@@ -146,4 +146,5 @@ public class LoggingDialog extends Frame implements WindowListener {
         }
     }
     
+    private static final long serialVersionUID = 1L;
 }

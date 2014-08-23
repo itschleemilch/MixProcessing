@@ -101,7 +101,7 @@ public class MPGraphics2D extends PGraphicsJava2D {
             g2.setPaint(storePaint);
         if(storeHints != null)
         {
-            Iterator keys = storeHints.keySet().iterator();
+            Iterator<?> keys = storeHints.keySet().iterator();
             while(keys.hasNext())
             {
                 Object key = keys.next();

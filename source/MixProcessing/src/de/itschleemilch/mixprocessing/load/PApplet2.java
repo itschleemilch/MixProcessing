@@ -64,5 +64,5 @@ public class PApplet2 extends PApplet {
     }
     
     
-    
+    private static final long serialVersionUID = 1L;
 }

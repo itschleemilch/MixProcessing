@@ -250,5 +250,5 @@ public class MixRenderer extends Canvas
         sketches.keyEvent(e, 2);
     }
     
-    
+    private static final long serialVersionUID = 1L;
 }

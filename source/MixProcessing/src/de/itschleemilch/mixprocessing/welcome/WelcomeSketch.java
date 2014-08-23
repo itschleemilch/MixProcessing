@@ -149,4 +149,6 @@ public class WelcomeSketch extends PApplet2 {
       else
         colorWheel = 0;      
     }
+    
+    private static final long serialVersionUID = 1L;
 }

@@ -352,11 +352,10 @@ public class ScriptingApi {
             return false;
         else {
             Object obj = s.getInstance();
-            Class type = null;
             try {
                 Field field = obj.getClass().getDeclaredField(varName);
                 field.setAccessible(true);
-                type = field.getType();
+                Class<?> type = field.getType();
                 
                 if(type.equals(String.class))
                     field.set(obj, newValue.toString());
@@ -400,8 +399,8 @@ public class ScriptingApi {
                 return false;
             } 
             catch (IllegalAccessException e2) {
-                System.err.printf("Variable's type can not be set: %s in sketch %s, type: %s\n", 
-                        varName, sketchName, type.getName());
+                System.err.printf("Variable's type can not be set: %s in sketch %s%s\n", 
+                        varName, sketchName);
                 return false;
             }
             catch (Exception e3) {
@@ -426,7 +425,7 @@ public class ScriptingApi {
             try {
                 Field field = obj.getClass().getDeclaredField(varName);
                 field.setAccessible(true);
-                Class type = field.getType();
+                Class<?> type = field.getType();
                 
                 if(type.equals(boolean.class))
                     return field.getBoolean(obj);
@@ -553,7 +552,7 @@ public class ScriptingApi {
         final File sketchFolder = (sketchFile.isDirectory()) ? sketchFile : sketchFile.getParentFile();
         if(sketchFile.exists()) {
             SketchCompiler compiler =  new SketchCompiler();
-            Class result = compiler.compileSketch(new File(sketchPath));
+            Class<?> result = compiler.compileSketch(new File(sketchPath));
             if(result != null) {
                 Sketch newSketch = new Sketch(result);
                 newSketch.createInstance(outputWindow, sketchFolder.getAbsolutePath());

@@ -246,4 +246,6 @@ public class RenderFrame extends Frame
     
     public static final int STARTUP_WIDTH   = 800;
     public static final int STARTUP_HEIGHT  = 600;
+    
+    private static final long serialVersionUID = 1L;
 }

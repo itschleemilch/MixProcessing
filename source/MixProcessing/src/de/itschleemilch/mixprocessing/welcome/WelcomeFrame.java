@@ -254,4 +254,6 @@ public class WelcomeFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem webserverLoclItem;
     private javax.swing.JMenuItem websiteItem;
     // End of variables declaration//GEN-END:variables
+
+    private static final long serialVersionUID = 1L;
 }

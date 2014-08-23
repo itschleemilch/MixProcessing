@@ -306,4 +306,6 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
     private javax.swing.JTextField scriptInputField;
     private javax.swing.JMenu sketchListMenu;
     // End of variables declaration//GEN-END:variables
+    
+    private static final long serialVersionUID = 1L;
 }

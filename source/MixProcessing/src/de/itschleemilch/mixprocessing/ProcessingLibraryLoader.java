@@ -67,10 +67,10 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
     
     private void addLibraryToClasspath(URL url) {
         URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class clazz = URLClassLoader.class;
+        Class<?> clazz = URLClassLoader.class;
 
         try {
-            Method method = clazz.getDeclaredMethod("addURL", new Class[]{URL.class});
+            Method method = clazz.getDeclaredMethod("addURL", new Class<?>[]{URL.class});
             method.setAccessible(true);
             method.invoke(classLoader, new Object[]{url});
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         for(File file : files) {
             if(file.isFile() && file.getName().endsWith(".jar")) {
                 try {
-                    addLibraryToClasspath( file.toURL() );
+                    addLibraryToClasspath( file.toURI().toURL() );
                 } catch (MalformedURLException e) {
                     e.printStackTrace(System.err);
                 }
@@ -265,4 +265,6 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
     private java.awt.Button searchBtn;
     private java.awt.Button startBtn;
     // End of variables declaration//GEN-END:variables
+
+    private static final long serialVersionUID = 1L;
 }

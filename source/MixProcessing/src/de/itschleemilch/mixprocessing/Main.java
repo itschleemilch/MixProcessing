@@ -109,7 +109,7 @@ public class Main {
         }        
     }
     
-    private static Class[] readSketches(File sourceDir)
+    private static Class<?>[] readSketches(File sourceDir)
     {
         JarManagement jars = new JarManagement(sourceDir);
         jars.readJars();
@@ -140,7 +140,7 @@ public class Main {
                 jarSource.getAbsolutePath());
         
         RenderFrame frame = new RenderFrame("MixProcessing", logging);
-        frame.centerWindowOnScreen(frame);
+        RenderFrame.centerWindowOnScreen(frame);
         
         logging.setIconImages( frame.getIconImages() );
         //logging.setVisible(true);
@@ -161,11 +161,11 @@ public class Main {
             }
         }
         
-        Class[] sketchClasses = readSketches(jarSource);
+        Class<?>[] sketchClasses = readSketches(jarSource);
         Sketches sketches = new Sketches();
         
         // add welcome Sketch
-        ArrayList<Class> totalSketchList = new ArrayList<>( 
+        ArrayList<Class<?>> totalSketchList = new ArrayList<>( 
                 Arrays.asList(sketchClasses) );
         totalSketchList.add(WelcomeSketch.class);
 
@@ -182,7 +182,7 @@ public class Main {
         
         // initialise Processing Sketches
         String sketchPath = jarSource.getAbsolutePath();
-        for (Class sketchClasse : totalSketchList) {
+        for (Class<?> sketchClasse : totalSketchList) {
             Sketch s = new Sketch(sketchClasse);
             sketches.addSketch(s);
             s.createInstance(frame, sketchPath);
@@ -217,4 +217,5 @@ public class Main {
         webserver.startServer();
     }
     
+    private static final long serialVersionUID = 1L;
 }
