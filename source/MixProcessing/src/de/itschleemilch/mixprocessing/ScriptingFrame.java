@@ -61,7 +61,7 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
         initComponents();
         try {
             buildMenu();
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             e.printStackTrace(System.err);
         }
         rebuildSketchesChannelsList();
@@ -131,7 +131,7 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
             e.printStackTrace(System.err);
         }
         
-        Sketch[] sketches = eventManager.getSketches().getAllSketches();
+        Sketch[] sketches = eventManager.getAPI().getSketches().getAllSketches();
         Arrays.sort(sketches);
         for (Sketch sketch : sketches) {
             JMenuItem item = new JMenuItem(sketch.getName());
@@ -159,12 +159,13 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
             e.printStackTrace(System.err);
         }
         
-        SingleChannel[] channels = eventManager.getChannels().getAllChannels();
+        SingleChannel[] channels = eventManager.getAPI().getChannels().getAllChannels();
         Arrays.sort(channels);
         for (SingleChannel channel : channels) {
             String text = channel.getChannelName();
-            if(channel instanceof GroupChannel)
+            if(channel instanceof GroupChannel) {
                 text += " (G)";
+            }
             final JMenuItem item = new JMenuItem(text);
             item.setActionCommand("I:" + channel.getChannelName());
             item.addActionListener(this);
@@ -190,8 +191,10 @@ implements ActionListener, ChannelsChangedListener, SketchesChangedListener {
     }
     
     private void insertText(String text) {
-        if(scriptInputField.getSelectionStart() == scriptInputField.getSelectionEnd())
+        if(scriptInputField.getSelectionStart() == 
+                scriptInputField.getSelectionEnd()) {
             scriptInputField.replaceSelection(text);
+        }
         else { // Replace selected Text
             scriptInputField.replaceSelection(text);
         }

@@ -35,7 +35,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
-import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -69,7 +68,7 @@ public class RenderFrame extends Frame
                 new java.awt.Point(0, 0), "NOCURSOR");
         
         setSize(STARTUP_WIDTH, STARTUP_HEIGHT);
-        centerWindowOnScreen(this);
+        RenderFrame.centerWindowOnScreen(this);
         addIconImage();
     }
     
@@ -99,11 +98,7 @@ public class RenderFrame extends Frame
     {
         return getToolkit().createImage(RenderFrame.class.getResource("res/"+name));
     }
-    
-    public final ArrayList<Image> getIconImages() {
-        return icons;
-    }
-    
+        
     /**
      * Centers the windows on the screen
      * @param window 
@@ -125,28 +120,45 @@ public class RenderFrame extends Frame
                 dispose();
                 setUndecorated(!isUndecorated());
                 setVisible(true);
-                if(isUndecorated())
+                if(isUndecorated()) {
                     setAlwaysOnTop(true);
-                else
+                }
+                else {
                     setAlwaysOnTop(false);
+                }
             }
         });
     }
     
     public final void toggleMouse()
     {
-        if(getCursor() == zeroCursor)
+        if(getCursor() == zeroCursor) {
             setCursor(Cursor.getDefaultCursor());
-        else
+        }
+        else {
             setCursor(zeroCursor);
+        }
     }
     
     public final void toggleOpacity() {
         if(isUndecorated()) {
-            if(getOpacity() == 1f)
+            if(getOpacity() == 1f) {
                 setOpacity(0.5f);
-            else
+            }
+            else {
                 setOpacity(1f);
+            }
+        }
+    }
+    
+    public final void toggleEditMode() {
+        if(scriptingAPI != null) {
+            if( scriptingAPI.channelIsEditing() ) {
+                scriptingAPI.channelNormal();
+            }
+            else {
+                scriptingAPI.channelEditing();
+            }
         }
     }
 
@@ -219,12 +231,7 @@ public class RenderFrame extends Frame
         }
         /* Switch to channel edit mode. */
         else if(e.getKeyCode() == KeyEvent.VK_F2) {
-            if(scriptingAPI != null) {
-                if( scriptingAPI.channelIsEditing() )
-                    scriptingAPI.channelNormal();
-                else
-                    scriptingAPI.channelEditing();
-            }
+            toggleEditMode();
         }
         /* Show / hide debug log. */
         else if(e.getKeyCode() == KeyEvent.VK_F5) {

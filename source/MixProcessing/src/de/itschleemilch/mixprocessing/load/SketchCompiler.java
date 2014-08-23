@@ -84,13 +84,17 @@ public class SketchCompiler {
             final String javaCode = preprocessSketch(className, pdeText.toString());
             final Class<?> compiled = compileCode(className, javaCode);
             
-            if(compiled != null && compiled.getSuperclass().equals(PApplet2.class))
+            if(compiled != null && 
+                    compiled.getSuperclass().equals(PApplet2.class)) {
                 return compiled;
-            else
+            }
+            else {
                 return null;
+            }
         }
-        else
+        else {
             return null;
+        }
     }
     
     /**
@@ -175,11 +179,12 @@ public class SketchCompiler {
             return null;
         }
         finally {
-            if(fileManager != null)
+            if(fileManager != null) {
                 try {
                     fileManager.close();
                 } catch (IOException e) {
                 }
+            }
         }
     }
     

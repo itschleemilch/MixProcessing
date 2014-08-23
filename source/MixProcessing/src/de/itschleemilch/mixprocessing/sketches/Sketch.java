@@ -67,8 +67,9 @@ public class Sketch implements Comparable<Sketch> {
         {
             return null;
         }
-        else
+        else {
             return instance;
+        }
     }
     
     /**
@@ -79,8 +80,9 @@ public class Sketch implements Comparable<Sketch> {
      */
     public final PApplet createInstance(RenderFrame f, String sketchPath)
     {
-        if(getInstance() != null)
+        if(getInstance() != null) {
             return getInstance();
+        }
         else
         {
             try {
@@ -191,7 +193,8 @@ public class Sketch implements Comparable<Sketch> {
             Field f = PGraphicsJava2D.class.getDeclaredField("offscreen");
             f.setAccessible(true);
             f.set(mpg2d, bi);
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | SecurityException | 
+                IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace(System.err);
         }
         mpg2d.init();
@@ -209,11 +212,8 @@ public class Sketch implements Comparable<Sketch> {
                 long period = FRAME_RATE_PERIOD_FIELD.getLong(instance);
                 long lastDrawn = FRAME_RATE_LAST_NANOS_FIELD.getLong(instance);
                 long diff = System.nanoTime() - lastDrawn;
-                if(diff >= period)
-                    return true;
-                else
-                    return false;
-            } catch (Exception e) {
+                return diff >= period;
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -229,7 +229,7 @@ public class Sketch implements Comparable<Sketch> {
         {
             try {
                 FRAME_RATE_LAST_NANOS_FIELD.setLong(instance, System.nanoTime());
-            } catch (Exception e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -254,12 +254,15 @@ public class Sketch implements Comparable<Sketch> {
      * @param alpha 0: transparent. 1: opaque.
      */
     public void setAlpha(float alpha) {
-        if(alpha < 0)
+        if(alpha < 0) {
             this.alpha = 0.0f;
-        else if(alpha > 1.0f)
+        }
+        else if(alpha > 1.0f) {
             this.alpha = 1.0f;
-        else
+        }
+        else {
             this.alpha = alpha;
+        }
     }
     
     /**
@@ -333,14 +336,14 @@ public class Sketch implements Comparable<Sketch> {
         try {
             fRP_F = PApplet.class.getDeclaredField("frameRatePeriod");
             fRP_F.setAccessible(true);
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | SecurityException e) {
             e.printStackTrace(System.out);
         }
         FRAME_RATE_PERIOD_FIELD = fRP_F;
         try {
             fRLN_F = PApplet.class.getDeclaredField("frameRateLastNanos");
             fRLN_F.setAccessible(true);
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | SecurityException e) {
             e.printStackTrace(System.out);
         }
         FRAME_RATE_LAST_NANOS_FIELD = fRLN_F;

@@ -60,7 +60,7 @@ public class JarManagement {
         File[] jars = jarFolder.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                return pathname.isFile() & pathname.getName().endsWith(".jar");
+                return pathname.isFile() && pathname.getName().endsWith(".jar");
             }
         });
         sketches.clear();
@@ -117,8 +117,9 @@ public class JarManagement {
                     sketches.add(sketchClass);
                     System.out.printf("\t\tSketch loaded: %s\n", mainClass);
                 }
-                else
+                else {
                     System.out.printf("\t\tClass is no Processing Sketch: %s\n", mainClass);
+                }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace(System.err);
             }

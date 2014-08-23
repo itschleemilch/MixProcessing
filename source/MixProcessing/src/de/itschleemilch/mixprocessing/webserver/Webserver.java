@@ -19,7 +19,6 @@
  */
 package de.itschleemilch.mixprocessing.webserver;
 
-import de.itschleemilch.mixprocessing.EventManager;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
 import java.io.BufferedReader;
@@ -28,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
@@ -51,19 +51,17 @@ import processing.data.JSONObject;
 public class Webserver extends Thread {
     private ServerSocket server = null;
     
-    private final EventManager eventManager;
     private final ScriptRunner scriptRunner;
     
     private File fileStorage = null;
     
     /**
      * Creates a new Webserver object. Must be started!
-     * @param eventManager 
+     * @param scriptRunner 
      * @see Webserver#startServer() 
      */
-    public Webserver(EventManager eventManager) {
-        this.eventManager = eventManager;
-        this.scriptRunner = new ScriptRunner(eventManager);
+    public Webserver(ScriptRunner scriptRunner) {
+        this.scriptRunner = scriptRunner;
         initServerStorage();
     }
     
@@ -149,11 +147,11 @@ public class Webserver extends Thread {
                         try {
                             processClient(client);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            e.printStackTrace(System.err);
                         }
                     }
                 }).start();
-            } catch (Exception e) {
+            } catch (IOException e) {
             }
         } // while
     }
@@ -166,9 +164,9 @@ public class Webserver extends Thread {
             reader= new BufferedReader( new InputStreamReader(
                 client.getInputStream() ) );
             clientCmd = reader.readLine();
-        } catch (Exception e) {
+        } catch (IOException e) {
             // Failed to open input stream or to read first line
-            try{client.close();}catch(Exception ee) {}
+            try{client.close();}catch(IOException ee) {}
             return;
         }
         /* Determine HTTP request parameters */
@@ -190,7 +188,7 @@ public class Webserver extends Thread {
                 String paramRaw = query.substring(getParamBeginning+1);
                 try {
                     param = URLDecoder.decode(paramRaw, "UTF-8");
-                } catch (Exception e) {
+                } catch (UnsupportedEncodingException e) {
                     param = "decoding error.";
                 }
             }
@@ -220,8 +218,9 @@ public class Webserver extends Thread {
                 sendString(output, jsonOutput);
             } catch (IOException e) {
             } finally {
-                if(output != null)
+                if(output != null) {
                     try{output.close();} catch(IOException e) {}
+                }
                 try{client.close();}catch(IOException ee) {}
             }
         }
@@ -241,8 +240,9 @@ public class Webserver extends Thread {
                 }
             } catch (IOException e) {
             } finally {
-                if(output != null)
+                if(output != null) {
                     try{output.close();} catch(IOException e) {}
+                }
                 try{client.close();}catch(IOException ee) {}
             }
         } // End file output
@@ -266,8 +266,9 @@ public class Webserver extends Thread {
             }
         } catch (IOException e) {
         } finally {
-            if(fis != null)
-                try{fis.close();} catch(Exception e) {}
+            if(fis != null) {
+                try{fis.close();} catch(IOException e) {}
+            }
         }
         /* Flush contents  */
         out.flush();
@@ -296,57 +297,63 @@ public class Webserver extends Thread {
     }
     
     private void fillJsonArray(JSONArray array, Object data) {
-        if(data == null)
+        if(data == null) {
             array.append("null");
-
-        else if(data instanceof Boolean)
+        } 
+        else if(data instanceof Boolean) {
             array.append( (Boolean) data );
-
-        else if(data instanceof Double)
+        } 
+        else if(data instanceof Double) {
             array.append( (Double) data );
-
-        else if(data instanceof Float)
+        } 
+        else if(data instanceof Float) {
             array.append( (Float) data );
-
-        else if(data instanceof Integer)
+        } 
+        else if(data instanceof Integer) {
             array.append( (Integer) data );
-
-        else if(data instanceof Long)
+        } 
+        else if(data instanceof Long) {
             array.append( (Long) data );
-        
+        } 
         else if(data instanceof Object[]) { 
             Object[] subarray = (Object[]) data;
-            for(Object subdata : subarray)
+            for(Object subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
         
-        else if(data instanceof Object)
+        else if(data instanceof Object) {
             array.append(data.toString());
-        
+        } 
         else if(data instanceof double[]) { 
             double[] subarray = (double[]) data;
-            for(double subdata : subarray)
+            for(double subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
         else if(data instanceof float[]) { 
             float[] subarray = (float[]) data;
-            for(float subdata : subarray)
+            for(float subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
         else if(data instanceof int[]) { 
             int[] subarray = (int[]) data;
-            for(int subdata : subarray)
+            for(int subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
         else if(data instanceof boolean[]) { 
             boolean[] subarray = (boolean[]) data;
-            for(boolean subdata : subarray)
+            for(boolean subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
         else if(data instanceof long[]) { 
             long[] subarray = (long[]) data;
-            for(long subdata : subarray)
+            for(long subdata : subarray) {
                 fillJsonArray(array, subdata); // add all elements
+            }
         }
     }
     

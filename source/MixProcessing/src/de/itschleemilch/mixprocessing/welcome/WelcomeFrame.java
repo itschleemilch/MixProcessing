@@ -36,9 +36,11 @@ public class WelcomeFrame extends javax.swing.JFrame {
     private final LoggingDialog logDialog;
     private final ScriptingFrame scriptFrame;
 
-    
     /**
      * Creates new form WelcomeFrame
+     * 
+     * @param logDialog
+     * @param scriptFrame 
      */
     public WelcomeFrame(LoggingDialog logDialog, ScriptingFrame scriptFrame) {
         super();

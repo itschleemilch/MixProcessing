@@ -88,27 +88,30 @@ public class ChannelEditing implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(!channels.isPreviewChannelOutlines())
+        if(!channels.isPreviewChannelOutlines()) {
             return;
+        }
         
         if(state == STATES.WAITING) {
-            if(e.getClickCount() < 2)
-                return;
+            if(e.getClickCount() < 2) {
+            }
             else {
                 startNewPath();
                 path.moveTo(e.getX(), e.getY());
                 state = STATES.LINE_TO;
             }
         }
-        else if(state == STATES.END) return;
+        else if(state == STATES.END) {
+        }
         else if(state == STATES.START) { // currently not used
             path.moveTo(e.getX(), e.getY());
             state = STATES.LINE_TO;
         }
         else if(state == STATES.LINE_TO)
         {
-            if(e.getClickCount() < 2)
+            if(e.getClickCount() < 2) {
                 path.lineTo(e.getX(), e.getY());
+            }
             else {
                 path.lineTo(e.getX(), e.getY());
                 path.closePath();
@@ -126,8 +129,10 @@ public class ChannelEditing implements MouseListener {
         if(state != STATES.WAITING)
         {
             Point2D lastPoint = path.getCurrentPoint();
-            if(lastPoint != null)
-                drawControlPoint(g, (float)lastPoint.getX(), (float)lastPoint.getY());
+            if(lastPoint != null) {
+                drawControlPoint(g, 
+                        (float)lastPoint.getX(), (float)lastPoint.getY());
+            }
             g.setColor(Color.MAGENTA);
             g.draw(path);
         }

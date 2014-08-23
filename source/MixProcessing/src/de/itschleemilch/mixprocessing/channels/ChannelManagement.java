@@ -21,7 +21,6 @@ package de.itschleemilch.mixprocessing.channels;
 
 import de.itschleemilch.mixprocessing.EventManager;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
-import de.itschleemilch.mixprocessing.welcome.WelcomeChannels;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -46,7 +45,7 @@ public class ChannelManagement {
     private final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
     public EventManager eventManager = null; // is set external by EventManager
     
-    private final HashMap<Sketch, SingleChannel> sketchChannelAssociation = new HashMap<Sketch, SingleChannel>();
+    private final HashMap<Sketch, SingleChannel> sketchChannelAssociation = new HashMap<>();
 
     public ChannelManagement() {
     }
@@ -55,8 +54,9 @@ public class ChannelManagement {
     {
         SingleChannel channel = new SingleChannel(channels.size());
         channels.add(channel);
-        if(eventManager != null)
+        if(eventManager != null) {
             eventManager.fireChannelsChanged();
+        }
         return channel;
     }
     
@@ -75,8 +75,9 @@ public class ChannelManagement {
     {
         GroupChannel channel = new GroupChannel(channels.size());
         channels.add(channel);
-        if(eventManager != null)
+        if(eventManager != null) {
             eventManager.fireChannelsChanged();
+        }
         return channel;
     }
     
@@ -103,8 +104,9 @@ public class ChannelManagement {
      */
     public final SingleChannel findChannel(String name) {
         for (SingleChannel channel : channels) {
-            if(channel.getChannelName().equals(name))
+            if(channel.getChannelName().equals(name)) {
                 return channel;
+            }
         }
         return null;
     }
@@ -193,13 +195,16 @@ public class ChannelManagement {
         SingleChannel c = sketchChannelAssociation.get(s);
         if( c != null && c.isEnabled() )
         {
-            if(c.getShape() != null)
+            if(c.getShape() != null) {
                 return c.getShape();
-            else
+            }
+            else {
                 return offChannel;
+            }
         }
-        else
+        else {
             return offChannel;
+        }
     }
     
     /**

@@ -21,7 +21,6 @@ package de.itschleemilch.mixprocessing;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.Label;
 import java.awt.Panel;
 import java.awt.TextArea;
 import java.awt.event.WindowEvent;
@@ -79,8 +78,9 @@ public class LoggingDialog extends Frame implements WindowListener {
                     try {
                         if(br.ready()) {
                             String line = br.readLine();
-                            if(line != null)
+                            if(line != null) {
                                 output.append(line + "\n");
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace(System.err);

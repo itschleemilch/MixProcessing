@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -42,7 +41,7 @@ import java.util.Date;
  * @see ScriptingApi
  */
 public class JS_API_Generator {
-    private Method[] methods;
+    private final Method[] methods;
 
     public JS_API_Generator() {
         println("/* START OF MIXPROCESSING JAVASCRIPT LIBRARY */");

@@ -33,7 +33,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import processing.core.PApplet;
 
 /**
  * MixProcessing's scripting API.
@@ -50,19 +49,6 @@ public class ScriptingApi {
     protected final Sketches sketches;
     
     /**
-     * Only called by EventManager
-     * @param outputWindow
-     * @param renderer 
-     */
-    public ScriptingApi(RenderFrame outputWindow, MixRenderer renderer) {
-        this.events = null;
-        this.outputWindow = outputWindow;
-        this.renderer = renderer;
-        this.channels = renderer.getChannels();
-        this.sketches = renderer.getSketches();
-    }
-    
-    /**
      * Public Constructor
      * @param events
      * @param outputWindow
@@ -73,6 +59,7 @@ public class ScriptingApi {
         this.outputWindow = outputWindow;
         this.renderer = renderer;
         this.channels = renderer.getChannels();
+        this.channels.eventManager = events;
         this.sketches = renderer.getSketches();
     }
     
@@ -119,12 +106,14 @@ public class ScriptingApi {
         ArrayList<Shape> sourceShapes = new ArrayList<>();
         for (String sourceChannel : sourceChannels) {
             SingleChannel channel = channels.findChannel(sourceChannel);
-            if(channel.getShape() != null)
+            if(channel.getShape() != null) {
                 sourceShapes.add( channel.getShape() );
+            }
         }
         /* Make group */
-        if(sourceShapes.isEmpty())
+        if(sourceShapes.isEmpty()) {
             return false;
+        }
         else {
             GroupChannel group = channels.addGroupChannel();
             for(Shape sourceShape : sourceShapes) {
@@ -138,8 +127,9 @@ public class ScriptingApi {
     
     public final boolean channelOn(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
-        if(c == null)
+        if(c == null) {
             return false;
+        }
         else
         {
             c.setEnabled(true);
@@ -149,8 +139,9 @@ public class ScriptingApi {
     
     public final boolean channelOff(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
-        if(c == null)
+        if(c == null) {
             return false;
+        }
         else
         {
             c.setEnabled(false);
@@ -187,8 +178,9 @@ public class ScriptingApi {
     
     public final boolean channelRename(String oldName, String newName) {
         SingleChannel c = channels.findChannel(oldName);
-        if(c == null)
+        if(c == null) {
             return false;
+        }
         else
         {
             c.setChannelName(newName);
@@ -205,8 +197,9 @@ public class ScriptingApi {
      */
     public final boolean channelBlacking(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
-        if(c == null)
+        if(c == null) {
             return false;
+        }
         else
         {
             c.paintBlackFlag = true;
@@ -216,8 +209,9 @@ public class ScriptingApi {
     
     public final boolean channelRemove(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
-        if(c == null)
+        if(c == null) {
             return false;
+        }
         else
         {
             channels.removeChannel(c);
@@ -229,10 +223,16 @@ public class ScriptingApi {
     /*************************************************************
      * Rendering Control
      *************************************************************/
+    
+    /**
+     * Performes a full refresh including a full blacking of the screen.
+     * @return true
+     */
     public final boolean rendererForceRefresh() {
         renderer.setForceRefresh();
-        while(renderer.isForceRefreshWaiting())
+        while(renderer.isForceRefreshWaiting()) {
             Thread.yield();
+        }
         return true;
     }
     
@@ -247,6 +247,7 @@ public class ScriptingApi {
     /**
      * Sets the absolut maximum frame rate of the renderer.
      * @param frameRate 
+     * @return true
      */
     public boolean setFrameRate(float frameRate) {
         renderer.setMaxFrameRate(frameRate);
@@ -269,8 +270,9 @@ public class ScriptingApi {
             s.setAlpha(value);
             return true;
         }
-        else
+        else {
             return false;
+        }
     }
     
     /**
@@ -312,13 +314,16 @@ public class ScriptingApi {
             s.resetSetup();
             return true;
         }
-        else return false;
+        else {
+            return false;
+        }
     }
     
     public final boolean sketchRemove(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
+        if(s == null) {
             return false;
+        }
         else {
             channels.unsetSketchChannel(s);
             events.fireSketchesChanged();
@@ -329,8 +334,9 @@ public class ScriptingApi {
     public final boolean sketchRestart(String sketchName)
     {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
+        if(s == null) {
             return false;
+        }
         else {
             s.resetSetup();
             return true;
@@ -348,8 +354,9 @@ public class ScriptingApi {
      */
     public final boolean sketchSetVar(String sketchName, String varName, Object newValue) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null || s.getInstance() == null)
+        if(s == null || s.getInstance() == null) {
             return false;
+        }
         else {
             Object obj = s.getInstance();
             try {
@@ -357,39 +364,41 @@ public class ScriptingApi {
                 field.setAccessible(true);
                 Class<?> type = field.getType();
                 
-                if(type.equals(String.class))
+                if(type.equals(String.class)) {
                     field.set(obj, newValue.toString());
-                
-                else if(type.equals(boolean.class))
-                    field.setBoolean(obj, (boolean)newValue);
-                
-                else if(type.equals(byte.class))
-                    field.setByte(obj, (byte)newValue);
-                
-                else if(type.equals(char.class))
-                    field.setChar(obj, (char)newValue);
-                
-                else if(type.equals(double.class))
-                    field.setDouble(obj, (double)newValue);
-                
-                else if(type.equals(float.class))
-                    field.setFloat(obj, (float)newValue);
-                
-                else if(type.equals(int.class)) {
-                    if(newValue instanceof Double)
-                        field.setInt(obj, ((Double)newValue).intValue() );
-                    else
-                        field.setInt(obj, (int)newValue);
                 }
-                
-                else if(type.equals(long.class))
+                else if(type.equals(boolean.class)) {
+                    field.setBoolean(obj, (boolean)newValue);
+                }
+                else if(type.equals(byte.class)) {
+                    field.setByte(obj, (byte)newValue);
+                }
+                else if(type.equals(char.class)) {
+                    field.setChar(obj, (char)newValue);
+                }
+                else if(type.equals(double.class)) {
+                    field.setDouble(obj, (double)newValue);
+                }
+                else if(type.equals(float.class)) {
+                    field.setFloat(obj, (float)newValue);
+                }
+                else if(type.equals(int.class)) {
+                    if(newValue instanceof Double) {
+                        field.setInt(obj, ((Double)newValue).intValue() );
+                    }
+                    else {
+                        field.setInt(obj, (int)newValue);
+                    }
+                }
+                else if(type.equals(long.class)) {
                     field.setLong(obj, (long)newValue);
-                
-                else if(type.equals(short.class))
+                }
+                else if(type.equals(short.class)) {
                     field.setShort(obj, (short)newValue);
-                
-                else
+                }
+                else {
                     field.set(obj, newValue);
+                }
                 
                 return true;
             } 
@@ -403,7 +412,7 @@ public class ScriptingApi {
                         varName, sketchName);
                 return false;
             }
-            catch (Exception e3) {
+            catch (IllegalArgumentException | SecurityException e3) {
                 e3.printStackTrace(System.err);
                 return false;
             }
@@ -418,8 +427,9 @@ public class ScriptingApi {
      */
     public final Object sketchGetVar(String sketchName, String varName) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null || s.getInstance() == null)
+        if(s == null || s.getInstance() == null) {
             return null;
+        }
         else {
             Object obj = s.getInstance();
             try {
@@ -427,39 +437,41 @@ public class ScriptingApi {
                 field.setAccessible(true);
                 Class<?> type = field.getType();
                 
-                if(type.equals(boolean.class))
+                if(type.equals(boolean.class)) {
                     return field.getBoolean(obj);
-                
-                else if(type.equals(byte.class))
+                }
+                else if(type.equals(byte.class)) {
                     return field.getByte(obj);
-                
-                else if(type.equals(char.class))
+                }
+                else if(type.equals(char.class)) {
                     return field.getChar(obj);
-                
-                else if(type.equals(double.class))
+                }
+                else if(type.equals(double.class)) {
                     return field.getDouble(obj);
-                
-                else if(type.equals(float.class))
+                }
+                else if(type.equals(float.class)) {
                     return field.getFloat(obj);
-                
-                else if(type.equals(int.class))
+                }
+                else if(type.equals(int.class)) {
                     return field.getInt(obj);
-                
-                else if(type.equals(long.class))
+                }
+                else if(type.equals(long.class)) {
                     return field.getLong(obj);
-                
-                else if(type.equals(short.class))
+                }
+                else if(type.equals(short.class)) {
                     return field.getShort(obj);
-                
-                else
+                }
+                else {
                     return field.get(obj);
+                }
             } 
             catch (NoSuchFieldException e1) {
                 System.err.printf("Variable does not exist: %s in sketch %s\n", 
                         varName, sketchName);
                 return null;
             } 
-            catch (Exception e3) {
+            catch (IllegalAccessException | IllegalArgumentException | 
+                    SecurityException e3) {
                 e3.printStackTrace(System.err);
                 return null;
             }
@@ -474,8 +486,9 @@ public class ScriptingApi {
      */
     public String[] sketchGetVars(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null || s.getInstance() == null)
+        if(s == null || s.getInstance() == null) {
             return null;
+        }
         else {
             ArrayList<String> vars = new ArrayList<>();
             Field[] fields = s.getInstance().getClass().getDeclaredFields();
@@ -493,8 +506,9 @@ public class ScriptingApi {
      */
     public float sketchGetFrameRate(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null || s.getInstance() == null)
+        if(s == null || s.getInstance() == null) {
             return -1f;
+        }
         else {
             return s.getInstance().frameRate;
         }
@@ -507,8 +521,9 @@ public class ScriptingApi {
      */
     public int sketchGetFrameCount(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null || s.getInstance() == null)
+        if(s == null || s.getInstance() == null) {
             return -1;
+        }
         else {
             return s.getInstance().frameCount;
         }
@@ -518,20 +533,34 @@ public class ScriptingApi {
      * User Events
      *************************************************************/
     
+    /**
+     * Enables or disables key events for the specific sketch
+     * @param sketchName
+     * @param value
+     * @return 
+     */
     public final boolean sketchKeyEventsOn(String sketchName, boolean value) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
+        if(s == null) {
             return false;
+        }
         else {
             s.setReceivingKeyEvents(value);
             return true;
         }
     }
     
+    /**
+     * Enables or disables mouse events for the specific sketch
+     * @param sketchName
+     * @param value
+     * @return 
+     */
     public final boolean sketchMouseEventsOn(String sketchName, boolean value) {
         Sketch s = sketches.findSketch(sketchName);
-        if(s == null)
+        if(s == null) {
             return false;
+        }
         else {
             s.setReceivingMouseEvents(value);
             return true;
@@ -560,11 +589,13 @@ public class ScriptingApi {
                 events.fireSketchesChanged();
                 return true;
             }
-            else
+            else {
                 return false;
+            }
         }
-        else
+        else {
             return false;
+        }
     }
     
     /**
@@ -639,8 +670,7 @@ public class ScriptingApi {
     
     /**
      * Log Text to the standard log output.
-     * @param format
-     * @param args optional parameters
+     * @param text
      * @return 
      */
     public boolean println(String text) {
@@ -660,7 +690,7 @@ public class ScriptingApi {
     public boolean sleep(long ms) {
         try {
             Thread.sleep(ms);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
         }
         return true;
     }

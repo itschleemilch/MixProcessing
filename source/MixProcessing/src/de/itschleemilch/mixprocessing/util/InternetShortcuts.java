@@ -45,12 +45,15 @@ public class InternetShortcuts {
             }
             return true;
         }
-        else
+        else {
             return false;
+        }
     }
     
     public static final String USER_MANUAL = "https://github.com/itschleemilch/MixProcessing/blob/master/documentation/user/user_manual.md";
     
     public static final String PROJECT_HOME = "https://github.com/itschleemilch/MixProcessing";
     public static final String PROJECT_WEBSITE = "http://itschleemilch.github.io/MixProcessing/";
+    
+    public static final String PROCESSING_DOWNLOAD = "https://processing.org/download/";
 }

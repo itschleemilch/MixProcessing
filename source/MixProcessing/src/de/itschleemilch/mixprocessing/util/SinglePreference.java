@@ -24,6 +24,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -60,20 +61,22 @@ public class SinglePreference {
                         new FileInputStream(sourceFile), "UTF-8" ) );
                 return reader.readLine();
             } 
-            catch (Exception e) {
+            catch (IOException e) {
                 e.printStackTrace(System.err);
                 return defaultValue;
             }
             finally {
-                if(reader != null)
+                if(reader != null) {
                     try {
                         reader.close();
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                     }
+                }
             }
         }
-        else // File does not exist
+        else {// File does not exist
             return defaultValue;
+        }
     }
     
     /**
@@ -91,15 +94,16 @@ public class SinglePreference {
             writer.flush();
             writer.close();
         } 
-        catch (Exception e) {
+        catch (IOException e) {
             e.printStackTrace(System.err);
         }
         finally {
-            if(writer != null)
+            if(writer != null) {
                 try {
                     writer.close();
-                } catch (Exception e) {
+                } catch (IOException e) {
                 }
+            }
         }
     }
 }

@@ -82,7 +82,7 @@ public class MixRenderer extends Canvas
      * Returns a reference to the channel-editor
      * @return 
      */
-    public ChannelEditing getChannelEditor() {
+    public final ChannelEditing getChannelEditor() {
         return channelEditor;
     }
     
@@ -90,7 +90,7 @@ public class MixRenderer extends Canvas
      * Returns all managed output channels
      * @return 
      */
-    public ChannelManagement getChannels() {
+    public final ChannelManagement getChannels() {
         return channels;
     }
 
@@ -98,7 +98,7 @@ public class MixRenderer extends Canvas
      * Returns all managed Sketches
      * @return 
      */
-    public Sketches getSketches() {
+    public final Sketches getSketches() {
         return sketches;
     }
 
@@ -106,11 +106,11 @@ public class MixRenderer extends Canvas
      * Can be polled to wait until the refresh has been done.
      * @return 
      */
-    public boolean isForceRefreshWaiting() {
+    public final boolean isForceRefreshWaiting() {
         return forceRefresh;
     }
     
-    public void setForceRefresh() {
+    public final void setForceRefresh() {
         this.forceRefresh = true;
     }
     
@@ -118,7 +118,7 @@ public class MixRenderer extends Canvas
      * Returns the set maximum frame rate.
      * @return 
      */
-    public float getMaxFrameRate() {
+    public final float getMaxFrameRate() {
         return 1000f / (float)repaintSleep;
     }
     
@@ -126,11 +126,12 @@ public class MixRenderer extends Canvas
      * Sets the absolut maximum frame rate. 
      * @param frameRate 
      */
-    public void setMaxFrameRate(float frameRate) {
+    public final void setMaxFrameRate(float frameRate) {
         float sleep = 1000f / frameRate;
         int newSleep = Math.round(sleep);
-        if(newSleep < 10) // set lower limit
+        if(newSleep < 10) { // set lower limit
             newSleep = 10;
+        }
         repaintSleep = newSleep;
     }
 
@@ -158,8 +159,9 @@ public class MixRenderer extends Canvas
             g2d.fillRect(0, 0, getWidth(), getHeight());
             offImg2 = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
         }
-        else
+        else {
             g2d = offImg.createGraphics();
+        }
         if(forceRefresh)
         {
             forceRefresh = false;

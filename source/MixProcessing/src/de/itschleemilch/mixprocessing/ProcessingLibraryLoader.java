@@ -19,17 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package de.itschleemilch.mixprocessing;
 
+import de.itschleemilch.mixprocessing.util.InternetShortcuts;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
 import java.awt.Desktop;
 import java.awt.FileDialog;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -54,10 +50,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
         fileDialog.setFilenameFilter(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                if(dir.isDirectory() || name.endsWith(".jar"))
-                    return true;
-                else
-                    return false;
+                return dir.isDirectory() || name.endsWith(".jar");
             }
         });
         
@@ -73,7 +66,9 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
             Method method = clazz.getDeclaredMethod("addURL", new Class<?>[]{URL.class});
             method.setAccessible(true);
             method.invoke(classLoader, new Object[]{url});
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | SecurityException | 
+                IllegalAccessException | IllegalArgumentException | 
+                InvocationTargetException e) {
             e.printStackTrace(System.err);
         }
     }
@@ -249,10 +244,7 @@ public class ProcessingLibraryLoader extends java.awt.Frame {
     }//GEN-LAST:event_abortBtnActionPerformed
 
     private void downloadLibraryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadLibraryBtnActionPerformed
-        try {
-            Desktop.getDesktop().browse(new URI("https://processing.org/download/"));
-        } catch (Exception e) {
-        }
+        InternetShortcuts.openShortcut(InternetShortcuts.PROCESSING_DOWNLOAD);
     }//GEN-LAST:event_downloadLibraryBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

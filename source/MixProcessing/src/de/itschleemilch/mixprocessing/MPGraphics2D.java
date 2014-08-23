@@ -89,16 +89,21 @@ public class MPGraphics2D extends PGraphicsJava2D {
      * Loads the Graphic Context Settings
      */
     public final void loadGraphicSettings() {
-        if(storeBackground != null)
+        if(storeBackground != null) {
             g2.setBackground(storeBackground);
-        if(storeColor != null)
+        }
+        if(storeColor != null) {
             g2.setColor(storeColor);
-        if(storeComposite != null)
+        }
+        if(storeComposite != null) {
             g2.setComposite(storeComposite);
-        if(storeFont != null)
+        }
+        if(storeFont != null) {
             g2.setFont(storeFont);
-        if(storePaint != null)
+        }
+        if(storePaint != null) {
             g2.setPaint(storePaint);
+        }
         if(storeHints != null)
         {
             Iterator<?> keys = storeHints.keySet().iterator();
@@ -109,10 +114,12 @@ public class MPGraphics2D extends PGraphicsJava2D {
                 g2.setRenderingHint((RenderingHints.Key) key, value);
             }
         }
-        if(storeStroke != null)
+        if(storeStroke != null) {
             g2.setStroke(storeStroke);
-        if(storeTransform != null)
+        }
+        if(storeTransform != null) {
             g2.setTransform(storeTransform);
+        }
     }
     
 
@@ -149,10 +156,12 @@ public class MPGraphics2D extends PGraphicsJava2D {
     @Override
     protected void defaultSettings() {
         /* From original PGraphicsJava2D: */
-        if (quality > 0) 
+        if (quality > 0) {
             smooth();
-        else
+        }
+        else {
             noSmooth();
+        }
         colorMode(RGB, 255);
         fill(255);
         stroke(0);

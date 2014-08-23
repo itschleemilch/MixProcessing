@@ -23,7 +23,6 @@ package de.itschleemilch.mixprocessing;
 import de.itschleemilch.mixprocessing.events.ChannelsChangedListener;
 import de.itschleemilch.mixprocessing.events.SketchesChangedListener;
 import de.itschleemilch.mixprocessing.script.ScriptingApi;
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -31,30 +30,40 @@ import java.util.ArrayList;
  *
  * @author Sebastian Schleemilch
  */
-public class EventManager extends ScriptingApi {
+public class EventManager {
     
     
     private final ArrayList<ChannelsChangedListener> ccListener = new ArrayList<>();
     private final ArrayList<SketchesChangedListener> scListener = new ArrayList<>();
+    private ScriptingApi api = null;
 
     public EventManager(RenderFrame outputWindow, MixRenderer renderer) {
-        super(outputWindow, renderer);        
-        this.events = this;
-        setExternalReferences();
     }
     
-    private void setExternalReferences()
+    /**
+     * After creation this has to be called.
+     * @param api 
+     */
+    public void setApiAcess(final ScriptingApi api)
     {
+        this.api = api;
         final EventManager em = this;
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                channels.eventManager = em;
+                api.getChannels().eventManager = em;
             }
         }).start();
     }
-    
+
+    /**
+     * Access to the Scripting API.
+     * @return 
+     */
+    public ScriptingApi getAPI() {
+        return api;
+    }
     
     /*************************************************************
      * Event System

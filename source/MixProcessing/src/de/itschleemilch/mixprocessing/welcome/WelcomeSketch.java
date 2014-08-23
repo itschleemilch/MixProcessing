@@ -144,10 +144,12 @@ public class WelcomeSketch extends PApplet2 {
       
       // data prepreation
       moveAgents();
-      if(colorWheel < 0xFF)
-        colorWheel++;
-      else
-        colorWheel = 0;      
+      if(colorWheel < 0xFF) {
+          colorWheel++;
+      }
+      else {
+          colorWheel = 0;
+      }      
     }
     
     private static final long serialVersionUID = 1L;

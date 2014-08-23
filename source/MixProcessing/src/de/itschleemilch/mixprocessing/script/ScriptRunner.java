@@ -19,14 +19,11 @@
  */
 package de.itschleemilch.mixprocessing.script;
 
-import de.itschleemilch.mixprocessing.EventManager;
-import java.awt.TextArea;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.text.JTextComponent;
 
 /**
  * Runs JavaScript Code to control MixProcessing 
@@ -36,11 +33,15 @@ import javax.swing.text.JTextComponent;
 public class ScriptRunner {
     private final ScriptEngine scriptingEngine;
 
-    public ScriptRunner(final EventManager eventManager) {        
+    /**
+     * 
+     * @param api Access to the scripting API
+     */
+    public ScriptRunner(final ScriptingApi api) {        
         /* Init Scripting API */
         ScriptEngineManager factory = new ScriptEngineManager();
         scriptingEngine = factory.getEngineByName("JavaScript");
-        scriptingEngine.put("Api", eventManager); // access to EventManager through mp Variable
+        scriptingEngine.put("Api", api); // access to EventManager through mp Variable
     }
     
     /**
@@ -82,8 +83,9 @@ public class ScriptRunner {
      */
     public Object remoteApiCall(String jsScript) throws ScriptException {
         jsScript = jsScript.trim();
-        if(!jsScript.endsWith(";"))
+        if(!jsScript.endsWith(";")) {
             jsScript += ";";
+        }
         jsScript = "var rVal = " + jsScript;
         scriptingEngine.eval(jsScript);
         Object answer = null;

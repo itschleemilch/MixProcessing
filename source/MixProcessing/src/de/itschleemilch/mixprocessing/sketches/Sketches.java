@@ -99,10 +99,12 @@ public class Sketches {
                     applet.mouseY = y;
                     applet.pmouseX = lastMouseX;
                     applet.pmouseY = lastMouseY;
-                    if(dragged)
+                    if(dragged) {
                         applet.mouseDragged();
-                    else
+                    }
+                    else {
                         applet.mouseMoved();
+                    }
                 }
             }
         }
@@ -117,8 +119,9 @@ public class Sketches {
             if(applet != null)
             {
                 if(s.isReceivingMouseEvents()) {
-                    if(clicked)
+                    if(clicked) {
                         applet.mouseClicked();
+                    }
                     else if(pressed)
                     {
                         applet.mousePressed = true;
@@ -130,8 +133,9 @@ public class Sketches {
                         applet.mouseReleased();
                     }
                 }
-                else
+                else {
                     applet.mousePressed = false;
+                }
             }
         }
     }
@@ -160,11 +164,13 @@ public class Sketches {
                         applet.keyPressed = false;
                         applet.keyReleased();
                     }
-                    else
+                    else {
                         applet.keyTyped();
+                    }
                 }
-                else
+                else {
                     applet.keyPressed = false;
+                }
             }
         }
     }
@@ -216,8 +222,9 @@ public class Sketches {
     public final Sketch findSketch(String name)
     {
         for (Sketch sketch : sketches) {
-            if(sketch.getName().equals(name))
+            if(sketch.getName().equals(name)) {
                 return sketch;
+            }
         }
         return null;
     }

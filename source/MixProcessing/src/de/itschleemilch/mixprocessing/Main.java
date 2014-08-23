@@ -22,6 +22,7 @@ package de.itschleemilch.mixprocessing;
 
 import de.itschleemilch.mixprocessing.load.JarManagement;
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
+import de.itschleemilch.mixprocessing.script.ScriptingApi;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
@@ -38,6 +39,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Basic demo of the current MixProcessing codebase. Loades all sketches
@@ -65,15 +67,17 @@ public class Main {
             in = Main.class.getResourceAsStream("info.txt");
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line;
-            while((line = br.readLine()) != null)
+            while((line = br.readLine()) != null) {
                 System.out.println(line);
+            }
         } catch (IOException e) {
             System.err.println("Error while reading info text.");
         }
         finally {
             try {
-                if(in != null)
+                if(in != null) {
                     in.close();
+                }
             } 
             catch (IOException e) { /*ignore exception here*/ }
         }
@@ -105,7 +109,8 @@ public class Main {
         /* Swing Settings */
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | IllegalAccessException | 
+                InstantiationException | UnsupportedLookAndFeelException e) {
         }        
     }
     
@@ -156,8 +161,9 @@ public class Main {
                 ProcessingLibraryLoader pll = new ProcessingLibraryLoader();
                 pll.setIconImages(frame.getIconImages());
                 pll.setVisible(true);
-                while(pll.isVisible())
-                    Thread.yield(); // wait for ProcessingLibraryLoader
+                while(pll.isVisible()) {
+                    Thread.yield();
+                } // wait for ProcessingLibraryLoader
             }
         }
         
@@ -174,8 +180,11 @@ public class Main {
         MixRenderer renderer = new MixRenderer(sketches);
         // Event System
         EventManager eventManager = new EventManager(frame, renderer);
+        // Scripting API
+        ScriptingApi api = new ScriptingApi(eventManager, frame, renderer);
+        eventManager.setApiAcess(api);
+        frame.setScriptingAPI(api);
         
-        frame.setScriptingAPI(eventManager);
         frame.add(renderer, BorderLayout.CENTER);
         renderer.init();
         //frame.setVisible(true); -> moved after showing welcome screen
@@ -190,15 +199,15 @@ public class Main {
         }
         
         // Scripting API
-        ScriptRunner scriptRunner = new ScriptRunner(eventManager);
+        ScriptRunner scriptRunner = new ScriptRunner(api);
         ScriptingFrame scripting = new ScriptingFrame(eventManager, scriptRunner);
         scripting.setIconImages( frame.getIconImages() );
         //scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);
         
         /* Init Welcome Settings */
-        WelcomeChannels.addWelcomeChannels(eventManager.getChannels());
-        eventManager.sketchOutput(WelcomeSketch.class.getSimpleName(), 
+        WelcomeChannels.addWelcomeChannels(eventManager.getAPI().getChannels());
+        eventManager.getAPI().sketchOutput(WelcomeSketch.class.getSimpleName(), 
                 WelcomeChannels.CHANNEL_NAMES[0]);
         
         // Welcome Screen
@@ -213,7 +222,7 @@ public class Main {
         frame.setVisible(true);
         
         // Webinterface
-        Webserver webserver = new Webserver(eventManager);
+        Webserver webserver = new Webserver(scriptRunner);
         webserver.startServer();
     }
     

@@ -44,7 +44,8 @@ public class FolderShortcuts {
             }
             return true;
         }
-        else
+        else {
             return false;
+        }
     }
 }

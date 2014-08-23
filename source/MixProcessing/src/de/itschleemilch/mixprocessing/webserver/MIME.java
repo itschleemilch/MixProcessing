@@ -35,11 +35,12 @@ public class MIME {
     public static final String findMime(String fileName) {
         String fileExtension;
         int extensionStart = fileName.lastIndexOf(".");
-        if(extensionStart > -1)
+        if(extensionStart > -1) {
             fileExtension = fileName.substring(extensionStart+1).toLowerCase();
-        else // has no file extension
+        }
+        else { // has no file extension
             return "application/octet-stream";
-        
+        }
         switch (fileExtension) {
             case "css":
                 return "text/css";
