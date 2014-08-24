@@ -29,9 +29,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import javax.script.ScriptException;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
@@ -51,9 +53,8 @@ import processing.data.JSONObject;
  */
 public class Webserver extends Thread {
     private ServerSocket server = null;
-    
     private final ScriptRunner scriptRunner;
-    
+    private final IpFilter ipfilter;
     private File fileStorage = null;
     
     /**
@@ -63,6 +64,7 @@ public class Webserver extends Thread {
      */
     public Webserver(ScriptRunner scriptRunner) {
         this.scriptRunner = scriptRunner;
+        this.ipfilter = new IpFilter();
         initServerStorage();
     }
     
@@ -109,6 +111,14 @@ public class Webserver extends Thread {
             System.err.println("Server can not open port: " + serverPort);
         }
         if(server != null) {
+            try {
+                InetAddress serverHost = InetAddress.getLocalHost();
+            System.out.println("Running control server at: http://" 
+                    + serverHost.getHostAddress() + ":" + serverPort + "/");
+            } catch (UnknownHostException e) {
+                e.printStackTrace(System.err);
+            }
+            
             start(); // start Thread to accept clients
         }
         
@@ -162,6 +172,26 @@ public class Webserver extends Thread {
     }
     
     private void processClient(final Socket client) {
+        /* Security Check: IP Filter */
+        if(!ipfilter.isAccepted(client)) {
+            OutputStream output = null;
+            try {
+                output = client.getOutputStream();
+                sendString(output, "403 Forbidden", 
+                        "Your client is not allowed to access this webserver.");
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+            } finally {
+                try {
+                    if(output != null) {
+                        output.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            return;
+        }        
         /* Open Input Stream, read request */
         final BufferedReader reader;
         final String clientCmd;
@@ -183,12 +213,12 @@ public class Webserver extends Thread {
         //final String clientCmdLowerCase = clientCmd.toLowerCase();
         //final String method = clientCmdLowerCase.substring(0, clientCmdLowerCase.indexOf(' '));
         
-        // Get resource (eliminate first /) and get-param, example: GET /infotext.html HTTP/1.1
-        final String query = clientCmd.substring(clientCmd.indexOf(" ") + 2, 
+        // Get resource (/api) and get-param, example: GET /infotext.html HTTP/1.1
+        final String query = clientCmd.substring(clientCmd.indexOf(" ") + 1, 
                 clientCmd.lastIndexOf(" ") );
         
         int getParamBeginning = query.indexOf('?');
-        final String resource;
+        String resource;
         if(getParamBeginning > -1) {
             resource = query.substring(0, getParamBeginning);
         }
@@ -196,8 +226,13 @@ public class Webserver extends Thread {
             resource = query;
         }
         
+        /* Set default file within folders */
+        if(resource.endsWith("/")) {
+            resource += "index.html";
+        }
+        
         /* Remote Scripting API */
-        if(resource.startsWith("api/api1")) {
+        if(resource.startsWith("/api/api1")) {
             String param = "";
             if(getParamBeginning > -1) {
                 String paramRaw = query.substring(getParamBeginning+1);
@@ -261,8 +296,9 @@ public class Webserver extends Thread {
                     sendFile(output, requestedFile);
                 } 
                 else {
-                    File defaultFile = new File(fileStorage, "index.html");
-                    sendFile(output, defaultFile);
+                    sendString(output, "404 Not Found", 
+                            "Error: File does not exist! (Request: " 
+                                    + resource + ")");
                 }
             } catch (IOException e) {
                 e.printStackTrace(System.err);
@@ -317,11 +353,28 @@ public class Webserver extends Thread {
         out.flush();
     }
     
+    /**
+     * Sends String UTF-8 encoded with status 200 OK.
+     * @param out
+     * @param data
+     * @throws IOException 
+     */
     private void sendString(OutputStream out, String data) throws IOException {
+        sendString(out, "200 OK", data);
+    }
+    
+    /**
+     * Sends String UTF-8 encoded with free definable status.
+     * @param out
+     * @param http_status e.g. "200 OK"
+     * @param data
+     * @throws IOException 
+     */
+    private void sendString(OutputStream out, String http_status, String data) throws IOException {
         final StringBuilder header = new StringBuilder();
         byte[] outputData = data.getBytes("UTF-8");
         /* Output HTTP Header  */
-        generateHeader(header, outputData.length, "text/plain; charset=UTF-8");
+        generateHeader(header, http_status, outputData.length, "text/plain; charset=UTF-8");
         out.write(header.toString().getBytes("UTF-8"));
         /* Redirect data to client */
         out.write(outputData);
@@ -329,14 +382,18 @@ public class Webserver extends Thread {
         out.flush();
     }
     
-    private void generateHeader(final StringBuilder header, long dataLength, String contentType) {
-        header.append("HTTP/1.1 200 OK\r\n");
+    private void generateHeader(final StringBuilder header, final String http_status, long dataLength, String contentType) {
+        header.append("HTTP/1.1 ").append(http_status).append("\r\n");
         header.append("Server: ").append(SERVER_NAME).append("\r\n");
         header.append("Content-Length: ").append( Long.toString(dataLength) ).append("\r\n");
         header.append("Connection: close\r\n");
         header.append("Content-Type: ").append(contentType).append("\r\n");
         header.append("Cache-Control: private, max-age=0, no-cache\r\n");
         header.append("\r\n");
+    }
+    
+    private void generateHeader(final StringBuilder header, long dataLength, String contentType) {
+        generateHeader(header, "200 OK", dataLength, contentType);
     }
     
     private void fillJsonArray(JSONArray array, Object data) {

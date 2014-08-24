@@ -53,17 +53,18 @@ public class SinglePreference {
      */
     public static String getPreference(String key, String defaultValue)
     {
+        String returnValue = defaultValue;
         File sourceFile = new File(getParentFolder(), key + ".txt");
         if(sourceFile.exists() && sourceFile.isFile()) { // read
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader( new InputStreamReader( 
                         new FileInputStream(sourceFile), "UTF-8" ) );
-                return reader.readLine();
+                returnValue = reader.readLine();
             } 
             catch (IOException e) {
                 e.printStackTrace(System.err);
-                return defaultValue;
+                returnValue = defaultValue;
             }
             finally {
                 if(reader != null) {
@@ -76,8 +77,9 @@ public class SinglePreference {
             }
         }
         else {// File does not exist
-            return defaultValue;
+            returnValue = defaultValue;
         }
+        return returnValue;
     }
     
     /**
