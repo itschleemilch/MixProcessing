@@ -147,7 +147,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/de/itschleemilch/mixprocessing/res/MixProcessing-Logo_256x256.png"/>
+          <Image iconType="3" name="/mixprocessing/res/MixProcessing-Logo_256x256.png"/>
         </Property>
       </Properties>
       <Constraints>

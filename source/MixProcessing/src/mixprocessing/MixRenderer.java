@@ -48,19 +48,20 @@ public class MixRenderer extends Canvas
     private final ChannelManagement channels;
     private final Sketches sketches;
     /* Double Buffers, offImg: Sketches, offImg2: Sketches+Editormode*/
-    private BufferedImage offImg = null, offImg2 = null;
+    private BufferedImage offImg = null;
+    private Graphics2D offscreenG = null;
     
     private final ChannelEditing channelEditor;
     /* Self-Resetting Flag: If set-> causes full black background redraw */
-    private boolean forceRefresh = false;
+    private boolean forceRefresh = true;
     
     private int repaintSleep = 16; // used within repaint loop
     
     public MixRenderer(Sketches sketches)
     {
         super();
-        this.channels = new ChannelManagement();
         this.sketches = sketches;
+        this.channels = new ChannelManagement(sketches);
         addComponentListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -137,6 +138,7 @@ public class MixRenderer extends Canvas
 
     @Override
     public final void run() {
+        Thread.currentThread().setName("MP Renderer Loop");
         while(true)
         {
             repaint();
@@ -150,45 +152,38 @@ public class MixRenderer extends Canvas
 
     @Override
     public final void paint(Graphics g) {
-        Graphics2D g2d;
+        /* Offscreen Images out of date? */
         if(offImg == null || offImg.getWidth() != getWidth() || offImg.getHeight() != getHeight())
         {
             offImg = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
-            g2d = offImg.createGraphics();
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-            offImg2 = getGraphicsConfiguration().createCompatibleImage(getWidth(), getHeight());
-        }
-        else {
-            g2d = offImg.createGraphics();
+            offscreenG = offImg.createGraphics();
+            offscreenG.clearRect(0, 0, getWidth(), getHeight());
+            forceRefresh = true;
         }
         if(forceRefresh)
         {
             forceRefresh = false;
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            offscreenG.setColor(Color.BLACK);
+            offscreenG.fillRect(0, 0, getWidth(), getHeight());
         }
-        sketches.paintAll(offImg, g2d, channels);
-        g2d.dispose();
+        sketches.paintAll(offImg, offscreenG, channels);
+        
         
         if(channels.isPreviewChannelOutlines()) {
-            Graphics2D g2d_2 = offImg2.createGraphics();
-            g2d_2.drawImage(offImg, 0, 0, this);
-            channels.paintChannelOutlines( g2d_2 );
-            channelEditor.paintEditorPath( g2d_2 );
-            g2d_2.dispose();
-            g.drawImage(offImg2, 0, 0, this);
+            channels.paintChannelOutlines( offscreenG );
+            channelEditor.paintEditorPath( offscreenG );
+            g.drawImage(offImg, 0, 0, this);
         }
         else {
             g.drawImage(offImg, 0, 0, this);
         }
-        
-        
     }
 
     @Override
     public final void update(Graphics g) {
-        paint(g); //To change body of generated methods, choose Tools | Templates.
+        paint(g);
     }
     
     /* Event Handling starts here */

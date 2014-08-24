@@ -152,6 +152,7 @@ public class Webserver extends Thread {
      */
     @Override
     public final void run() {
+        Thread.currentThread().setName("MP Webserver");
         while (!isInterrupted()) { // Accept new clients
             try {
                 final Socket client = server.accept();

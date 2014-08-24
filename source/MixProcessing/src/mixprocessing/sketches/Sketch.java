@@ -27,6 +27,7 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import mixprocessing.channels.SingleChannel;
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 
@@ -43,6 +44,8 @@ public class Sketch implements Comparable<Sketch> {
     private boolean setupDone = false;
     private boolean receivingMouseEvents = true, receivingKeyEvents = true;
     private float alpha = 1.0f; // 1.0: opace, 0.0: transparent
+    
+    private SingleChannel outputChannel = null;
 
     /**
      * Creates a Processing sketch represenation.
@@ -141,33 +144,35 @@ public class Sketch implements Comparable<Sketch> {
      */
     public final void doSetup(BufferedImage bi, Graphics2D g)
     {
-        if(instance.g == null || !(instance.g instanceof MPGraphics2D) )
-        {
+        MPGraphics2D mpg2d;
+        if(instance.g == null || !(instance.g instanceof MPGraphics2D) ) {
            createMPGraphics(bi, g);
         }
-        else
-        {
-            MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
-            mpg2d.g2 = g;
-        }
+        mpg2d = (MPGraphics2D) instance.g;
+        mpg2d.g2 = g;
+       
+        boolean callSetup = false;
         if(!setupDone )
         {
             setupDone = true;
-            try {
-                instance.setup();
-                instance.frameCount = 0;
-            } catch (PApplet.RendererChangeException e) {
-                createMPGraphics(bi, g);
-                System.err.println("Please remove size() call in setup in sketch " + getName());
-            }
+            instance.frameCount = 0;
+            mpg2d.init();
+            callSetup = true;
         }
-        MPGraphics2D mpg2d = (MPGraphics2D) instance.g;
-        mpg2d.init();
+        
         mpg2d.loadGraphicSettings();
         // Set sketch's opacity
         if(alpha < 1.0f) {
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
             mpg2d.g2.setComposite(ac);
+        }
+        if(callSetup) {
+            try {
+                instance.setup();
+            } catch (PApplet.RendererChangeException e) {
+                createMPGraphics(bi, g);
+                System.err.println("Please remove size() call in setup in sketch " + getName());
+            }
         }
     }
     
@@ -238,6 +243,23 @@ public class Sketch implements Comparable<Sketch> {
     /*************************************************************
      * Normal get/set methods
      *************************************************************/
+    
+    /**
+     * Returns the current output cannel
+     * @return (or null, if not present)
+     */
+    public SingleChannel getOutputChannel() {
+        return outputChannel;
+    }
+
+    /**
+     * Sets the desired output channel for this Sketch. Can be null if the
+     * Sketch should be off.
+     * @param outputChannel 
+     */
+    public void setOutputChannel(SingleChannel outputChannel) {
+        this.outputChannel = outputChannel;
+    }
     
     /**
      * Returns the alpha value of the Sketch

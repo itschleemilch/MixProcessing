@@ -50,10 +50,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author Sebastian Schleemilch
  */
 public class Main {
+    private static boolean userGUI_Logging = false;
     
     private static LoggingDialog initLogging()
     {
-        LoggingDialog.initLogging();
+        if(userGUI_Logging) {
+            LoggingDialog.initLogging();
+        }
         LoggingDialog log = new LoggingDialog();
         return log;
     }

@@ -50,8 +50,13 @@ public class LoggingDialog extends Frame implements WindowListener {
         errArea = new TextArea();
         configureTextArea(outArea);
         configureTextArea(errArea);
-        runReader(OUT_READER, outArea);
-        runReader(ERR_READER, errArea);
+        if(OUT_READER != null || ERR_READER != null) {
+            runReader(OUT_READER, outArea);
+            runReader(ERR_READER, errArea);
+        }
+        else {
+            outArea.setText("Logging via graphic user interface is disabled in code.");
+        }
         
         Panel centerPanel = new Panel(new BorderLayout());
         centerPanel.add(outArea, BorderLayout.CENTER);
@@ -71,6 +76,7 @@ public class LoggingDialog extends Frame implements WindowListener {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.currentThread().setName("MP Logging System");
                 BufferedReader br = reader;
                 TextArea output = target;
                 Thread.currentThread().setPriority(Thread.MIN_PRIORITY);

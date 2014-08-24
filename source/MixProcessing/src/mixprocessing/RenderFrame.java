@@ -159,6 +159,7 @@ public class RenderFrame extends Frame
             else {
                 scriptingAPI.channelEditing();
             }
+            scriptingAPI.rendererForceRefresh();
         }
     }
 

@@ -230,9 +230,6 @@ public class ScriptingApi {
      */
     public final boolean rendererForceRefresh() {
         renderer.setForceRefresh();
-        while(renderer.isForceRefreshWaiting()) {
-            Thread.yield();
-        }
         return true;
     }
     

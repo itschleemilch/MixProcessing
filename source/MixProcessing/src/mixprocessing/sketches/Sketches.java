@@ -20,14 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package mixprocessing.sketches;
 
+import java.awt.Composite;
+import java.awt.Font;
 import mixprocessing.channels.ChannelManagement;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
+import mixprocessing.channels.SingleChannel;
 import processing.core.PApplet;
 
 /**
@@ -41,6 +47,8 @@ public class Sketches {
     private final ArrayList<Sketch> sketches = new ArrayList<>();
     private int lastW = 0, lastH = 0;
     private int lastMouseX = 0, lastMouseY = 0;
+    
+    private final AffineTransform oneMatrix = new AffineTransform();
 
     public Sketches() {
     }
@@ -179,30 +187,58 @@ public class Sketches {
      */
     public final void paintAll(BufferedImage bi, Graphics2D g, ChannelManagement channels)
     {
+        /* Save internal graphic settings */
+        final AffineTransform old_at = g.getTransform();
+        final Paint old_paint = g.getPaint();
+        final Shape old_clip = g.getClip();
+        final Stroke old_stroke = g.getStroke();
+        final Composite old_composite = g.getComposite();
+        final Font old_font = g.getFont();
+        final RenderingHints old_rHints = g.getRenderingHints();
+            
         for(int i = 0; i < sketches.size(); i++)
         {
-            AffineTransform old_at = g.getTransform();
-            Paint old_paint = g.getPaint();
-            
             Sketch sketch = sketches.get(i);
             PApplet applet = sketch.getInstance();
             
             if(applet != null && sketch.needsRedraw())
             {
-                Shape clip = channels.getChannelForSketch(sketch, i);
+                
+                
+                final SingleChannel channel = channels.getChannelForSketch(sketch);
+                final Shape clip;
+                if(channel != null && channel.isEnabled() && 
+                        channel.getShape() != null) {
+                    clip = channel.getShape();
+                }
+                else {
+                    clip = channels.getNullChannelShape();
+                }
+                g.setTransform(oneMatrix); // reset transformation
                 g.setClip(clip);
-                sketch.doSetup(bi, g);
-                AffineTransform transform_backup = g.getTransform();
-                g.setTransform(new AffineTransform()); // reset transformation
-                g.setClip(clip);
-                g.setTransform(transform_backup); // bring transformation back
+                
+                sketch.doSetup(bi, g); 
                 applet.draw();
                 sketch.storeInternalSettings();
                 sketch.updateLastRedrawTime();
             }
-            g.setTransform(old_at);
-            g.setPaint(old_paint);
         }
+        
+        /* Restore internal graphic settings */
+        g.setTransform(old_at);
+        g.setPaint(old_paint);
+        g.setClip(old_clip);
+        g.setStroke(old_stroke);
+        g.setComposite(old_composite);
+        g.setFont(old_font);
+        Iterator<?> keys = old_rHints.keySet().iterator();
+        while(keys.hasNext())
+        {
+            Object key = keys.next();
+            Object value = old_rHints.get( key );
+            g.setRenderingHint((RenderingHints.Key) key, value);
+        }
+            
         channels.paintBlackedChannels(g);
     }
     

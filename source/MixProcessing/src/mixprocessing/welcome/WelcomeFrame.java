@@ -84,7 +84,7 @@ public class WelcomeFrame extends javax.swing.JFrame {
         setTitle("Mission Control");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/itschleemilch/mixprocessing/res/MixProcessing-Logo_256x256.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mixprocessing/res/MixProcessing-Logo_256x256.png"))); // NOI18N
         getContentPane().add(jLabel1, java.awt.BorderLayout.CENTER);
 
         fileMenu.setText("File");

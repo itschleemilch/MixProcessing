@@ -28,8 +28,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import mixprocessing.sketches.Sketches;
 
 /**
  * Manages the output channels (variable output areas) and the
@@ -45,9 +44,10 @@ public class ChannelManagement {
     private final Rectangle2D.Float offChannel = new Rectangle2D.Float(0, 0, 0, 0);
     public EventManager eventManager = null; // is set external by EventManager
     
-    private final HashMap<Sketch, SingleChannel> sketchChannelAssociation = new HashMap<>();
+    private final Sketches sketches;
 
-    public ChannelManagement() {
+    public ChannelManagement(Sketches sketches) {
+        this.sketches = sketches;
     }
     
     public final SingleChannel addChannel()
@@ -89,10 +89,9 @@ public class ChannelManagement {
     {
         channels.remove(channel);
         // Also remove association
-        Set<Sketch> sketches = sketchChannelAssociation.keySet();
-        for(Sketch s : sketches) {
-            if(sketchChannelAssociation.get(s) == channel) {
-                sketchChannelAssociation.remove(s);
+        for(Sketch s : sketches.getAllSketches()) {
+            if(s.getOutputChannel().equals(channel)) {
+                s.setOutputChannel(null);
             }
         }
     }
@@ -169,7 +168,8 @@ public class ChannelManagement {
     }
     
     /**
-     * Fills disabled areas with black - needed to switch them on/off
+     * Fills areas whre the paintBlack Flag is set by the user.
+     * Needed to switch them on/off.
      * @param g 
      */
     public final void paintBlackedChannels(Graphics2D g)
@@ -188,23 +188,19 @@ public class ChannelManagement {
      * Association of sketches to channels
      * @param s
      * @param index
+     * @return if found or null
+     */
+    public final SingleChannel getChannelForSketch(Sketch s)
+    {
+        return s.getOutputChannel();
+    }
+    /**
+     * Returns a 0x0 rectangle shape to perform a contant
+     * paint rate to all sketches even if they are on disabled channels.
      * @return 
      */
-    public final Shape getChannelForSketch(Sketch s, int index)
-    {
-        SingleChannel c = sketchChannelAssociation.get(s);
-        if( c != null && c.isEnabled() )
-        {
-            if(c.getShape() != null) {
-                return c.getShape();
-            }
-            else {
-                return offChannel;
-            }
-        }
-        else {
-            return offChannel;
-        }
+    public final Shape getNullChannelShape() {
+        return offChannel;
     }
     
     /**
@@ -214,7 +210,7 @@ public class ChannelManagement {
      */
     public final void setSketchChannel(Sketch sketch, SingleChannel channel)
     {
-        sketchChannelAssociation.put(sketch, channel);
+        sketch.setOutputChannel(channel);
     }
     
     /**
@@ -222,6 +218,6 @@ public class ChannelManagement {
      * @param sketch 
      */
     public final void unsetSketchChannel(Sketch sketch) {
-        sketchChannelAssociation.remove(sketch);
+        sketch.setOutputChannel(null);
     }
 }
