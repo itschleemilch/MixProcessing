@@ -25,6 +25,7 @@ import de.itschleemilch.mixprocessing.script.ScriptRunner;
 import de.itschleemilch.mixprocessing.script.ScriptingApi;
 import de.itschleemilch.mixprocessing.sketches.Sketch;
 import de.itschleemilch.mixprocessing.sketches.Sketches;
+import de.itschleemilch.mixprocessing.util.BasePath;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
 import de.itschleemilch.mixprocessing.webserver.Webserver;
 import de.itschleemilch.mixprocessing.welcome.WelcomeChannels;
@@ -136,7 +137,7 @@ public class Main {
         
         /* Subfolder, where all exported Processing Sketches (e.g. bubbles.jar) 
         have to be placed. Also all data files have to be stored here. */
-        File defaultSource = new File("jarSource"); 
+        File defaultSource = new File(BasePath.getBasePath(), "jarSource"); 
         String jarSourcePath = SinglePreference.getPreference(
                 JarManagement.KEY_SKETCH_JAR_SOURCE, 
                 defaultSource.getAbsolutePath() );

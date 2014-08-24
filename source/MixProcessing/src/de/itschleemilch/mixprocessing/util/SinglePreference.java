@@ -41,7 +41,7 @@ public class SinglePreference {
      * @return 
      */
     public static File getParentFolder() {
-        File parent = new File("preferences");
+        File parent = new File(BasePath.getBasePath(), "preferences");
         parent.mkdirs();
         return parent;
     }

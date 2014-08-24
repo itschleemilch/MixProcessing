@@ -20,6 +20,7 @@
 package de.itschleemilch.mixprocessing.webserver;
 
 import de.itschleemilch.mixprocessing.script.ScriptRunner;
+import de.itschleemilch.mixprocessing.util.BasePath;
 import de.itschleemilch.mixprocessing.util.SinglePreference;
 import java.io.BufferedReader;
 import java.io.File;
@@ -74,7 +75,7 @@ public class Webserver extends Thread {
         String storageFolder = SinglePreference.getPreference(
                 KEY_STORAGE, null);
         if(storageFolder == null) {
-            fileStorage = new File("webserver");
+            fileStorage = new File(BasePath.getBasePath(), "webserver");
             fileStorage.mkdirs();
         }
         else {
