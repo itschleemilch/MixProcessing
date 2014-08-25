@@ -153,13 +153,13 @@ public class RenderFrame extends Frame
     
     public final void toggleEditMode() {
         if(scriptingAPI != null) {
-            if( scriptingAPI.channelIsEditing() ) {
+            if( scriptingAPI.channelEditingGet() ) {
                 scriptingAPI.channelNormal();
             }
             else {
                 scriptingAPI.channelEditing();
             }
-            scriptingAPI.rendererForceRefresh();
+            scriptingAPI.rendererRefresh();
         }
     }
 

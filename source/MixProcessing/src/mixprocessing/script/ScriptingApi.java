@@ -105,7 +105,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Channels", description = "Group")
-    public final boolean channelCreateGroup(String newName, String ... sourceChannels) {
+    public final boolean channelGroupCreate(String newName, String ... sourceChannels) {
         /* Collect shapes */
         ArrayList<Shape> sourceShapes = new ArrayList<>();
         for (String sourceChannel : sourceChannels) {
@@ -172,7 +172,7 @@ public class ScriptingApi {
      * @return value or false if channel not found.
      */
     @ApiMethodInfo(category = "Channels", description = "On?")
-    public final boolean channelIsOn(String channelName) {
+    public final boolean channelOnGet(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
         if(c == null) {
             return false;
@@ -209,7 +209,7 @@ public class ScriptingApi {
      * @return
      */
     @ApiMethodInfo(category = "Channels", description = "Mode: Editing?")
-    public final boolean channelIsEditing() {
+    public final boolean channelEditingGet() {
         return channels.isPreviewChannelOutlines();
     }
     
@@ -280,7 +280,7 @@ public class ScriptingApi {
      * @return true
      */
     @ApiMethodInfo(category = "Renderer", description = "Force Refresh")
-    public final boolean rendererForceRefresh() {
+    public final boolean rendererRefresh() {
         renderer.setForceRefresh();
         return true;
     }
@@ -290,7 +290,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Renderer", description = "Frame Rate?")
-    public float rendererGetFrameRate() {
+    public float rendererFrameRateGet() {
         return renderer.getMaxFrameRate();
     }
     
@@ -300,7 +300,7 @@ public class ScriptingApi {
      * @return true
      */
     @ApiMethodInfo(category = "Renderer", description = "Frame Rate")
-    public boolean rendererSetFrameRate(float frameRate) {
+    public boolean rendererFrameRate(float frameRate) {
         renderer.setMaxFrameRate(frameRate);
         return true;
     }
@@ -345,7 +345,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Opacity?", ignore = false)
-    public final float SketchGetAlpha(String sketchName) {
+    public final float sketchAlphaGet(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s != null) {
             return s.getAlpha();
@@ -363,8 +363,8 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Channel")
-    public final boolean sketchSetChannelRestart(String sketchName, String channelName) {
-        boolean returnValue = sketchSetChannel(sketchName, channelName);
+    public final boolean sketchChannelSetAndRestart(String sketchName, String channelName) {
+        boolean returnValue = sketchChannelSet(sketchName, channelName);
         sketchRestart(sketchName);
         return returnValue;
     }
@@ -377,7 +377,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Channel (no Restart)")
-    public final boolean sketchSetChannel(String sketchName, String channelName) {
+    public final boolean sketchChannelSet(String sketchName, String channelName) {
         Sketch s = sketches.findSketch(sketchName);
         SingleChannel c = channels.findChannel(channelName);
         if(s != null && c != null) {
@@ -436,7 +436,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Variable")
-    public final boolean sketchSetVar(String sketchName, String varName, Object newValue) {
+    public final boolean sketchVar(String sketchName, String varName, Object newValue) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
             return false;
@@ -514,7 +514,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Variable?")
-    public final Object sketchGetVar(String sketchName, String varName) {
+    public final Object sketchVarGet(String sketchName, String varName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
             return null;
@@ -575,7 +575,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Variables?")
-    public final String[] sketchGetVars(String sketchName) {
+    public final String[] sketchVarsGet(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
             return null;
@@ -591,7 +591,7 @@ public class ScriptingApi {
     }
     
     @ApiMethodInfo(category = "Sketches", description = "Frame Rate?")
-    public final boolean sketchSetFrameRate(String sketchName, float fps) {
+    public final boolean sketchFrameRate(String sketchName, float fps) {
         Sketch s = sketches.findSketch(sketchName);
         if(s != null && s.getInstance() == null) {
             s.getInstance().frameRate(fps);
@@ -608,7 +608,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Frame Rate")
-    public final float sketchGetFrameRate(String sketchName) {
+    public final float sketchFrameRateGet(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
             return -1f;
@@ -624,7 +624,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketches", description = "Frame Count?")
-    public final int sketchGetFrameCount(String sketchName) {
+    public final int sketchFrameCountGet(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
             return -1;
@@ -698,7 +698,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "Sketch Events", description = "Mouse Events: Enabled?")
-    public final boolean sketchMouseEventsOn(String sketchName) {
+    public final boolean sketchMouseEventsIsOn(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null) {
             return false;
@@ -753,7 +753,7 @@ public class ScriptingApi {
      * @return Sketch[] Array
      */
     @ApiMethodInfo(category = "System", description = "List Sketches")
-    public final Sketch[] systemListSketches() {
+    public final Sketch[] systemSketchesList() {
         return getSketches().getAllSketches();
     }
     
@@ -762,7 +762,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "System", description = "List Channels")
-    public final SingleChannel[] systemListChannels() {
+    public final SingleChannel[] systemChannelsList() {
         return getChannels().getAllChannels();
     }
     
@@ -806,7 +806,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "System", description = "Mouse: Position")
-    public final boolean systemSetMouse(int x, int y) {
+    public final boolean systemMouse(int x, int y) {
         getSketches().mouseMoved(x, y, false);
         return true;
     }
@@ -816,7 +816,7 @@ public class ScriptingApi {
      * @return 
      */
     @ApiMethodInfo(category = "System", description = "Mouse: Click")
-    public final boolean systemDoMouseClick() {
+    public final boolean systemMouseClick() {
         getSketches().mouseEvent(false, false, true);
         return true;
     }

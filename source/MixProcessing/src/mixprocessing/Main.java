@@ -213,7 +213,7 @@ public class Main {
         
         /* Init Welcome Settings */
         WelcomeChannels.addWelcomeChannels(api.getChannels());
-        api.sketchSetChannel(WelcomeSketch.class.getSimpleName(), 
+        api.sketchChannelSet(WelcomeSketch.class.getSimpleName(), 
                 WelcomeChannels.CHANNEL_NAMES[0]);
         
         // Welcome Screen
