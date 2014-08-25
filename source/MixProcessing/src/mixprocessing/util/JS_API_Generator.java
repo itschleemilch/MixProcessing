@@ -34,8 +34,9 @@ import java.util.Date;
 /**
  * Tool to generate a remote API for Javascript.
  * 
- * Usage: Compile the Class ScriptingAPI with javac parameter "-parameters"
- * to geht the full parameter names instead of "arg0, arg1, ...". Run this code.
+ * MixProcessing has to be compiled with the -parameters option.
+ * Only works on Java 8+ machines.
+ * Warning: Netbean's 'compile on save' option must be disabled.
  *
  * @author Sebastian Schleemilch
  * @see ScriptingApi
@@ -53,14 +54,6 @@ public class JS_API_Generator {
         
         /* Analysis */
         for(Method method : methods) {
-            /*
-            String mName = method.getName();
-            Parameter[] params = method.getParameters();
-            for(Parameter param : params) {
-                String pName = param.getName();
-                String type = param.getType().getName();
-            }
-            */
             outputMethodComment(method);
             outputMethod(method);
             println();

@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Provides an easy mac filter for the webserver
+ * Provides an easy mac filter for the webserver.
+ * Is enabled per default. Has preferences in programms pref-folder starting
+ * with "webserver.ipfilter".
  *
  * @author Sebastian Schleemilch
  */
@@ -39,7 +41,7 @@ public class IpFilter {
         String value;
         
         /* Test if filter is enabled */
-        value = SinglePreference.getPreference(KEY_MACFILTER_ENABLED, "false");
+        value = SinglePreference.getPreference(KEY_MACFILTER_ENABLED, "true");
         filterOnPreference = Boolean.parseBoolean(value);
         SinglePreference.setPreference(KEY_MACFILTER_ENABLED, value);
         this.filterOn = filterOnPreference;

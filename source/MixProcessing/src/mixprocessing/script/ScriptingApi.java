@@ -71,6 +71,7 @@ public class ScriptingApi {
      * Returns the channel manager
      * @return 
      */
+    @ApiMethodInfo(category = "private", description = "", ignore = true)
     public final ChannelManagement getChannels() {
         return channels;
     }
@@ -79,6 +80,7 @@ public class ScriptingApi {
      * Returns the output renderer
      * @return 
      */
+    @ApiMethodInfo(category = "private", description = "", ignore = true)
     public final MixRenderer getRenderer() {
         return renderer;
     }
@@ -87,6 +89,7 @@ public class ScriptingApi {
      * Returns the sketch manager
      * @return 
      */
+    @ApiMethodInfo(category = "private", description = "", ignore = true)
     public final Sketches getSketches() {
         return sketches;
     }
@@ -101,7 +104,8 @@ public class ScriptingApi {
      * @param sourceChannels Shapes to be implemented
      * @return 
      */
-    public final boolean createGroupChannel(String newName, String ... sourceChannels) {
+    @ApiMethodInfo(category = "Channels", description = "Create Group")
+    public final boolean channelCreateGroup(String newName, String ... sourceChannels) {
         /* Collect shapes */
         ArrayList<Shape> sourceShapes = new ArrayList<>();
         for (String sourceChannel : sourceChannels) {
@@ -125,6 +129,12 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Enables a channel for rendering to the final output.
+     * @param channelName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Channels", description = "Switch On")
     public final boolean channelOn(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
         if(c == null) {
@@ -137,6 +147,12 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Disables a channel for the rendering to the final output.
+     * @param channelName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Channels", description = "Switch Off")
     public final boolean channelOff(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
         if(c == null) {
@@ -153,6 +169,7 @@ public class ScriptingApi {
      * Enter channel editing mode
      * @return true
      */
+    @ApiMethodInfo(category = "Channels", description = "Set Editing Mode")
     public final boolean channelEditing() {
         channels.setPreviewChannelOutlines(true);
         return true;
@@ -162,6 +179,7 @@ public class ScriptingApi {
      * Exit channel editing mode
      * @return true
      */
+    @ApiMethodInfo(category = "Channels", description = "Set Normal Mode")
     public final boolean channelNormal()
     {
         channels.setPreviewChannelOutlines(false);
@@ -172,10 +190,18 @@ public class ScriptingApi {
      * Returns if the current mode is editing mode.
      * @return
      */
+    @ApiMethodInfo(category = "Channels", description = "Get Editing Mode")
     public final boolean channelIsEditing() {
         return channels.isPreviewChannelOutlines();
     }
     
+    /**
+     * Gives a channel a new name.
+     * @param oldName
+     * @param newName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Channels", description = "Rename")
     public final boolean channelRename(String oldName, String newName) {
         SingleChannel c = channels.findChannel(oldName);
         if(c == null) {
@@ -195,6 +221,7 @@ public class ScriptingApi {
      * @param channelName
      * @return 
      */
+    @ApiMethodInfo(category = "Channels", description = "Fill Black")
     public final boolean channelBlacking(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
         if(c == null) {
@@ -207,6 +234,12 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Remove a channel from the output and all links from sketches to it.
+     * @param channelName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Channels", description = "Remove")
     public final boolean channelRemove(String channelName) {
         SingleChannel c = channels.findChannel(channelName);
         if(c == null) {
@@ -228,6 +261,7 @@ public class ScriptingApi {
      * Performes a full refresh including a full blacking of the screen.
      * @return true
      */
+    @ApiMethodInfo(category = "Renderer", description = "Force Refresh")
     public final boolean rendererForceRefresh() {
         renderer.setForceRefresh();
         return true;
@@ -237,6 +271,7 @@ public class ScriptingApi {
      * Returns the set maximum frame rate of the renderer
      * @return 
      */
+    @ApiMethodInfo(category = "Renderer", description = "Get Frame Rate")
     public float rendererGetFrameRate() {
         return renderer.getMaxFrameRate();
     }
@@ -246,7 +281,8 @@ public class ScriptingApi {
      * @param frameRate 
      * @return true
      */
-    public boolean setFrameRate(float frameRate) {
+    @ApiMethodInfo(category = "Renderer", description = "Set Frame Rate")
+    public boolean rendererSetFrameRate(float frameRate) {
         renderer.setMaxFrameRate(frameRate);
         return true;
     }
@@ -261,6 +297,7 @@ public class ScriptingApi {
      * @param value new opacity (0: transparent, 1: opaque)
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Set Opacity")
     public final boolean sketchAlpha(String sketchName, float value) {
         Sketch s = sketches.findSketch(sketchName);
         if(s != null) {
@@ -279,6 +316,7 @@ public class ScriptingApi {
      * @return 
      * @see EventManager#sketchAlpha(java.lang.String, float) 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Set Opacity", ignore = true)
     public final boolean sketchAlpha(String sketchName, double value) {
         return sketchAlpha(sketchName, (float)value);
     }
@@ -290,8 +328,9 @@ public class ScriptingApi {
      * @param channelName
      * @return 
      */
-    public final boolean sketchOutput(String sketchName, String channelName) {
-        boolean returnValue = sketchOutputNoRestart(sketchName, channelName);
+    @ApiMethodInfo(category = "Sketches", description = "Set Channel")
+    public final boolean sketchSetChannelRestart(String sketchName, String channelName) {
+        boolean returnValue = sketchSetChannel(sketchName, channelName);
         sketchRestart(sketchName);
         return returnValue;
     }
@@ -303,7 +342,8 @@ public class ScriptingApi {
      * @param channelName
      * @return 
      */
-    public final boolean sketchOutputNoRestart(String sketchName, String channelName) {
+    @ApiMethodInfo(category = "Sketches", description = "Set Channel (no Restart)")
+    public final boolean sketchSetChannel(String sketchName, String channelName) {
         Sketch s = sketches.findSketch(sketchName);
         SingleChannel c = channels.findChannel(channelName);
         if(s != null && c != null) {
@@ -316,6 +356,12 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Deletes an sketch and it's link to an output channel.
+     * @param sketchName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Sketches", description = "Remove")
     public final boolean sketchRemove(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null) {
@@ -328,6 +374,12 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Forces an restart of the given sketch (calls setup()).
+     * @param sketchName
+     * @return 
+     */
+    @ApiMethodInfo(category = "Sketches", description = "Restart")
     public final boolean sketchRestart(String sketchName)
     {
         Sketch s = sketches.findSketch(sketchName);
@@ -349,6 +401,7 @@ public class ScriptingApi {
      * @param newValue New value for the modified variable.
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Set Variable")
     public final boolean sketchSetVar(String sketchName, String varName, Object newValue) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
@@ -422,6 +475,7 @@ public class ScriptingApi {
      * @param varName
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Get Variable")
     public final Object sketchGetVar(String sketchName, String varName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
@@ -481,6 +535,7 @@ public class ScriptingApi {
      * @param sketchName
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Get Variables")
     public String[] sketchGetVars(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
@@ -501,6 +556,7 @@ public class ScriptingApi {
      * @param sketchName
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Frame Rate")
     public float sketchGetFrameRate(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
@@ -516,6 +572,7 @@ public class ScriptingApi {
      * @param sketchName
      * @return 
      */
+    @ApiMethodInfo(category = "Sketches", description = "Get Frame Count")
     public int sketchGetFrameCount(String sketchName) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null || s.getInstance() == null) {
@@ -536,6 +593,7 @@ public class ScriptingApi {
      * @param value
      * @return 
      */
+    @ApiMethodInfo(category = "Sketch Events", description = "En-/Disables Key Events")
     public final boolean sketchKeyEventsOn(String sketchName, boolean value) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null) {
@@ -553,6 +611,7 @@ public class ScriptingApi {
      * @param value
      * @return 
      */
+    @ApiMethodInfo(category = "Sketch Events", description = "En-/Disables Mouse Events")
     public final boolean sketchMouseEventsOn(String sketchName, boolean value) {
         Sketch s = sketches.findSketch(sketchName);
         if(s == null) {
@@ -565,7 +624,7 @@ public class ScriptingApi {
     }
     
     /*************************************************************
-     * Environment
+     * System functions
      *************************************************************/
     
     /**
@@ -573,7 +632,8 @@ public class ScriptingApi {
      * @param sketchPath Path to Sketch's project folder or PDE file.
      * @return sucess of process.
      */
-    public final boolean environmentLoad(String sketchPath) {
+    @ApiMethodInfo(category = "System", description = "Load Processing Sketch")
+    public final boolean systemLoad(String sketchPath) {
         final File sketchFile = new File(sketchPath);
         
         final File sketchFolder;
@@ -607,7 +667,8 @@ public class ScriptingApi {
      * Returns an array of all sketches
      * @return Sketch[] Array
      */
-    public final Sketch[] environmentListSketches() {
+    @ApiMethodInfo(category = "System", description = "List Sketches")
+    public final Sketch[] systemListSketches() {
         return getSketches().getAllSketches();
     }
     
@@ -615,7 +676,8 @@ public class ScriptingApi {
      * Returns an array of all channels
      * @return 
      */
-    public final SingleChannel[] environmentListChannels() {
+    @ApiMethodInfo(category = "System", description = "List Channels")
+    public final SingleChannel[] systemListChannels() {
         return getChannels().getAllChannels();
     }
     
@@ -624,7 +686,8 @@ public class ScriptingApi {
      * @param key pressed key as char
      * @return 
      */
-    public final boolean environmentKeyPressed(char key) {
+    @ApiMethodInfo(category = "System", description = "Key: Press")
+    public final boolean systemKeyPressed(char key) {
         getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 0);
         return true;
     }
@@ -634,7 +697,8 @@ public class ScriptingApi {
      * @param key released key as char
      * @return 
      */
-    public final boolean environmentKeyReleased(char key) {
+    @ApiMethodInfo(category = "System", description = "Key: Release")
+    public final boolean systemKeyReleased(char key) {
         getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 1);
         return true;
     }
@@ -644,7 +708,8 @@ public class ScriptingApi {
      * @param key typed key as char
      * @return 
      */
-    public final boolean environmentKeyTyped(char key) {
+    @ApiMethodInfo(category = "System", description = "Key: Typed")
+    public final boolean systemKeyTyped(char key) {
         getSketches().keyEvent(new KeyEvent(null, 0, 0, 0, key, key), 2);
         return true;
     }
@@ -655,7 +720,8 @@ public class ScriptingApi {
      * @param y
      * @return 
      */
-    public final boolean environmentSetMouse(int x, int y) {
+    @ApiMethodInfo(category = "System", description = "Mouse: Set Position")
+    public final boolean systemSetMouse(int x, int y) {
         getSketches().mouseMoved(x, y, false);
         return true;
     }
@@ -664,35 +730,30 @@ public class ScriptingApi {
      * Calls the sketches' mouseClicked() method for all receiving sketches.
      * @return 
      */
-    public final boolean environmentDoMouseClick() {
+    @ApiMethodInfo(category = "System", description = "Mouse: Click")
+    public final boolean systemDoMouseClick() {
         getSketches().mouseEvent(false, false, true);
         return true;
     }
-    
-    /*************************************************************
-     * Console Output
-     *************************************************************/
     
     /**
      * Log Text to the standard log output.
      * @param text
      * @return 
      */
-    public boolean println(String text) {
+    @ApiMethodInfo(category = "System", description = "Log Message")
+    public boolean systemPrintln(String text) {
         System.out.println(text);
         return true;
     }
-    
-    /*************************************************************
-     * Time delay
-     *************************************************************/
     
     /**
      * Freeze the current thread for the given milliseconds.
      * @param ms
      * @return 
      */
-    public boolean sleep(long ms) {
+    @ApiMethodInfo(category = "System", description = "Sleep")
+    public boolean systemSleep(long ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
