@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import mixprocessing.script.ApiMethodInfo;
 
 /**
  * Tool to generate a remote API for Javascript.
@@ -54,9 +55,12 @@ public class JS_API_Generator {
         
         /* Analysis */
         for(Method method : methods) {
-            outputMethodComment(method);
-            outputMethod(method);
-            println();
+            final ApiMethodInfo info = method.getAnnotation(ApiMethodInfo.class);
+            if(info != null && !info.ignore()) {
+                outputMethodComment(method);
+                outputMethod(method);
+                println();
+            }
         }
         outputStaticResource("res/JS_API_STATIC_FOOTER.js");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd', 'HH:mm");
@@ -72,6 +76,12 @@ public class JS_API_Generator {
         
         String mName = method.getName();
         println(" * Method: ", mName);
+        
+        final ApiMethodInfo info = method.getAnnotation(ApiMethodInfo.class);
+        if(info != null) {
+            println(" * Short Description: " + info.category() + " ~ " + info.description());
+        }
+        
         println(" *");
         
         Parameter[] params = method.getParameters();
@@ -124,14 +134,18 @@ public class JS_API_Generator {
         for(Parameter param : params) {
             String pName = param.getName();
             Class<?> pType = param.getType();
-            if(firstElement)
+            if(firstElement) {
                 firstElement = false;
-            else
+            }
+            else {
                 out.append(", ");
-            if(pType.equals(String.class))
+            }
+            if(pType.equals(String.class)) {
                 out.append("'\" + ").append(pName).append(" + \"'");
-            else
+            }
+            else {
                 out.append("\" + ").append(pName).append(" + \"");
+            }
         }
         out.append(");");
         return out.toString();
@@ -144,20 +158,16 @@ public class JS_API_Generator {
      */
     private String getShortType(Class<?> type) {
         String typeName = type.getName();
-        if(typeName.contains("."))
-                return typeName.substring(typeName.lastIndexOf('.')+1);
-        else
+        if(typeName.contains(".")) {
+            return typeName.substring(typeName.lastIndexOf('.')+1);
+        }
+        else {
             return typeName;
+        }
     }
     
     private void sortMethods() {
-        Comparator<Method> methodComp = new Comparator<Method>() {
-            @Override
-            public int compare(Method o1, Method o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        };
-        Arrays.sort(methods, methodComp);
+        Arrays.sort(methods, API_Hints_Generator.getFieldComperator());
     }
     
     private void outputStaticResource(String path) {
@@ -199,6 +209,7 @@ public class JS_API_Generator {
     
     public static void main(String ... args) {
         new JS_API_Generator();
+        System.exit(0);
     }
     
 }

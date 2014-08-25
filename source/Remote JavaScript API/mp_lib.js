@@ -53,6 +53,7 @@ Api.apiCall = function (remoteCall, callBackFunction) {
 };
 /**
  * Method: channelBlacking
+ * Short Description: Channels ~ Fill Black
  *
  * @param channelName type=String
  * @return boolean
@@ -64,7 +65,22 @@ Api.channelBlacking = function (channelName, callbackFunction) {
 };
 
 /**
+ * Method: channelCreateGroup
+ * Short Description: Channels ~ Group
+ *
+ * @param newName type=String
+ * @param sourceChannels type=String;
+ * @return boolean
+*/
+Api.channelCreateGroup = function (newName, sourceChannels, callbackFunction) {
+	"use strict";
+	var request = "Api.channelCreateGroup('" + newName + "', " + sourceChannels + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: channelEditing
+ * Short Description: Channels ~ Mode: Editing
  *
  * @return boolean
 */
@@ -75,7 +91,20 @@ Api.channelEditing = function (callbackFunction) {
 };
 
 /**
+ * Method: channelIsEditing
+ * Short Description: Channels ~ Mode: Editing?
+ *
+ * @return boolean
+*/
+Api.channelIsEditing = function (callbackFunction) {
+	"use strict";
+	var request = "Api.channelIsEditing();";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: channelNormal
+ * Short Description: Channels ~ Mode: Normal
  *
  * @return boolean
 */
@@ -87,6 +116,7 @@ Api.channelNormal = function (callbackFunction) {
 
 /**
  * Method: channelOff
+ * Short Description: Channels ~ Off
  *
  * @param channelName type=String
  * @return boolean
@@ -99,6 +129,7 @@ Api.channelOff = function (channelName, callbackFunction) {
 
 /**
  * Method: channelOn
+ * Short Description: Channels ~ On
  *
  * @param channelName type=String
  * @return boolean
@@ -110,7 +141,21 @@ Api.channelOn = function (channelName, callbackFunction) {
 };
 
 /**
+ * Method: channelIsOn
+ * Short Description: Channels ~ On?
+ *
+ * @param channelName type=String
+ * @return boolean
+*/
+Api.channelIsOn = function (channelName, callbackFunction) {
+	"use strict";
+	var request = "Api.channelIsOn('" + channelName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: channelRemove
+ * Short Description: Channels ~ Remove
  *
  * @param channelName type=String
  * @return boolean
@@ -123,6 +168,7 @@ Api.channelRemove = function (channelName, callbackFunction) {
 
 /**
  * Method: channelRename
+ * Short Description: Channels ~ Rename
  *
  * @param oldName type=String
  * @param newName type=String
@@ -135,159 +181,8 @@ Api.channelRename = function (oldName, newName, callbackFunction) {
 };
 
 /**
- * Method: createGroupChannel
- *
- * @param newName type=String
- * @param sourceChannels type=String;
- * @return boolean
-*/
-Api.createGroupChannel = function (newName, sourceChannels, callbackFunction) {
-	"use strict";
-	var request = "Api.createGroupChannel('" + newName + "', " + sourceChannels + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentDoMouseClick
- *
- * @return boolean
-*/
-Api.environmentDoMouseClick = function (callbackFunction) {
-	"use strict";
-	var request = "Api.environmentDoMouseClick();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentKeyPressed
- *
- * @param key type=char
- * @return boolean
-*/
-Api.environmentKeyPressed = function (key, callbackFunction) {
-	"use strict";
-	var request = "Api.environmentKeyPressed(" + key + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentKeyReleased
- *
- * @param key type=char
- * @return boolean
-*/
-Api.environmentKeyReleased = function (key, callbackFunction) {
-	"use strict";
-	var request = "Api.environmentKeyReleased(" + key + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentKeyTyped
- *
- * @param key type=char
- * @return boolean
-*/
-Api.environmentKeyTyped = function (key, callbackFunction) {
-	"use strict";
-	var request = "Api.environmentKeyTyped(" + key + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentListChannels
- *
- * @return SingleChannel;
-*/
-Api.environmentListChannels = function (callbackFunction) {
-	"use strict";
-	var request = "Api.environmentListChannels();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentListSketches
- *
- * @return Sketch;
-*/
-Api.environmentListSketches = function (callbackFunction) {
-	"use strict";
-	var request = "Api.environmentListSketches();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentLoad
- *
- * @param sketchPath type=String
- * @return boolean
-*/
-Api.environmentLoad = function (sketchPath, callbackFunction) {
-	"use strict";
-	var request = "Api.environmentLoad('" + sketchPath + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: environmentSetMouse
- *
- * @param x type=int
- * @param y type=int
- * @return boolean
-*/
-Api.environmentSetMouse = function (x, y, callbackFunction) {
-	"use strict";
-	var request = "Api.environmentSetMouse(" + x + ", " + y + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: getChannels
- *
- * @return ChannelManagement
-*/
-Api.getChannels = function (callbackFunction) {
-	"use strict";
-	var request = "Api.getChannels();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: getRenderer
- *
- * @return MixRenderer
-*/
-Api.getRenderer = function (callbackFunction) {
-	"use strict";
-	var request = "Api.getRenderer();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: getSketches
- *
- * @return Sketches
-*/
-Api.getSketches = function (callbackFunction) {
-	"use strict";
-	var request = "Api.getSketches();";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: println
- *
- * @param text type=String
- * @return boolean
-*/
-Api.println = function (text, callbackFunction) {
-	"use strict";
-	var request = "Api.println('" + text + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
  * Method: rendererForceRefresh
+ * Short Description: Renderer ~ Force Refresh
  *
  * @return boolean
 */
@@ -298,7 +193,21 @@ Api.rendererForceRefresh = function (callbackFunction) {
 };
 
 /**
+ * Method: rendererSetFrameRate
+ * Short Description: Renderer ~ Frame Rate
+ *
+ * @param frameRate type=float
+ * @return boolean
+*/
+Api.rendererSetFrameRate = function (frameRate, callbackFunction) {
+	"use strict";
+	var request = "Api.rendererSetFrameRate(" + frameRate + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: rendererGetFrameRate
+ * Short Description: Renderer ~ Frame Rate?
  *
  * @return float
 */
@@ -309,94 +218,8 @@ Api.rendererGetFrameRate = function (callbackFunction) {
 };
 
 /**
- * Method: setFrameRate
- *
- * @param frameRate type=float
- * @return boolean
-*/
-Api.setFrameRate = function (frameRate, callbackFunction) {
-	"use strict";
-	var request = "Api.setFrameRate(" + frameRate + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchAlpha
- *
- * @param sketchName type=String
- * @param value type=float
- * @return boolean
-*/
-Api.sketchAlpha = function (sketchName, value, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchAlpha('" + sketchName + "', " + value + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchAlpha
- *
- * @param sketchName type=String
- * @param value type=double
- * @return boolean
-*/
-Api.sketchAlpha = function (sketchName, value, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchAlpha('" + sketchName + "', " + value + ");";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchGetFrameCount
- *
- * @param sketchName type=String
- * @return int
-*/
-Api.sketchGetFrameCount = function (sketchName, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchGetFrameCount('" + sketchName + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchGetFrameRate
- *
- * @param sketchName type=String
- * @return float
-*/
-Api.sketchGetFrameRate = function (sketchName, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchGetFrameRate('" + sketchName + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchGetVar
- *
- * @param sketchName type=String
- * @param varName type=String
- * @return Object
-*/
-Api.sketchGetVar = function (sketchName, varName, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchGetVar('" + sketchName + "', '" + varName + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
- * Method: sketchGetVars
- *
- * @param sketchName type=String
- * @return String;
-*/
-Api.sketchGetVars = function (sketchName, callbackFunction) {
-	"use strict";
-	var request = "Api.sketchGetVars('" + sketchName + "');";
-	this.apiCall(request, callbackFunction);
-};
-
-/**
  * Method: sketchKeyEventsOn
+ * Short Description: Sketch Events ~ Key Events: En-/Disable
  *
  * @param sketchName type=String
  * @param value type=boolean
@@ -409,7 +232,21 @@ Api.sketchKeyEventsOn = function (sketchName, value, callbackFunction) {
 };
 
 /**
+ * Method: sketchKeyEventsIsOn
+ * Short Description: Sketch Events ~ Key Events: Enabled?
+ *
+ * @param sketchName type=String
+ * @return boolean
+*/
+Api.sketchKeyEventsIsOn = function (sketchName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchKeyEventsIsOn('" + sketchName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: sketchMouseEventsOn
+ * Short Description: Sketch Events ~ Mouse Events: En-/Disable
  *
  * @param sketchName type=String
  * @param value type=boolean
@@ -422,33 +259,116 @@ Api.sketchMouseEventsOn = function (sketchName, value, callbackFunction) {
 };
 
 /**
- * Method: sketchOutput
+ * Method: sketchMouseEventsOn
+ * Short Description: Sketch Events ~ Mouse Events: Enabled?
  *
  * @param sketchName type=String
- * @param channelName type=String
  * @return boolean
 */
-Api.sketchOutput = function (sketchName, channelName, callbackFunction) {
+Api.sketchMouseEventsOn = function (sketchName, callbackFunction) {
 	"use strict";
-	var request = "Api.sketchOutput('" + sketchName + "', '" + channelName + "');";
+	var request = "Api.sketchMouseEventsOn('" + sketchName + "');";
 	this.apiCall(request, callbackFunction);
 };
 
 /**
- * Method: sketchOutputNoRestart
+ * Method: sketchSetChannelRestart
+ * Short Description: Sketches ~ Channel
  *
  * @param sketchName type=String
  * @param channelName type=String
  * @return boolean
 */
-Api.sketchOutputNoRestart = function (sketchName, channelName, callbackFunction) {
+Api.sketchSetChannelRestart = function (sketchName, channelName, callbackFunction) {
 	"use strict";
-	var request = "Api.sketchOutputNoRestart('" + sketchName + "', '" + channelName + "');";
+	var request = "Api.sketchSetChannelRestart('" + sketchName + "', '" + channelName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchSetChannel
+ * Short Description: Sketches ~ Channel (no Restart)
+ *
+ * @param sketchName type=String
+ * @param channelName type=String
+ * @return boolean
+*/
+Api.sketchSetChannel = function (sketchName, channelName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchSetChannel('" + sketchName + "', '" + channelName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchGetFrameCount
+ * Short Description: Sketches ~ Frame Count?
+ *
+ * @param sketchName type=String
+ * @return int
+*/
+Api.sketchGetFrameCount = function (sketchName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchGetFrameCount('" + sketchName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchGetFrameRate
+ * Short Description: Sketches ~ Frame Rate
+ *
+ * @param sketchName type=String
+ * @return float
+*/
+Api.sketchGetFrameRate = function (sketchName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchGetFrameRate('" + sketchName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchSetFrameRate
+ * Short Description: Sketches ~ Frame Rate?
+ *
+ * @param sketchName type=String
+ * @param fps type=float
+ * @return boolean
+*/
+Api.sketchSetFrameRate = function (sketchName, fps, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchSetFrameRate('" + sketchName + "', " + fps + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchAlpha
+ * Short Description: Sketches ~ Opacity
+ *
+ * @param sketchName type=String
+ * @param value type=float
+ * @return boolean
+*/
+Api.sketchAlpha = function (sketchName, value, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchAlpha('" + sketchName + "', " + value + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: SketchGetAlpha
+ * Short Description: Sketches ~ Opacity?
+ *
+ * @param sketchName type=String
+ * @return float
+*/
+Api.SketchGetAlpha = function (sketchName, callbackFunction) {
+	"use strict";
+	var request = "Api.SketchGetAlpha('" + sketchName + "');";
 	this.apiCall(request, callbackFunction);
 };
 
 /**
  * Method: sketchRemove
+ * Short Description: Sketches ~ Remove
  *
  * @param sketchName type=String
  * @return boolean
@@ -461,6 +381,7 @@ Api.sketchRemove = function (sketchName, callbackFunction) {
 
 /**
  * Method: sketchRestart
+ * Short Description: Sketches ~ Restart
  *
  * @param sketchName type=String
  * @return boolean
@@ -473,6 +394,7 @@ Api.sketchRestart = function (sketchName, callbackFunction) {
 
 /**
  * Method: sketchSetVar
+ * Short Description: Sketches ~ Variable
  *
  * @param sketchName type=String
  * @param varName type=String
@@ -486,16 +408,159 @@ Api.sketchSetVar = function (sketchName, varName, newValue, callbackFunction) {
 };
 
 /**
- * Method: sleep
+ * Method: sketchGetVar
+ * Short Description: Sketches ~ Variable?
+ *
+ * @param sketchName type=String
+ * @param varName type=String
+ * @return Object
+*/
+Api.sketchGetVar = function (sketchName, varName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchGetVar('" + sketchName + "', '" + varName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: sketchGetVars
+ * Short Description: Sketches ~ Variables?
+ *
+ * @param sketchName type=String
+ * @return String;
+*/
+Api.sketchGetVars = function (sketchName, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchGetVars('" + sketchName + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemKeyPress
+ * Short Description: System ~ Key: Press
+ *
+ * @param key type=char
+ * @return boolean
+*/
+Api.systemKeyPress = function (key, callbackFunction) {
+	"use strict";
+	var request = "Api.systemKeyPress(" + key + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemKeyRelease
+ * Short Description: System ~ Key: Release
+ *
+ * @param key type=char
+ * @return boolean
+*/
+Api.systemKeyRelease = function (key, callbackFunction) {
+	"use strict";
+	var request = "Api.systemKeyRelease(" + key + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemKeyType
+ * Short Description: System ~ Key: Type
+ *
+ * @param key type=char
+ * @return boolean
+*/
+Api.systemKeyType = function (key, callbackFunction) {
+	"use strict";
+	var request = "Api.systemKeyType(" + key + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemListChannels
+ * Short Description: System ~ List Channels
+ *
+ * @return SingleChannel;
+*/
+Api.systemListChannels = function (callbackFunction) {
+	"use strict";
+	var request = "Api.systemListChannels();";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemListSketches
+ * Short Description: System ~ List Sketches
+ *
+ * @return Sketch;
+*/
+Api.systemListSketches = function (callbackFunction) {
+	"use strict";
+	var request = "Api.systemListSketches();";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemLoad
+ * Short Description: System ~ Load Sketch
+ *
+ * @param sketchPath type=String
+ * @return boolean
+*/
+Api.systemLoad = function (sketchPath, callbackFunction) {
+	"use strict";
+	var request = "Api.systemLoad('" + sketchPath + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemPrintln
+ * Short Description: System ~ Log Message
+ *
+ * @param text type=String
+ * @return boolean
+*/
+Api.systemPrintln = function (text, callbackFunction) {
+	"use strict";
+	var request = "Api.systemPrintln('" + text + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemDoMouseClick
+ * Short Description: System ~ Mouse: Click
+ *
+ * @return boolean
+*/
+Api.systemDoMouseClick = function (callbackFunction) {
+	"use strict";
+	var request = "Api.systemDoMouseClick();";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemSetMouse
+ * Short Description: System ~ Mouse: Position
+ *
+ * @param x type=int
+ * @param y type=int
+ * @return boolean
+*/
+Api.systemSetMouse = function (x, y, callbackFunction) {
+	"use strict";
+	var request = "Api.systemSetMouse(" + x + ", " + y + ");";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
+ * Method: systemSleep
+ * Short Description: System ~ Sleep
  *
  * @param ms type=long
  * @return boolean
 */
-Api.sleep = function (ms, callbackFunction) {
+Api.systemSleep = function (ms, callbackFunction) {
 	"use strict";
-	var request = "Api.sleep(" + ms + ");";
+	var request = "Api.systemSleep(" + ms + ");";
 	this.apiCall(request, callbackFunction);
 };
 
 /* END OF MIXPROCESSING JAVASCRIPT LIBRARY */
-/* DATE OF GENERATION:2014-08-22, 13:39 */
+/* DATE OF GENERATION:2014-08-25, 11:34 */

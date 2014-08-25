@@ -37,7 +37,7 @@ import mixprocessing.script.ScriptingApi;
  */
 public class API_Hints_Generator {
     
-    private static Comparator<Method> getFieldComperator() {
+    public static Comparator<Method> getFieldComperator() {
         return new Comparator<Method>() {
             @Override
             public int compare(Method o1, Method o2) {
