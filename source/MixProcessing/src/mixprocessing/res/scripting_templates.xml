@@ -34,6 +34,7 @@
 		<item insert="Api.sketchRemove('sketchName');">Remove</item>
 		<item insert="Api.sketchRestart('sketchName');">Restart</item>
 		<item insert="Api.sketchVar('sketchName', 'varName', newValue);">Variable</item>
+		<item insert="Api.sketchVarAutomation('sketchName', 'varName', finalValue, delayMS, durationMS, periodeMS, 'timingFunction');">Variable Automation</item>
 		<item insert="Api.sketchVarGet('sketchName', 'varName');">Variable?</item>
 		<item insert="Api.sketchVarsGet('sketchName');">Variables?</item>
 	</menu>
@@ -44,7 +45,7 @@
 		<item insert="Api.systemChannelsList();">List Channels</item>
 		<item insert="Api.systemSketchesList();">List Sketches</item>
 		<item insert="Api.systemLoad('sketchPath');">Load Sketch</item>
-		<item insert="Api.systemPrintln('text');">Log Message</item>
+		<item insert="Api.systemPrintln(output);">Log Message</item>
 		<item insert="Api.systemMouseClick();">Mouse: Click</item>
 		<item insert="Api.systemMouse(x, y);">Mouse: Position</item>
 		<item insert="Api.systemSleep(ms);">Sleep</item>

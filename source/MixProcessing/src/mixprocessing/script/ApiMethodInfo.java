@@ -42,7 +42,7 @@ public @interface ApiMethodInfo {
     
     /**
      * 
-     * @return 
+     * @return
      */
     public String category();
 

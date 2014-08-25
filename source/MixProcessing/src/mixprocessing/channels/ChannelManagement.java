@@ -45,6 +45,7 @@ public class ChannelManagement {
     public EventManager eventManager = null; // is set external by EventManager
     
     private final Sketches sketches;
+    private int creationCounter = 0;
 
     public ChannelManagement(Sketches sketches) {
         this.sketches = sketches;
@@ -52,11 +53,12 @@ public class ChannelManagement {
     
     public final SingleChannel addChannel()
     {
-        SingleChannel channel = new SingleChannel(channels.size());
+        SingleChannel channel = new SingleChannel(creationCounter);
         channels.add(channel);
         if(eventManager != null) {
             eventManager.fireChannelsChanged();
         }
+        creationCounter++;
         return channel;
     }
     
@@ -78,6 +80,7 @@ public class ChannelManagement {
         if(eventManager != null) {
             eventManager.fireChannelsChanged();
         }
+        creationCounter++;
         return channel;
     }
     
@@ -141,8 +144,11 @@ public class ChannelManagement {
      */
     public final void paintChannelOutlines(Graphics2D g)
     {
-        g.setColor(Color.RED);
         g.setFont(new Font("Arial", Font.BOLD, 10));
+        final int STR_MODE_WITH = g.getFontMetrics().stringWidth("EDIT MODE");
+        g.setColor(Color.BLACK);
+        g.fillRect(10, 0, STR_MODE_WITH, 10);
+        g.setColor(Color.RED);
         g.drawString("EDIT MODE", 10, 10);
         for (SingleChannel c : channels) {
             Shape s = c.getShape();
@@ -151,16 +157,24 @@ public class ChannelManagement {
                 g.setColor(Color.RED);
                 g.draw(s);
                 Rectangle bounds = s.getBounds();
+                final int STR_NAME_WIDTH = g.getFontMetrics().stringWidth(c.getChannelName());
                 
                 if(c instanceof GroupChannel) {
-                    int x = bounds.x + ( bounds.width - g.getFontMetrics().stringWidth(c.getChannelName())) / 2;
+                    int x = bounds.x + ( bounds.width - STR_NAME_WIDTH) / 2;
                     int y = bounds.y + ( bounds.height - g.getFontMetrics().getHeight() ) / 2;
+                    g.setColor(Color.BLACK);
+                    g.fillRect(x, y-10, STR_NAME_WIDTH, 10);
+                    g.setColor(Color.RED);
                     g.drawString(c.getChannelName(), x, y);
                 }
                 else {
-                    int x_add = (bounds.width-g.getFontMetrics().stringWidth(c.getChannelName()))/2;
+                    int x_add = (bounds.width-STR_NAME_WIDTH)/2;
+                    int x = bounds.x+x_add;
                     int y = bounds.y + bounds.height + g.getFontMetrics().getHeight() + 4;
-                    g.drawString(c.getChannelName(), bounds.x+x_add, y);
+                    g.setColor(Color.BLACK);
+                    g.fillRect(x, y-10, STR_NAME_WIDTH, 10);
+                    g.setColor(Color.RED);
+                    g.drawString(c.getChannelName(), x, y);
                 }
                 ChannelEditing.drawControlPoints(g, s);
             }
@@ -187,7 +201,6 @@ public class ChannelManagement {
     /**
      * Association of sketches to channels
      * @param s
-     * @param index
      * @return if found or null
      */
     public final SingleChannel getChannelForSketch(Sketch s)

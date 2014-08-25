@@ -33,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * MixProcessing's scripting API.
@@ -332,7 +333,7 @@ public class ScriptingApi {
      * @param sketchName
      * @param value
      * @return 
-     * @see EventManager#sketchAlpha(java.lang.String, float) 
+     * @see ScriptingApi#sketchAlpha(java.lang.String, float) 
      */
     @ApiMethodInfo(category = "Sketches", description = "Opacity", ignore = true)
     public final boolean sketchAlpha(String sketchName, double value) {
@@ -507,6 +508,37 @@ public class ScriptingApi {
         }
     }
     
+    /**
+     * Starts an automated variable transition process alike CSS3.
+     * 
+     * @param sketchName
+     * @param varName
+     * @param finalValue
+     * @param delayMS start delay before transition begins in milliseconds
+     * @param durationMS the whole duration in milliseconds
+     * @param periodeMS one periode duration in milliseconds
+     * @param timingFunction String, implemented: EASE, EASE_IN, EASE_OUT, LINEAR, STEPS, ALTERNATING
+     * @see VariableAutomation
+     * @see VariableAutomation#getTimingFunctionByName(java.lang.String) 
+     * @see <a href="https://developer.mozilla.org/de/docs/Web/CSS/transition">CSS3 transition</a>
+     * @return sucess of invokation
+     */
+    @ApiMethodInfo(category = "Sketches", description = "Variable Automation")
+    public final boolean sketchVarAutomation(String sketchName, String varName, 
+            Object finalValue, long delayMS, long durationMS, long periodeMS, 
+            String timingFunction) {
+        Sketch s = sketches.findSketch(sketchName);
+        if(s == null || s.getInstance() == null) {
+            return false;
+        }
+        else {
+            VariableAutomation automat = new VariableAutomation(this, s, varName, 
+                    finalValue, delayMS, durationMS, periodeMS, 
+                    VariableAutomation.getTimingFunctionByName(timingFunction));
+            automat.start();
+            return true;
+        }
+    }
     /**
      * Get the value of a sketch's variable 
      * @param sketchName
@@ -823,12 +855,15 @@ public class ScriptingApi {
     
     /**
      * Log Text to the standard log output.
-     * @param text
+     * @param output can be a String or an Array.
      * @return 
      */
     @ApiMethodInfo(category = "System", description = "Log Message")
-    public boolean systemPrintln(String text) {
-        System.out.println(text);
+    public boolean systemPrintln(Object output) {
+        if(output.getClass().isArray()) {
+            output = Arrays.toString( (Object[]) output );
+        }
+        System.out.println(output);
         return true;
     }
     

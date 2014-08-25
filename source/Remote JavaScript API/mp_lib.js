@@ -408,6 +408,25 @@ Api.sketchVar = function (sketchName, varName, newValue, callbackFunction) {
 };
 
 /**
+ * Method: sketchVarAutomation
+ * Short Description: Sketches ~ Variable Automation
+ *
+ * @param sketchName type=String
+ * @param varName type=String
+ * @param finalValue type=Object
+ * @param delayMS type=long
+ * @param durationMS type=long
+ * @param periodeMS type=long
+ * @param timingFunction type=String
+ * @return boolean
+*/
+Api.sketchVarAutomation = function (sketchName, varName, finalValue, delayMS, durationMS, periodeMS, timingFunction, callbackFunction) {
+	"use strict";
+	var request = "Api.sketchVarAutomation('" + sketchName + "', '" + varName + "', " + finalValue + ", " + delayMS + ", " + durationMS + ", " + periodeMS + ", '" + timingFunction + "');";
+	this.apiCall(request, callbackFunction);
+};
+
+/**
  * Method: sketchVarGet
  * Short Description: Sketches ~ Variable?
  *
@@ -514,12 +533,12 @@ Api.systemLoad = function (sketchPath, callbackFunction) {
  * Method: systemPrintln
  * Short Description: System ~ Log Message
  *
- * @param text type=String
+ * @param output type=Object
  * @return boolean
 */
-Api.systemPrintln = function (text, callbackFunction) {
+Api.systemPrintln = function (output, callbackFunction) {
 	"use strict";
-	var request = "Api.systemPrintln('" + text + "');";
+	var request = "Api.systemPrintln(" + output + ");";
 	this.apiCall(request, callbackFunction);
 };
 
@@ -563,4 +582,4 @@ Api.systemSleep = function (ms, callbackFunction) {
 };
 
 /* END OF MIXPROCESSING JAVASCRIPT LIBRARY */
-/* DATE OF GENERATION:2014-08-25, 13:41 */
+/* DATE OF GENERATION:2014-08-25, 16:40 */
