@@ -20,9 +20,9 @@
 package mixprocessing.welcome;
 
 import mixprocessing.Main;
-import mixprocessing.RenderFrame;
 import mixprocessing.channels.ChannelManagement;
 import java.awt.geom.Ellipse2D;
+import mixprocessing.MixRenderer;
 
 /**
  * Adds welcome channel(s) to the ChannelManger. Used at booting.
@@ -32,11 +32,11 @@ import java.awt.geom.Ellipse2D;
  */
 public class WelcomeChannels {
     
-    public static final void addWelcomeChannels(ChannelManagement cman) {
+    public static final void addWelcomeChannels(ChannelManagement cman, MixRenderer renderer) {
         int dia = ( 10 * Math.min(
-                RenderFrame.STARTUP_WIDTH, RenderFrame.STARTUP_HEIGHT) ) / 13;
-        int x = (RenderFrame.STARTUP_WIDTH-dia)/2;
-        int y = (RenderFrame.STARTUP_HEIGHT-dia)/2;
+                renderer.getWidth(), renderer.getHeight()) ) / 13;
+        int x = (renderer.getWidth()-dia)/2;
+        int y = (renderer.getHeight()-dia)/2;
         Ellipse2D.Float ellipse = new Ellipse2D.Float(x, y, dia, dia);
         cman.addChannel(ellipse).setChannelName(CHANNEL_NAMES[0]);
     }

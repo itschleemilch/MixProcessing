@@ -110,6 +110,13 @@ public class RenderFrame extends Frame
         int y = (screen.height-window.getHeight())/2;
         window.setLocation(x, y);
     }
+
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b); 
+        Dimension newSize = scriptingAPI.getRenderer().getSize();
+        scriptingAPI.getSketches().updateSize(newSize.width, newSize.height);
+    }
     
     public final void toggleFullscreen() {
         EventQueue.invokeLater(new Runnable() {

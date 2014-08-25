@@ -192,6 +192,7 @@ public class Main {
         frame.setScriptingAPI(api);
         
         frame.add(renderer, BorderLayout.CENTER);
+        frame.doLayout();
         renderer.init();
         //frame.setVisible(true); -> moved after showing welcome screen
         
@@ -211,8 +212,10 @@ public class Main {
         //scripting.setVisible(true);
         scripting.setLocation(0, logging.getHeight()+10);
         
+        // Show renderer
+        frame.setVisible(true);
         /* Init Welcome Settings */
-        WelcomeChannels.addWelcomeChannels(api.getChannels());
+        WelcomeChannels.addWelcomeChannels(api.getChannels(), renderer);
         api.sketchChannelSet(WelcomeSketch.class.getSimpleName(), 
                 WelcomeChannels.CHANNEL_NAMES[0]);
         
@@ -223,9 +226,6 @@ public class Main {
         int welcomeY = frame.getLocation().y;
         welcome.setLocation(welcomeX, welcomeY);
         welcome.setVisible(true);
-        
-        // Show renderer
-        frame.setVisible(true);
         
         // Webinterface
         Webserver webserver = new Webserver(scriptRunner);
